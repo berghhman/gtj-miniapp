@@ -983,7 +983,7 @@ document.addEventListener('click', e => {
     case 'order': S.openOrder = S.openOrder===v ? null : v; break;
     case 'notify': S.notify=!S.notify; break;
     case 'favs': { const f=P.filter(p=>S.fav.has(p.id)); sheet(`<h2>Избранное</h2>${f.length?`<div class="grid">${f.map(pcard).join('')}</div>`:'<p class="hint">Отмечайте товары сердечком, они появятся здесь.</p>'}`); return; }
-    case 'share': toast('Ссылка на товар скопирована'); try{ navigator.clipboard.writeText('https://t.me/gtj_tuning_bot?startapp='+S.product).catch(()=>{}); }catch(e){} return;
+    case 'share': toast('Ссылка на товар скопирована'); try{ navigator.clipboard.writeText('https://t.me/GTJdetailing_bot?startapp='+S.product).catch(()=>{}); }catch(e){} return;
     case 'toast': toast(v); return;
   }
   render();

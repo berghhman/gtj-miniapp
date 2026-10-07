@@ -11,6 +11,7 @@
 | `img/` | Фото товаров, работ и автомобилей (сжатые до ~700 px) |
 | `logo/gtj-logo.svg` / `.png` | Основной логотип — седан анфас в стиле наклейки |
 | `logo/gtj-avatar.svg` / `.png` | Квадратная версия 1024×1024 для аватарки бота и иконки мини-аппа |
+| `logo/gtj-app-cover-640x360.png` | Обложка 640×360 для `/newapp` в BotFather |
 | `logo/build_logo.py` | Скрипт, который генерирует оба SVG (геометрия описана для левой половины и зеркалится) |
 
 ## Экраны
@@ -30,7 +31,8 @@
 
 1. **GitHub Pages:** Settings → Pages → Source: *Deploy from a branch*, ветка `main`, папка `/ (root)`.
    Через минуту приложение будет доступно по адресу `https://<аккаунт>.github.io/<репозиторий>/`.
-2. **BotFather:** `/newbot` — создать бота, затем `/newapp` (или *Bot Settings → Menu Button*) и указать ссылку с GitHub Pages.
+2. **Бот:** [@GTJdetailing_bot](https://t.me/GTJdetailing_bot). В BotFather: `/setmenubutton` и `/newapp` со ссылкой `https://berghhman.github.io/gtj-miniapp/`.
+   Токен бота **никогда не коммитить** в этот репозиторий — он публичный.
 3. Аватарка бота и иконка мини-аппа — `logo/gtj-avatar.png`.
 
 SDK Telegram (`telegram-web-app.js`) уже подключён: внутри Telegram подтягивается имя клиента, работает системная кнопка «Назад» и вибрация.
