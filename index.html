@@ -88,7 +88,7 @@ main.snap{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:non
 /* press feedback instead of hover: everything tappable gives way under the finger */
 .cat,.btn,.chip,.mycar,.row-card,.mrow,.brand,.modrow,.iconbtn,.addbtn,.favbtn,.work,.gadd,.day,.seg button,.story,.hero,.club,.card,.gcar,.tab,.search,.stepper button,.sv-cap .btn{transition:transform .14s cubic-bezier(.2,.8,.2,1),filter .14s,background-color .14s}
 :is(.cat,.btn,.chip,.mycar,.row-card,.mrow,.brand,.modrow,.iconbtn,.addbtn,.favbtn,.gadd,.day,.seg button,.search):active{transform:scale(.96)}
-.card:has(.media:active,.name:active),.work:active,.club:active,.hero:has(.btn:active){transform:scale(.975)}
+.card:has(.cbtn:active,.name:active),.work:active,.club:active,.hero:has(.btn:active){transform:scale(.975)}
 .story:active{transform:scale(.92)}
 .tab:active{transform:scale(.9)}
 .stepper button:active{transform:scale(.85)}
@@ -142,7 +142,7 @@ button.search{width:100%;text-align:left;font-size:14px}
 
 /* hero */
 .hero{position:relative;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line);margin-top:12px}
-.hero img{width:100%;aspect-ratio:835/265;object-fit:cover}
+.hero img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--panel-2)}
 .hero .copy{padding:10px 16px 16px;display:flex;flex-direction:column;gap:8px}
 .hero h3{margin:0;font:700 32px/1 var(--f-display);letter-spacing:.01em;background:linear-gradient(180deg,#fff 0%,#c9ced5 45%,#737a83 62%,#e6e9ec 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p{margin:0;color:#c3c0b8;max-width:36ch}
@@ -158,9 +158,11 @@ button.search{width:100%;text-align:left;font-size:14px}
 
 /* categories */
 .cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.cat{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 4px 10px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:11px;font-weight:600;line-height:1.15;text-align:center;min-height:88px}
-.cat .ico{width:28px;height:28px;stroke-width:1.5;color:var(--cream)}
-.cat small{color:var(--muted);font-weight:500;font-size:10.5px}
+.cat{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 10px;border-radius:14px;background:var(--panel);border:1px solid var(--line);font-size:12px;font-weight:600;line-height:1.15;text-align:center;min-width:0}
+.cat .ci{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--panel-2)}
+.cat .cn{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat .ico{width:24px;height:24px;stroke-width:1.6;color:var(--cream)}
+.cat small{color:var(--muted);font-weight:500;font-size:11px;margin-top:-3px}
 
 /* product cards */
 .hscroll{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scroll-snap-type:x mandatory}
@@ -194,7 +196,32 @@ button.search{width:100%;text-align:left;font-size:14px}
 .addbtn.in{background:var(--panel-2);color:var(--cream);border:1px solid #3a3e44}
 .addbtn .ico{width:18px;height:18px;stroke-width:2.2}
 
-/* tile for items without a photo */
+/* parts are shown by their category icon, never by a photo */
+.pic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line);color:var(--cream);flex:none}
+.pic .ico{width:24px;height:24px;stroke-width:1.6}
+.pic.lg{width:56px;height:56px;border-radius:14px}
+.pic.lg .ico{width:30px;height:30px;stroke-width:1.5}
+.cbtn{display:block;flex:none}
+.gainl{font-size:12px;font-weight:700;color:var(--ok)}
+.pp2{display:flex;flex-direction:column;gap:3px;min-width:0}
+.card{padding:12px;gap:8px}
+.ctop{display:flex;align-items:flex-start;gap:6px}
+.ctop .badge{margin-top:3px}
+.card .favbtn{position:relative;top:auto;right:auto;margin:-4px -6px 0 auto;width:34px;height:34px;background:transparent;color:var(--muted);backdrop-filter:none}
+.card .favbtn.on{color:var(--red)}
+.card .name{min-height:2.5em}
+.card .pr{padding-top:4px}
+.plist{border-radius:var(--r);background:var(--panel);border:1px solid var(--line);overflow:hidden}
+.prow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-bottom:1px solid var(--line);transition:background-color .14s}
+.prow:last-child{border-bottom:0}
+.prow .t{display:flex;flex-direction:column;gap:4px;text-align:left;min-width:0}
+.prow .t b{font-weight:600;font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prow .r{display:flex;align-items:center;gap:10px}
+.prow .pp2{align-items:flex-end;text-align:right}
+.prow .price{font-size:15px}
+.prow:has(.t:active,.cbtn:active){background:var(--panel-2)}
+.phead{display:flex;align-items:center;gap:12px}
+/* old photo tile (kept for reference, unused) */
 .svc{width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;padding:34px 12px 12px;color:var(--fg);
   background:radial-gradient(120% 90% at 100% 0%,rgba(224,38,47,.24),transparent 55%),repeating-linear-gradient(45deg,#17191c 0 5px,#1d2024 5px 10px)}
 .svc .k{font:700 20px/1 var(--f-display);letter-spacing:.03em}
@@ -320,7 +347,7 @@ button.search{width:100%;text-align:left;font-size:14px}
 .backrow{display:flex;align-items:center;gap:10px}
 
 /* cart */
-.citem{display:grid;grid-template-columns:78px minmax(0,1fr);gap:12px;padding:12px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
+.citem{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;padding:12px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
 .citem .media{border-radius:10px}
 .citem .svc{padding:8px!important;justify-content:center}
 .citem .svc .k{font-size:13px}
@@ -542,14 +569,8 @@ const STORIES = [
     { img: 'work-intercooler.jpg', t: 'Интеркулер на Preface', s: 'Stage 2 за один день в боксе', cta: ['product', 'intercooler', 'Интеркулер'] },
     { img: 'work-monjaro.jpg', t: 'Пакет охлаждения на Monjaro', s: 'Радиатор, патрубки и термостат', cta: ['cat', 'cooling', 'Охлаждение'] },
     { img: 'work-lift.jpg', t: 'Диски и занижение', s: 'Preface на койловерах', cta: ['product', 'coilovers', 'Койловеры'] } ] },
-  { id: 'stage', t: 'Stage 2', cover: 'dv-install.jpg', items: [
-    { img: 'dv-install.jpg', t: 'Клапан DV+ ставим за час', s: 'Держит наддув после прошивки', cta: ['product', 'dv', 'Клапан DV+'] },
-    { img: 'downpipe.jpg', t: 'Даунпайп и прошивка', s: 'Замер на стенде до и после', cta: ['product', 'stage2', 'Прошивка Stage 2'] } ] },
-  { id: 'brakes', t: 'Тормоза', cover: 'brakes.jpg', items: [
-    { img: 'brakes.jpg', t: 'Тормоза 6 поршней', s: 'Monjaro, диски 380 мм', cta: ['product', 'bbk6', 'Тормозной кит'] } ] },
   { id: 'wheels', t: 'Диски', cover: 'wheels2.jpg', items: [
-    { img: 'wheels.jpg', t: 'Кованые диски', s: 'Подбираем вылет под ваш кузов', cta: ['product', 'wheels', 'Диски'] },
-    { img: 'wheels2.jpg', t: 'R20 на Preface', s: 'С проставками 15 мм' },
+    { img: 'wheels2.jpg', t: 'Кованые диски', s: 'Подбираем вылет под ваш кузов', cta: ['product', 'wheels', 'Диски'] },
     { img: 'wheels3.jpg', t: 'Чёрный глянец', s: 'Под красные суппорты' },
     { img: 'wheels4.jpg', t: 'Шиномонтаж в боксе', s: 'Балансировка и хранение' } ] },
   { id: 'color', t: 'Цвет', cover: 'preface-purple.jpg', items: [
@@ -577,7 +598,7 @@ const IC = {
   clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
   chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',
   pin:'<path d="M12 21s7-6.1 7-12a7 7 0 0 0-14 0c0 5.9 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
-  car:'<path d="M4 15.5l1.6-5.2A2 2 0 0 1 7.5 9h9a2 2 0 0 1 1.9 1.3l1.6 5.2V19h-3v-2H7v2H4z"/><path d="M4 15.5h16"/><circle cx="8" cy="13.3" r=".6"/><circle cx="16" cy="13.3" r=".6"/>',
+  car:'<path d="M3 8.5h18l-1.5 3.5h-15z"/><path d="M8 12v4.5M16 12v4.5M5.5 16.5h5M13.5 16.5h5"/>',
   gift:'<path d="M4 11h16v9H4zM3 7.5h18V11H3zM12 7.5V20"/><path d="M12 7.5C10 3.5 6.5 4.5 7.5 7.5M12 7.5c2-4 5.5-3 4.5 0"/>',
   share:'<path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 13v6h14v-6"/>',
   info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.8v.1"/>',
@@ -688,39 +709,33 @@ const hSel = () => { try { tg && tg.HapticFeedback && tg.HapticFeedback.selectio
 const hNote = t => { try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred(t); } catch (e) {} };
 const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? b : c); };
 
-function tileHtml(p) {
-  const c = car(); const g = stageGain(p, c);
-  if (p.stage) {
-    return `<div class="svc"><span class="k">STAGE ${p.stage}</span><span>${g && g.dhp > 0 ? `<span class="v">+${g.dhp} л.с.</span><br><span class="s">${g.hp} л.с. · ${g.nm} Н·м</span>` : `<span class="v" style="font-size:20px">для турбо</span><br><span class="s">выберите авто для расчёта</span>`}</span></div>`;
-  }
-  return `<div class="svc" style="padding-top:12px"><span class="cap">${esc(CATM[p.cat].n)}</span>${p.t ? `<span class="k" style="font-size:26px">${p.t}</span>` : ''}<svg class="ico gl" viewBox="0 0 24 24" aria-hidden="true">${IC[p.g || CATM[p.cat].g]}</svg></div>`;
-}
-function mediaInner(p, v) {
-  const src = pimg(p, v);
-  return src ? `<img src="${src}" alt="" loading="lazy" referrerpolicy="no-referrer">` : tileHtml(p);
-}
+const glyph = p => p.g || CATM[p.cat].g;
+const pic = (p, cls = '') => `<span class="pic ${cls}">${ic(glyph(p))}</span>`;
+function gainLine(p) { const g = stageGain(p); return g && g.dhp > 0 ? `<span class="gainl">+${g.dhp} л.с. · до ${g.hp}</span>` : ''; }
 function fitLabel(p) {
   const c = car(); if (!c) return '';
   if (universal(p)) return `<span class="fits uni"><span>Универсальный</span></span>`;
   return fits(p, c) ? `<span class="fits">${ic('check')}<span>Подходит к ${esc(c.short)}</span></span>` : `<span class="fits no"><span>Не для ${esc(c.short)}</span></span>`;
 }
+function priceHtml(p) { return `<span class="price">${p.v && p.v.some(x => x.p) ? 'от ' : ''}${rub(minPrice(p))}</span>${p.old ? `<span class="old">${rub(p.old)}</span>` : ''}`; }
+const addBtn = p => `<button class="addbtn ${inCart(p.id) ? 'in' : ''}" data-act="quickadd" data-v="${p.id}" aria-label="${inCart(p.id) ? 'В корзине' : 'В корзину'}">${ic(inCart(p.id) ? 'check' : 'plus')}</button>`;
+const badgeHtml = p => p.badge ? `<span class="badge ${['Хит', 'Пакет'].includes(p.badge) ? 'red' : ''}">${p.badge}</span>` : '';
+/* compact card for the home rows: icon, name, fit, price */
 function pcard(p) {
   const fav = S.fav.has(p.id);
-  const src = pimg(p);
   return `<div class="card">
-    <button class="media ${src && isContain(p) ? 'contain' : ''}" data-act="product" data-v="${p.id}" aria-label="${esc(p.name || p.n)}">
-      ${mediaInner(p)}
-      ${p.badge ? `<span class="badge ${['Хит', 'Пакет'].includes(p.badge) ? 'red' : ''}">${p.badge}</span>` : ''}
-    </button>
-    <button class="favbtn ${fav ? 'on' : ''}" data-act="fav" data-v="${p.id}" aria-label="В избранное">${ic('heart')}</button>
-    <div class="info">
-      ${fitLabel(p)}
-      <button class="name" data-act="product" data-v="${p.id}">${esc(p.n)}</button>
-      <div class="pr">
-        <div><div class="price">${p.v && p.v.some(x => x.p) ? 'от ' : ''}${rub(minPrice(p))}</div>${p.old ? `<div class="old">${rub(p.old)}</div>` : ''}</div>
-        <button class="addbtn ${inCart(p.id) ? 'in' : ''}" data-act="quickadd" data-v="${p.id}" aria-label="В корзину">${ic(inCart(p.id) ? 'check' : 'plus')}</button>
-      </div>
-    </div>
+    <div class="ctop"><button class="cbtn" data-act="product" data-v="${p.id}" aria-label="${esc(p.n)}">${pic(p)}</button>${badgeHtml(p)}<button class="favbtn ${fav ? 'on' : ''}" data-act="fav" data-v="${p.id}" aria-label="В избранное">${ic('heart')}</button></div>
+    <button class="name" data-act="product" data-v="${p.id}">${esc(p.n)}</button>
+    ${gainLine(p) || fitLabel(p)}
+    <div class="pr"><div class="pp2">${priceHtml(p)}</div>${addBtn(p)}</div>
+  </div>`;
+}
+/* catalog row: the list reads like a price list, no pictures */
+function prow(p) {
+  return `<div class="prow">
+    <button class="cbtn" data-act="product" data-v="${p.id}" aria-label="${esc(p.n)}">${pic(p)}</button>
+    <button class="t" data-act="product" data-v="${p.id}"><b>${esc(p.n)}</b>${gainLine(p) || fitLabel(p)}</button>
+    <div class="r"><div class="pp2">${priceHtml(p)}</div>${addBtn(p)}</div>
   </div>`;
 }
 function carPhoto(m, cls = '') {
@@ -734,10 +749,11 @@ function plateHtml(pl) {
 /* ======================= screens ======================= */
 function mycarCard() {
   const c = car();
-  if (!c) return `<button class="mycar empty" data-act="carsheet"><span class="ph">${ic('car')}</span><span class="t"><span class="eyebrow">Мой авто</span><b>Выберите автомобиль</b><span>21 марка · покажем то, что подходит</span></span>${ic('chev')}</button>`;
-  return `<button class="mycar" data-act="carsheet"><span class="ph">${c.m.img ? `<img src="${IMG}${c.m.img}" alt="">` : ic('car')}</span>
+  if (!c) return `<button class="mycar empty" data-act="carsheet"><span class="ph">${ic('plus')}</span><span class="t"><span class="eyebrow">Мой авто</span><b>Выберите автомобиль</b><span>21 марка · покажем то, что подходит</span></span>${ic('chev')}</button>`;
+  return `<button class="mycar" data-act="carsheet"><span class="ph"><img src="${IMG}${c.m.img}" alt=""></span>
     <span class="t"><span class="eyebrow">Мой авто${S.garage.length > 1 ? ` · ${S.active + 1} из ${S.garage.length}` : ''}</span><b>${esc(c.title)}</b><span>${esc(c.spec)}</span></span>${ic('down')}</button>`;
 }
+const SHORT = { brakes: 'Тормоза', exhaust: 'Выхлоп', susp: 'Подвеска', elec: 'Электрика', ext: 'Экстерьер', int: 'Салон', intake: 'Впуск', turbo: 'Турбины', engine: 'Мотор', cooling: 'Радиаторы', hoses: 'Шланги', fittings: 'Фитинги', chem: 'Химия', chip: 'Чип-тюнинг', detail: 'Детейлинг', merch: 'Мерч' };
 function vHome() {
   const c = car();
   const hits = P.filter(p => !p.svc && !universal(p) && fits(p)).sort((a, b) => b.pop - a.pop).slice(0, 8);
@@ -752,14 +768,13 @@ function vHome() {
       <div class="t"><b>TUNING · DETAILING</b><span>Тюнинг и детейлинг китайских авто</span></div>
       <button class="iconbtn" data-act="notifs" aria-label="Уведомления">${ic('bell')}<span class="dot">2</span></button>
     </div>
-    <button class="search" data-act="gosearch">${ic('search')}<span>Даунпайп, койловеры, Stage 2…</span></button>
   </div>
   <div class="hscroll stories" role="list" aria-label="Истории">${STORIES.map((s, i) => `<button class="story ${S.seen.has(s.id) ? 'seen' : ''}" role="listitem" data-act="story" data-v="${i}"><span class="ring"><img src="${IMG}${s.cover}" alt=""></span><span>${s.t}</span></button>`).join('')}</div>
   <div style="height:12px"></div>
   ${mycarCard()}
   <div class="hero">
     <span class="tag">STAGE 2</span>
-    <img src="${IMG}hero-preface.jpg" alt="Preface клиента в обвесе">
+    <img src="${IMG}${c ? c.m.img : 'car-preface.jpg'}" alt="${c ? esc(c.title) : 'Geely Preface'}">
     <div class="copy">
       <span class="eyebrow">${c && g2 ? `Пакет для ${esc(c.short)} ${c.d[0]}` : 'Пакет для турбомоторов'}</span>
       <h3>${g2 && g2.dhp > 0 ? `+${g2.dhp} л.с. за день` : 'Мощность за день'}</h3>
@@ -769,7 +784,7 @@ function vHome() {
   </div>
   <section class="sec">
     <div class="sec-h"><h2>Каталог</h2><button data-act="cat" data-v="all">Всё · ${P.length}${ic('chev')}</button></div>
-    <div class="cats">${CATS.map(k => `<button class="cat" data-act="cat" data-v="${k.id}">${ic(k.g)}${k.n}<small class="num">${counts[k.id]}</small></button>`).join('')}</div>
+    <div class="cats">${CATS.map(k => `<button class="cat" data-act="cat" data-v="${k.id}" aria-label="${esc(k.n)}"><span class="ci">${ic(k.g)}</span><span class="cn">${SHORT[k.id] || k.n}</span><small class="num">${counts[k.id]}</small></button>`).join('')}</div>
   </section>
   ${hits.length ? `<section class="sec">
     <div class="sec-h"><h2>${c ? 'Хиты для ' + esc(c.short) : 'Хиты продаж'}</h2><button data-act="cat" data-v="all">Все${ic('chev')}</button></div>
@@ -801,17 +816,16 @@ function gridHtml() {
   const list = catalogList(); const n = list.length; const c = car();
   return `<div class="toolbar"><span class="num">${n} ${plural(n, 'позиция', 'позиции', 'позиций')}</span>
       <select id="sort" aria-label="Сортировка"><option value="pop" ${S.sort === 'pop' ? 'selected' : ''}>Популярные</option><option value="asc" ${S.sort === 'asc' ? 'selected' : ''}>Сначала дешевле</option><option value="desc" ${S.sort === 'desc' ? 'selected' : ''}>Сначала дороже</option></select></div>
-    ${n ? `<div class="grid">${list.map(pcard).join('')}</div>` :
-      `<div class="empty"><div class="big">${ic('search')}</div><h3>Ничего не нашли</h3><p>${S.onlyFit && c ? `Для ${esc(c.title)} в этой рубрике пока нет позиций. Снимите фильтр по авто или спросите менеджера: привезём под заказ.` : 'Попробуйте другой запрос или рубрику.'}</p><button class="btn btn-ghost btn-sm" data-act="resetfilters">Сбросить фильтры</button></div>`}`;
+    ${n ? `<div class="plist">${list.map(prow).join('')}</div>` :
+      `<div class="empty"><div class="big">${ic('search')}</div><h3>Ничего не нашли</h3><p>${S.onlyFit && c ? `Для ${esc(c.title)} в этой рубрике пока нет позиций. Снимите фильтр по авто или спросите менеджера: привезём под заказ.` : 'В этой рубрике пока пусто.'}</p><button class="btn btn-ghost btn-sm" data-act="resetfilters">Сбросить фильтры</button></div>`}`;
 }
 function vCatalog() {
   const c = car();
   return `
   <div class="top">
     <div class="ptitle" style="padding-top:2px"><h1>${S.cat === 'all' ? 'Каталог' : esc(CATM[S.cat].n)}</h1><button class="iconbtn" data-act="tab" data-v="cart" aria-label="Корзина">${ic('cart')}${cartCount() ? `<span class="dot">${cartCount()}</span>` : ''}</button></div>
-    <label class="search">${ic('search')}<input id="q" value="${esc(S.q)}" placeholder="Название или артикул" autocomplete="off" enterkeyhint="search"></label>
     <div class="chips">
-      ${c ? `<button class="chip ${S.onlyFit ? 'on' : ''}" data-act="onlyfit">${ic('car')}${S.onlyFit ? 'Для ' + esc(c.short) : 'Все авто'}${S.onlyFit ? ic('close') : ''}</button>` : `<button class="chip" data-act="carsheet">${ic('car')}Выбрать авто</button>`}
+      ${c ? `<button class="chip ${S.onlyFit ? 'on' : ''}" data-act="onlyfit">${S.onlyFit ? ic('check') : ''}${S.onlyFit ? 'Для ' + esc(c.short) : 'Все авто'}${S.onlyFit ? ic('close') : ''}</button>` : `<button class="chip" data-act="carsheet">${ic('plus')}Выбрать авто</button>`}
       <button class="chip ${S.cat === 'all' ? 'on' : ''}" data-act="cat" data-v="all">Все</button>
       ${CATS.map(k => `<button class="chip ${S.cat === k.id ? 'on' : ''}" data-act="cat" data-v="${k.id}">${k.n}</button>`).join('')}
     </div>
@@ -821,11 +835,9 @@ function vCatalog() {
 
 function vProduct() {
   const p = PM[S.product]; const v = S.pv; const c = car();
-  const imgs = gallery(p, v);
   const price = unitPrice(p, v);
   const g = stageGain(p, c);
   const fitOk = fits(p, c);
-  const credit = p.cm && CREDITS[p.cm];
   const vr = p.v && p.v.find(x => x.id === v);
   const fitsTxt = Array.isArray(p.fit) ? p.fit.map(e => ENG[e].n).join(', ') : p.fit === 'turbo' ? 'Турбированные бензиновые и дизельные моторы' : p.fit === 'ice' ? 'Любые автомобили с ДВС, включая гибриды' : p.fit && p.fit.models ? p.fit.models.map(k => { const [b, m] = k.split('/'); const B = CARS.find(x => x.id === b); return B.n + ' ' + B.models.find(x => x.id === m).n; }).join(', ') : 'Любой автомобиль';
   return `
@@ -838,12 +850,11 @@ function vProduct() {
         <button class="iconbtn glass" data-act="fav" data-v="${p.id}" aria-label="В избранное" style="${S.fav.has(p.id) ? 'color:var(--red)' : ''}">${ic('heart', S.fav.has(p.id) ? 'filled' : '')}</button>
       </div>
     </div>
-    <div class="gal" id="gal">${imgs.length ? imgs.map(src => `<div class="media ${isContain(p) ? 'contain' : ''}"><img src="${src}" alt="${esc(p.n)}" referrerpolicy="no-referrer"></div>`).join('') : `<div class="media">${tileHtml(p)}</div>`}</div>
-    ${imgs.length > 1 ? `<div class="gdots" id="gdots">${imgs.map((_, i) => `<i class="${i === 0 ? 'on' : ''}"></i>`).join('')}</div>` : ''}
+    <div style="height:68px"></div>
     <div class="pbody">
-      <div class="meta"><span class="mono">Арт. ${p.art}</span>${p.svc ? `<span>${ic('clock', 'i14')} ${p.instT}</span>` : `<span class="stock">В наличии · ${p.st} шт</span>`}<span>${esc(CATM[p.cat].n)}</span></div>
+      <div class="phead">${pic(p, 'lg')}<div class="meta"><span>${esc(CATM[p.cat].n)}</span>${p.svc ? `<span>${ic('clock', 'i14')} ${p.instT}</span>` : `<span class="stock">В наличии · ${p.st} шт</span>`}<span class="mono">Арт. ${p.art}</span></div></div>
       <h1>${esc(p.n)}</h1>
-      ${!c ? `<button class="fitbar uni" data-act="carsheet">${ic('car')}Выберите автомобиль, чтобы проверить совместимость</button>`
+      ${!c ? `<button class="fitbar uni" data-act="carsheet">${ic('plus')}Выберите автомобиль, чтобы проверить совместимость</button>`
         : universal(p) ? `<div class="fitbar uni">${ic('check')}Подходит к любому автомобилю</div>`
         : `<div class="fitbar ${fitOk ? 'ok' : 'no'}">${ic(fitOk ? 'check' : 'info')}${fitOk ? `Подходит к вашему ${esc(c.title)} ${c.d[0]}` : `Не подходит к ${esc(c.title)} ${c.d[0]}. Подберём аналог`}</div>`}
       ${g && g.dhp > 0 ? `<div class="gain"><div><small>Мощность</small><b>${g.hp}</b> л.с.<em>+${g.dhp}</em></div><div><small>Момент</small><b>${g.nm}</b> Н·м<em>+${g.dnm}</em></div></div><span class="hint">Ориентир для ${esc(ENG[c.eng].n)}, итог фиксируем замером на диностенде.</span>` : ''}
@@ -854,7 +865,6 @@ function vProduct() {
       <p class="desc">${esc(p.d)}</p>
       <div class="opt"><span class="lbl">Характеристики</span><table class="specs"><tbody>${p.sp.map(s => `<tr><td>${esc(s[0])}</td><td>${esc(s[1])}</td></tr>`).join('')}</tbody></table></div>
       <div class="opt"><span class="lbl">Совместимость</span><p class="desc" style="font-size:13px">${esc(fitsTxt)}</p></div>
-      ${credit ? `<span class="credit">Фото: ${esc(credit[0])}, ${esc(credit[1])}, Wikimedia Commons</span>` : ''}
     </div>
   </div>`;
 }
@@ -888,9 +898,9 @@ function vCart() {
   return `
   <div class="ptitle"><h1>Корзина <span class="num" style="color:var(--muted);font-size:18px">${cartCount()}</span></h1><button data-act="clear">Очистить</button></div>
   <section class="sec" style="margin-top:14px;gap:10px">
-    ${S.cart.map((i, ix) => { const p = PM[i.id]; const vr = p.v && p.v.find(x => x.id === i.v); const src = pimg(p, i.v); return `
+    ${S.cart.map((i, ix) => { const p = PM[i.id]; const vr = p.v && p.v.find(x => x.id === i.v); return `
     <div class="citem">
-      <button class="media ${src && isContain(p) ? 'contain' : ''}" data-act="product" data-v="${p.id}" aria-label="${esc(p.n)}" style="border-radius:10px">${mediaInner(p, i.v)}</button>
+      <button class="cbtn" data-act="product" data-v="${p.id}" aria-label="${esc(p.n)}">${pic(p)}</button>
       <div class="t">
         <span class="nm">${esc(p.n)}</span>
         <span class="vr">${vr ? esc(vr.l) + ' · ' : ''}<span class="mono">${p.art}</span></span>
@@ -1064,7 +1074,6 @@ function pickerHtml() {
       <div class="mlist">${m.m.map((d, i) => `<button class="modrow" data-act="pickmod" data-v="${i}"><b>${esc(d[0])} · ${esc(d[5])}</b><span class="hp">${d[2]} л.с.</span><span>${d[3]} Н·м · ${esc(d[4])} · ${esc(d[6])} · ${esc(ENG[d[1]].n)}</span></button>`).join('')}</div>`;
   }
   return `<div class="shead"><h2>${pk.step === 'mod' ? 'Модификация' : pk.step === 'model' ? 'Модель' : 'Выберите автомобиль'}</h2><button class="iconbtn" data-act="closesheet" aria-label="Закрыть">${ic('close')}</button></div>
-    ${pk.step === 'brand' ? `<label class="search">${ic('search')}<input id="carq" value="${esc(pk.q)}" placeholder="Марка или модель: Monjaro, Tiggo 8…" autocomplete="off"></label>` : ''}
     <div id="pickbody" style="display:flex;flex-direction:column;gap:10px">${body}</div>`;
 }
 function openPicker(step = 'brand') { S.picker = { step, b: null, m: null, q: '' }; sheet(pickerHtml()); }
@@ -1148,8 +1157,6 @@ function render(opt = {}) {
     const i = Math.round(gal.scrollLeft / gal.clientWidth);
     document.querySelectorAll('#gdots i').forEach((d, j) => d.classList.toggle('on', i === j));
   }, { passive: true });
-  // broken remote photo → fall back to the tile
-  view.querySelectorAll('img[referrerpolicy]').forEach(im => im.addEventListener('error', () => { const b = im.closest('.media'); const id = b && b.dataset.v; if (b && id && PM[id]) { b.classList.remove('contain'); b.innerHTML = tileHtml(PM[id]); } else im.remove(); }, { once: true }));
 
   syncBack();
   persist();
@@ -1325,7 +1332,7 @@ function rescheduleSheet() {
     <button class="btn btn-cream btn-block" data-act="rconfirm">Предложить это время</button>`);
 }
 function aboutSheet() {
-  const credits = [...new Set(P.filter(p => p.cm).map(p => p.cm))];
+  const carCred = [...new Set(Object.values(window.GTJ_CAR_CREDITS || {}).map(c => `${c[0]} (${c[1]})`))];
   sheet(`${sheetHead('О магазине')}
     <div class="perks">
       <div class="perk"><b>Свой бокс</b>Установка и прошивка в день покупки</div>
@@ -1340,7 +1347,7 @@ function aboutSheet() {
       <h3>Гарантия</h3><p>12 месяцев на детали и работы, 24 месяца на тормозные системы. Прошивку откатываем бесплатно в течение года.</p>
       <h3>Возврат</h3><p>14 дней на товары без следов установки. Детали под заказ возврату не подлежат.</p>
       <h3>Данные об автомобилях</h3><p>Характеристики собраны по открытым источникам: каталог drom.ru, сайты брендов, обзоры 2025–2026. Перед заказом сверяем VIN.</p>
-      <h3>Фото</h3><p class="credit" style="font-size:11.5px;line-height:1.5">Фото работ и деталей — GTJ. Часть фото — Wikimedia Commons: ${[...new Set(credits.map(t => `${CREDITS[t][0]} (${CREDITS[t][1]})`))].map(esc).join(', ')}.</p>
+      <h3>Фото</h3><p class="credit" style="font-size:11.5px;line-height:1.5">Фото работ — GTJ. Фото автомобилей — Wikimedia Commons, авторы: ${carCred.map(esc).join(', ')}.</p>
     </div>
     <a class="btn btn-cream btn-block" href="${BOT}" target="_blank" rel="noopener" data-act="manager">${ic('chat')}Написать менеджеру</a>`);
 }
@@ -1358,7 +1365,6 @@ document.addEventListener('click', e => {
     case 'tab':
       if (S.tab === v && !S.product && !S.carInfo) { $('#view').scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }); return; }
       S.tab = v; S.product = null; S.carInfo = null; sheet(''); break;
-    case 'gosearch': S.tab = 'catalog'; S.cat = 'all'; S.product = null; S.carInfo = null; render.reset = true; render(); { const q = $('#q'); q && q.focus(); } return;
     case 'story': openStory(+v); return;
     case 'product': openProduct(v); break;
     case 'back': goBack(); return;

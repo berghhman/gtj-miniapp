@@ -63,3 +63,5 @@ python3 logo/build_logo.py
 
 ---
 Шрифт Oswald (logo/fonts) — © The Oswald Project Authors, лицензия SIL Open Font License 1.1.
+
+- `img/cars/` — фото всех 97 моделей из базы авто (Wikimedia Commons, авторы и лицензии в `window.GTJ_CAR_CREDITS` в `data/cars.js`, показываются в «О магазине»).
