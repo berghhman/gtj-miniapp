@@ -9,7 +9,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tektur:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tektur:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
 <style>
 /* Layout: one phone-width column (Telegram webview) — sticky top, scrolling feed, bottom tab bar; on desktop it sits in a frame next to a short brief. */
 :root{
@@ -27,8 +27,11 @@
   --backdrop:#08090a;
   --f-display:"Tektur","Manrope",system-ui,sans-serif;
   --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --f-mono:var(--f-body);
   --r:14px;
+  /* one scale for type and corners */
+  --fs-xs:12px;--fs-s:14px;--fs-m:16px;--fs-l:20px;--fs-xl:26px;--fs-2xl:32px;
+  --r-s:8px;--r-m:14px;--r-l:22px;
   color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:pan-x pan-y}
@@ -38,14 +41,14 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-text-size
 html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea{-webkit-user-select:text;user-select:text}
 img,svg{-webkit-user-drag:none;user-select:none}
-body{position:fixed;inset:0;margin:0;background:var(--backdrop);color:var(--fg);font:500 14px/1.45 var(--f-body);
+body{position:fixed;inset:0;margin:0;background:var(--backdrop);color:var(--fg);font:500 var(--fs-s)/1.45 var(--f-body);
   background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 6px,transparent 6px 12px),repeating-linear-gradient(-45deg,rgba(255,255,255,.018) 0 6px,transparent 6px 12px)}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
 input,select,textarea{font:inherit;color:inherit}
 a{color:inherit}
-:focus-visible{outline:2px solid var(--cream);outline-offset:2px;border-radius:8px}
+:focus-visible{outline:2px solid var(--cream);outline-offset:2px;border-radius:var(--r-s)}
 img{display:block;max-width:100%}
-.ico{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ico{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .ico.filled{fill:currentColor}
 .ico.i14{width:14px;height:14px;vertical-align:-2px}
 
@@ -60,20 +63,20 @@ img{display:block;max-width:100%}
 @media (min-width:1000px){
   .brief{display:flex;flex-direction:column;gap:22px;width:330px}
   .brief img{width:200px}
-  .brief h1{font:700 28px/1.15 var(--f-display);margin:0;text-wrap:balance}
+  .brief h1{font:700 var(--fs-xl)/1.15 var(--f-display);margin:0;text-wrap:balance}
   .brief p{margin:0;color:var(--muted);max-width:34ch}
   .brief nav{display:flex;flex-direction:column;gap:6px}
-  .brief nav button{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);text-align:left;font-weight:600}
+  .brief nav button{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border:1px solid var(--line);border-radius:var(--r-m);background:var(--panel);text-align:left;font-weight:600}
   .brief nav button:hover{border-color:#3a3e44}
   .brief nav button span{color:var(--muted)}
 }
 
 /* ---------- telegram chrome (only outside Telegram) ---------- */
-.tgbar{flex:none;display:flex;align-items:center;justify-content:space-between;height:46px;padding:0 14px;background:#121315;border-bottom:1px solid var(--line);font-size:14px}
+.tgbar{flex:none;display:flex;align-items:center;justify-content:space-between;height:46px;padding:0 14px;background:#121315;border-bottom:1px solid var(--line);font-size:var(--fs-s)}
 .tgbar b{font-weight:700;display:block;text-align:center;line-height:1.1}
-.tgbar small{display:block;text-align:center;color:var(--muted);font-size:11px}
+.tgbar small{display:block;text-align:center;color:var(--muted);font-size:var(--fs-xs)}
 .tgbar .tgx{color:#6ab3f3;font-weight:600;min-width:64px}
-.tgbar .tgm{min-width:64px;text-align:right;color:var(--muted);font-size:20px;line-height:1}
+.tgbar .tgm{min-width:64px;text-align:right;color:var(--muted);font-size:var(--fs-l);line-height:1}
 
 /* ---------- view ---------- */
 .vp{position:relative;flex:1;min-height:0;overflow:hidden;background:var(--ink)}
@@ -81,15 +84,14 @@ main{position:relative;z-index:1;height:100%;overflow-y:auto;overflow-x:hidden;p
 main::-webkit-scrollbar{width:0}
 main.snap{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 /* compact bar that takes over the title once the big one scrolls away */
-.navbar{position:absolute;top:0;left:0;right:0;z-index:4;height:48px;display:flex;align-items:center;justify-content:center;padding:0 64px;background:rgba(13,14,16,.95);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 1px 0 var(--line);font:600 16px/1 var(--f-display);opacity:0;transform:translateY(-8px);transition:opacity .18s,transform .18s;pointer-events:none}
+.navbar{position:absolute;top:0;left:0;right:0;z-index:4;height:48px;display:flex;align-items:center;justify-content:center;padding:0 64px;background:rgba(13,14,16,.95);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 1px 0 var(--line);font:600 var(--fs-m)/1 var(--f-display);opacity:0;transform:translateY(-8px);transition:opacity .18s,transform .18s;pointer-events:none}
 .navbar b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vp.far .navbar.on{opacity:1;transform:none}
 
 /* press feedback instead of hover: everything tappable gives way under the finger */
-.cat,.btn,.chip,.mycar,.row-card,.mrow,.brand,.modrow,.iconbtn,.addbtn,.favbtn,.work,.gadd,.day,.seg button,.story,.hero,.club,.card,.gcar,.tab,.search,.stepper button,.sv-cap .btn{transition:transform .14s cubic-bezier(.2,.8,.2,1),filter .14s,background-color .14s}
-:is(.cat,.btn,.chip,.mycar,.row-card,.mrow,.brand,.modrow,.iconbtn,.addbtn,.favbtn,.gadd,.day,.seg button,.search):active{transform:scale(.96)}
-.card:has(.cbtn:active,.name:active),.work:active,.club:active,.hero:has(.btn:active){transform:scale(.975)}
-.story:active{transform:scale(.92)}
+.cat,.btn,.chip,.mycar,.row-card,.mrow,.brand,.modrow,.iconbtn,.addbtn,.favbtn,.work,.gadd,.day,.seg button,.gtile,.hchange,.card,.gcar,.tab,.stepper button,.linkbtn{transition:transform .14s cubic-bezier(.2,.8,.2,1),filter .14s,background-color .14s}
+:is(.cat,.btn,.chip,.mycar,.row-card,.mrow,.brand,.modrow,.iconbtn,.addbtn,.favbtn,.gadd,.day,.seg button,.gtile,.hchange):active{transform:scale(.96)}
+.card:has(.cbtn:active,.name:active),.work:active{transform:scale(.975)}
 .tab:active{transform:scale(.9)}
 .stepper button:active{transform:scale(.85)}
 :is(.menu>*,.order>button,.citem .inst):active{background:var(--panel-2)}
@@ -98,20 +100,20 @@ main.snap{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:non
 .addbtn,.stepper button{position:relative}
 :is(.favbtn,.addbtn,.iconbtn,.stepper button)::after{content:"";position:absolute;inset:-6px}
 /* images fade in over a shimmer instead of popping in */
-:is(.media,.work,.mycar .ph,.gcar .ph,.mrow .ph,.hero,.story .ring,.pp>.media) img{opacity:0;transition:opacity .3s}
+:is(.media,.work,.mycar .ph,.gcar .ph,.mrow .ph,.hero,.hcar,.pcar,.mini,.pp>.media) img{opacity:0;transition:opacity .3s}
 img.ld{opacity:1!important}
 :is(.media,.mycar .ph,.gcar .ph,.mrow .ph,.work):has(>img:not(.ld)){background-image:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);background-size:220% 100%;animation:shimmer 1.2s linear infinite}
 .media:has(>img:not(.ld)){background-image:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%)}
 @keyframes shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
 .sec{display:flex;flex-direction:column;gap:12px;margin-top:26px}
 .sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-.sec-h h2{margin:0;font:600 18px/1.2 var(--f-display);letter-spacing:.01em;text-wrap:balance}
-.sec-h button{display:inline-flex;align-items:center;gap:1px;min-height:32px;margin:-6px -4px -6px 0;color:var(--muted);font-size:13px;font-weight:600;white-space:nowrap}
+.sec-h h2{margin:0;font:600 var(--fs-l)/1.2 var(--f-display);letter-spacing:.01em;text-wrap:balance}
+.sec-h button{display:inline-flex;align-items:center;gap:1px;min-height:32px;margin:-6px -4px -6px 0;color:var(--muted);font-size:var(--fs-s);font-weight:600;white-space:nowrap}
 .sec-h button .ico{width:16px;height:16px;stroke-width:2.2}
-.eyebrow{font:600 11px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.mono{font-family:var(--f-mono);font-size:12px;letter-spacing:.02em}
+.eyebrow{font:500 var(--fs-xs)/1.2 var(--f-body);color:var(--muted)}
+.mono{font-variant-numeric:tabular-nums;font-size:var(--fs-xs)}
 .num{font-variant-numeric:tabular-nums}
-.hint{font-size:12px;color:var(--muted)}
+.hint{font-size:var(--fs-xs);color:var(--muted)}
 .hint.ok{color:var(--ok)}
 .hint.err{color:var(--warn)}
 
@@ -121,48 +123,50 @@ img.ld{opacity:1!important}
 .brandrow{display:flex;align-items:center;gap:12px}
 .brandrow img{width:74px;height:auto}
 .brandrow .t{flex:1;min-width:0}
-.brandrow .t b{display:block;font:700 16px/1.1 var(--f-display);letter-spacing:.04em}
-.brandrow .t span{font-size:12px;color:var(--muted)}
-.iconbtn{position:relative;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);flex:none}
+.brandrow .t b{display:block;font:600 var(--fs-m)/1.15 var(--f-display)}
+.brandrow .t span{font-size:var(--fs-xs);color:var(--muted)}
+.iconbtn{position:relative;width:40px;height:40px;border-radius:var(--r-m);display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);flex:none}
 .iconbtn.glass{background:rgba(13,14,16,.72);backdrop-filter:blur(6px);border-color:rgba(255,255,255,.08)}
-.dot{position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--red);color:#fff;font:700 10px/16px var(--f-body);text-align:center}
-.search{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
-.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--fg);font-size:16px}
-button.search{width:100%;text-align:left;font-size:14px}
-.search input::placeholder{color:var(--muted)}
+.dot{position:absolute;top:6px;right:6px;min-width:16px;height:16px;padding:0 4px;border-radius:var(--r-s);background:var(--red);color:#fff;font:700 var(--fs-xs)/16px var(--f-body);text-align:center}
 
 /* my car */
 .mycar{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line);text-align:left;width:100%}
-.mycar .ph{width:76px;height:52px;border-radius:9px;flex:none;overflow:hidden;background:var(--panel-2);display:grid;place-items:center;color:var(--muted)}
+.mycar .ph{width:76px;height:52px;border-radius:var(--r-s);flex:none;overflow:hidden;background:var(--panel-2);display:grid;place-items:center;color:var(--muted)}
 .mycar .ph img{width:100%;height:100%;object-fit:cover}
 .mycar .t{flex:1;min-width:0}
-.mycar b{display:block;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mycar span{font-size:12px;color:var(--muted)}
+.mycar b{display:block;font-weight:700;font-size:var(--fs-m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mycar span{font-size:var(--fs-xs);color:var(--muted)}
 .mycar.empty{border-style:dashed;border-color:#3a3e44}
 
 /* hero */
-.hero{position:relative;border-radius:18px;overflow:hidden;background:#000;border:1px solid var(--line);margin-top:12px}
+.hero{position:relative;border-radius:var(--r-l);overflow:hidden;background:#000;border:1px solid var(--line);margin-top:12px}
 .hero img{width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--panel-2)}
-.hero .copy{padding:10px 16px 16px;display:flex;flex-direction:column;gap:8px}
-.hero h3{margin:0;font:700 32px/1 var(--f-display);letter-spacing:.01em;background:linear-gradient(180deg,#fff 0%,#c9ced5 45%,#737a83 62%,#e6e9ec 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .copy{padding:16px;display:flex;flex-direction:column;gap:12px}
+.hero .copy .btn-block+.btn-block{margin-top:-4px}
+.hcar{position:relative;background:var(--panel-2)}
+.hcar img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.hcar.small{border-radius:var(--r-m);overflow:hidden}
+.hchange{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border-radius:var(--r-l);background:rgba(13,14,16,.78);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;font-size:var(--fs-s);font-weight:700}
+.hchange .ico{width:16px;height:16px}
+.hero h3{margin:0;font:700 var(--fs-xl)/1.1 var(--f-display);color:#fff;text-wrap:balance}
 .hero p{margin:0;color:#c3c0b8;max-width:36ch}
 .hero .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:4px;flex-wrap:wrap}
-.hero .tag{position:absolute;top:12px;left:12px;padding:5px 9px;border-radius:7px;background:var(--red);color:#fff;font:700 11px/1 var(--f-body);letter-spacing:.08em}
+.hero .tag{position:absolute;top:12px;left:12px;padding:5px 9px;border-radius:var(--r-s);background:var(--red);color:#fff;font:700 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 18px;border-radius:12px;font-weight:700;font-size:15px;white-space:nowrap;text-decoration:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 18px;border-radius:var(--r-m);font-weight:700;font-size:var(--fs-m);white-space:nowrap;text-decoration:none}
 .btn-cream{background:var(--cream);color:#121214}
 .btn-cream:active{filter:brightness(.92)}
 .btn-ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--fg)}
-.btn-sm{height:36px;padding:0 14px;font-size:13px;border-radius:10px}
+.btn-sm{height:36px;padding:0 14px;font-size:var(--fs-s);border-radius:var(--r-s)}
 .btn-block{width:100%}
 
 /* categories */
 .cats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.cat{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 10px;border-radius:14px;background:var(--panel);border:1px solid var(--line);font-size:12px;font-weight:600;line-height:1.15;text-align:center;min-width:0}
-.cat .ci{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--panel-2)}
+.cat{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px 10px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);font-size:var(--fs-xs);font-weight:600;line-height:1.15;text-align:center;min-width:0}
+.cat .ci{width:42px;height:42px;border-radius:var(--r-m);display:grid;place-items:center;background:var(--panel-2)}
 .cat .cn{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cat .ico{width:24px;height:24px;stroke-width:1.6;color:var(--cream)}
-.cat small{color:var(--muted);font-weight:500;font-size:11px;margin-top:-3px}
+.cat .ico{width:24px;height:24px;color:var(--cream)}
+.cat small{color:var(--muted);font-weight:500;font-size:var(--fs-xs);margin-top:-3px}
 
 /* product cards */
 .hscroll{display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 4px;scroll-snap-type:x mandatory}
@@ -176,33 +180,33 @@ button.search{width:100%;text-align:left;font-size:14px}
 .media img{width:100%;height:100%;object-fit:cover}
 .media.contain img{object-fit:contain;padding:8%}
 .media .badge{position:absolute;top:8px;left:8px}
-.badge{display:inline-block;padding:4px 7px;border-radius:6px;font:700 10px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;background:#111;color:var(--cream)}
+.badge{display:inline-block;padding:4px 8px;border-radius:var(--r-s);font:700 var(--fs-xs)/1.1 var(--f-body);background:#111;color:var(--cream)}
 .badge.red{background:var(--red);color:#fff}
 .favbtn{position:absolute;top:6px;right:6px;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgba(13,14,16,.55);color:#fff;backdrop-filter:blur(6px)}
 .favbtn.on{color:var(--red)}
 .favbtn.on .ico{fill:currentColor}
 .favbtn .ico{width:18px;height:18px}
 .card .info{display:flex;flex-direction:column;gap:4px;padding:10px 10px 12px;flex:1}
-.fits{font-size:11px;font-weight:600;color:var(--ok);display:flex;align-items:center;gap:4px;min-width:0}
+.fits{font-size:var(--fs-xs);font-weight:600;color:var(--ok);display:flex;align-items:center;gap:4px;min-width:0}
 .fits span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fits.no{color:var(--muted)}
 .fits.uni{color:var(--muted)}
 .fits .ico{width:13px;height:13px;stroke-width:2.4}
-.card .name{font-weight:600;font-size:13.5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em;text-align:left}
+.card .name{font-weight:600;font-size:var(--fs-s);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em;text-align:left}
 .card .pr{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto;padding-top:6px}
-.price{font:600 16px/1 var(--f-display);font-variant-numeric:tabular-nums;white-space:nowrap}
-.old{font-size:12px;color:var(--muted);text-decoration:line-through;font-variant-numeric:tabular-nums}
-.addbtn{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--cream);color:#121214;flex:none}
+.price{font:600 var(--fs-m)/1 var(--f-display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.old{font-size:var(--fs-xs);color:var(--muted);text-decoration:line-through;font-variant-numeric:tabular-nums}
+.addbtn{width:34px;height:34px;border-radius:var(--r-s);display:grid;place-items:center;background:var(--cream);color:#121214;flex:none}
 .addbtn.in{background:var(--panel-2);color:var(--cream);border:1px solid #3a3e44}
 .addbtn .ico{width:18px;height:18px;stroke-width:2.2}
 
 /* parts are shown by their category icon, never by a photo */
-.pic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line);color:var(--cream);flex:none}
-.pic .ico{width:24px;height:24px;stroke-width:1.6}
-.pic.lg{width:56px;height:56px;border-radius:14px}
-.pic.lg .ico{width:30px;height:30px;stroke-width:1.5}
+.pic{width:44px;height:44px;border-radius:var(--r-m);display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line);color:var(--cream);flex:none}
+.pic .ico{width:24px;height:24px}
+.pic.lg{width:56px;height:56px;border-radius:var(--r-m)}
+.pic.lg .ico{width:30px;height:30px}
 .cbtn{display:block;flex:none}
-.gainl{font-size:12px;font-weight:700;color:var(--ok)}
+.gainl{font-size:var(--fs-xs);font-weight:700;color:var(--ok)}
 .pp2{display:flex;flex-direction:column;gap:3px;min-width:0}
 .card{padding:12px;gap:8px}
 .ctop{display:flex;align-items:flex-start;gap:6px}
@@ -215,230 +219,201 @@ button.search{width:100%;text-align:left;font-size:14px}
 .prow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px;border-bottom:1px solid var(--line);transition:background-color .14s}
 .prow:last-child{border-bottom:0}
 .prow .t{display:flex;flex-direction:column;gap:4px;text-align:left;min-width:0}
-.prow .t b{font-weight:600;font-size:14px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.prow .t b{font-weight:600;font-size:var(--fs-s);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .prow .r{display:flex;align-items:center;gap:10px}
 .prow .pp2{align-items:flex-end;text-align:right}
-.prow .price{font-size:15px}
+.prow .price{font-size:var(--fs-m)}
 .prow:has(.t:active,.cbtn:active){background:var(--panel-2)}
 .phead{display:flex;align-items:center;gap:12px}
-/* old photo tile (kept for reference, unused) */
-.svc{width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;text-align:left;padding:34px 12px 12px;color:var(--fg);
-  background:radial-gradient(120% 90% at 100% 0%,rgba(224,38,47,.24),transparent 55%),repeating-linear-gradient(45deg,#17191c 0 5px,#1d2024 5px 10px)}
-.svc .k{font:700 20px/1 var(--f-display);letter-spacing:.03em}
-.svc .v{font:700 28px/1 var(--f-display);color:var(--cream)}
-.svc .s{font-size:11px;color:var(--muted)}
-.svc .gl{width:46%;height:auto;aspect-ratio:1;color:var(--cream);stroke-width:1.1;align-self:flex-end;opacity:.9}
-.svc .cap{font-size:10.5px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
 
 /* works */
-.work{width:220px;border-radius:var(--r);overflow:hidden;background:var(--panel);border:1px solid var(--line)}
+.work{width:220px;border-radius:var(--r-m);overflow:hidden;background:var(--panel);border:1px solid var(--line);text-align:left;display:block;padding:0}
 .work img{width:100%;aspect-ratio:4/3;object-fit:cover}
-.work div{padding:9px 11px 11px}
-.work b{display:block;font-size:13px}
-.work span{font-size:11.5px;color:var(--muted)}
-/* stories */
-.stories{gap:14px;padding-top:2px;padding-bottom:2px}
-.story{display:flex;flex-direction:column;align-items:center;gap:6px;width:66px;font-size:11.5px;font-weight:600;line-height:1.1;text-align:center}
-.story .ring{width:64px;height:64px;border-radius:50%;padding:2.5px;background:conic-gradient(from 200deg,var(--red),#ff8a3d 35%,var(--cream) 60%,var(--red))}
-.story .ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2.5px solid var(--ink);background:var(--panel-2)}
-.story.seen .ring{background:#3a3e44}
-.story.seen>span:last-child{color:var(--muted)}
-#story:empty{display:none}
-.sv{position:absolute;inset:0;z-index:40;background:#000;display:flex;flex-direction:column;animation:svin .26s cubic-bezier(.2,.8,.2,1)}
-.sv.out{animation:svout .2s ease-in forwards}
-.sv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.sv::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.5),transparent 22%,transparent 55%,rgba(0,0,0,.85));pointer-events:none}
-.sv-bars{position:relative;z-index:2;display:flex;gap:4px;padding:10px 10px 0}
-.sv-bars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.3);overflow:hidden}
-.sv-bars i b{display:block;height:100%;width:0;background:#fff}
-.sv-bars i.done b{width:100%}
-.sv-bars i b.run{animation:svfill 5s linear forwards}
-.sv.paused .sv-bars i b.run{animation-play-state:paused}
-.sv-head{position:relative;z-index:2;display:flex;align-items:center;gap:10px;padding:10px 6px 0 12px;color:#fff;font-size:13px}
-.sv-head img{width:32px;height:32px;border-radius:50%;object-fit:cover;opacity:1}
-.sv-head b{flex:1;font-weight:700}
-.sv-head button{width:44px;height:44px;display:grid;place-items:center;color:#fff}
-.sv-tap{position:absolute;top:70px;bottom:150px;z-index:1;width:35%}
-.sv-tap.l{left:0}.sv-tap.r{right:0;width:65%}
-.sv-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;gap:6px;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));color:#fff}
-.sv-cap b{font:700 24px/1.1 var(--f-display);text-wrap:balance}
-.sv-cap span{color:rgba(255,255,255,.8);font-size:14px}
-.sv-cap .btn{margin-top:8px}
-@keyframes svfill{to{width:100%}}
-@keyframes svin{from{opacity:0;transform:scale(.92)}}
-@keyframes svout{to{opacity:0;transform:scale(.94)}}
-.perks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.perk{padding:12px 10px;border-radius:12px;border:1px dashed #33373d;font-size:12px;line-height:1.3;color:var(--muted)}
-.perk b{display:block;color:var(--fg);font:600 13px/1.2 var(--f-display);margin-bottom:4px}
+.work .wt{display:block;padding:10px 12px 12px}
+.work b{display:block;font-size:var(--fs-s)}
+.work .wt>span{font-size:var(--fs-xs);color:var(--muted)}
 
+/* sections on home: two front doors, four side doors */
+.gbig{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gsmall{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gtile{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 12px;min-height:56px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);text-align:left}
+.gtile .ci{width:40px;height:40px;border-radius:var(--r-s);display:grid;place-items:center;background:var(--panel-2);color:var(--cream)}
+.gtile b{font-weight:600;font-size:var(--fs-s);line-height:1.2;min-width:0}
+.gtile .cnt{color:var(--muted);font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
+.gtile.big{grid-template-columns:1fr;align-items:start;gap:6px;padding:14px;min-height:0}
+.gtile.big .ci{width:44px;height:44px;margin-bottom:4px}
+.gtile.big b{font:600 var(--fs-m)/1.2 var(--f-display)}
+.gtile.big small{color:var(--muted);font-size:var(--fs-xs);line-height:1.35}
+.lgroup{display:flex;flex-direction:column;gap:8px}
+.lgroup h3{margin:0;font:600 var(--fs-m) var(--f-display)}
+.prow .t .ben{font-size:var(--fs-xs);color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pcar{position:relative;margin:0 0 4px}
+.pcar img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--panel-2)}
+.pcar::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(13,14,16,.9))}
+.pcar>span{position:absolute;left:16px;right:16px;bottom:12px;z-index:1;display:flex;align-items:center;gap:10px;font-size:var(--fs-s);font-weight:600;color:#fff}
+.pbody .lead{margin:0;color:#d6d2ca;font-size:var(--fs-m);line-height:1.45}
+.linkbtn{color:var(--cream);font-weight:600;text-decoration:underline;text-underline-offset:3px;min-height:32px;text-align:left}
+.consent{display:flex;gap:12px;align-items:flex-start;font-size:var(--fs-s);line-height:1.4;color:#cbc7bf}
+.consent input{flex:none;width:22px;height:22px;margin:0;accent-color:var(--ok)}
+.consent .linkbtn{min-height:0;display:inline}
+.form{display:flex;flex-direction:column;gap:12px}
+.leadtxt{margin:0;padding:12px;border-radius:var(--r-m);background:var(--panel-2);border:1px solid var(--line);font:500 var(--fs-xs)/1.5 var(--f-body);white-space:pre-wrap;text-align:left;user-select:text;-webkit-user-select:text;word-break:break-word}
+.mini{width:56px;height:38px;border-radius:var(--r-s);overflow:hidden;flex:none;background:var(--panel-2)}
+.mini img{width:100%;height:100%;object-fit:cover}
+.menu .mrowx{display:flex;align-items:center;gap:12px;padding:14px;border-bottom:1px solid var(--line)}
+.seg.two{grid-template-columns:1fr 1fr}
+.gcar .t .spec{font-size:var(--fs-xs);color:var(--muted)}
+.chip::after{content:"";position:absolute;inset:-2px 0}
+.btn .num{margin-left:auto;padding-left:12px}
+.btn-cream:has(.num){justify-content:flex-start}
 /* chips */
 .chips{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px}
 .chips::-webkit-scrollbar{display:none}
 .chips.wrap{flex-wrap:wrap;margin:0;padding:0;overflow:visible}
-.chip{flex:none;height:34px;padding:0 13px;border-radius:17px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip{position:relative;flex:none;height:40px;padding:0 14px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);font-size:var(--fs-s);font-weight:600;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .chip.on{background:var(--cream);color:#121214;border-color:var(--cream)}
 .chip .ico{width:14px;height:14px;stroke-width:2.4}
 .chip:disabled{opacity:.35;text-decoration:line-through;cursor:not-allowed}
-.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:13px}
-.toolbar select{background:var(--panel);border:1px solid var(--line);border-radius:10px;height:34px;padding:0 10px}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:var(--fs-s)}
+.toolbar select{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-s);height:34px;padding:0 10px}
 
 /* product page */
 .pp{margin:0 -16px}
 .pnav{position:sticky;top:0;z-index:6;height:0;display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px 0}
 .pnav>*{position:relative;z-index:1}
-.pnav .pbar{position:absolute;top:0;left:0;right:0;z-index:0;height:64px;display:flex;align-items:center;padding:0 112px 0 68px;background:rgba(13,14,16,.9);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 1px 0 var(--line);font:600 15px/1.2 var(--f-display);opacity:0;transition:opacity .18s;pointer-events:none}
+.pnav .pbar{position:absolute;top:0;left:0;right:0;z-index:0;height:64px;display:flex;align-items:center;padding:0 112px 0 68px;background:rgba(13,14,16,.9);-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 1px 0 var(--line);font:600 var(--fs-m)/1.2 var(--f-display);opacity:0;transition:opacity .18s;pointer-events:none}
 .pnav .pbar b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vp.far .pnav .pbar{opacity:1}
 .vp.far .iconbtn.glass{background:var(--panel);border-color:var(--line)}
-.gal{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;background:var(--tile)}
-.gal::-webkit-scrollbar{display:none}
-.gal .media{flex:none;width:100%;scroll-snap-align:center}
-.gal .svc{padding-top:68px!important}
-.gdots{display:flex;gap:5px;justify-content:center;margin-top:-22px;position:relative;z-index:1}
-.gdots i{width:6px;height:6px;border-radius:3px;background:rgba(0,0,0,.25)}
-.gdots i.on{width:18px;background:#121214}
 .pbody{padding:16px;display:flex;flex-direction:column;gap:14px}
-.pbody h1{margin:0;font:600 23px/1.15 var(--f-display);text-wrap:balance}
-.meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;color:var(--muted);font-size:12.5px}
+.pbody h1{margin:0;font:600 var(--fs-xl)/1.15 var(--f-display);text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;color:var(--muted);font-size:var(--fs-xs)}
 .stock{color:var(--ok);font-weight:600}
-.fitbar{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;font-size:13px;font-weight:600;border:1px solid;text-align:left;width:100%}
+.fitbar{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--r-m);font-size:var(--fs-s);font-weight:600;border:1px solid;text-align:left;width:100%}
 .fitbar.ok{color:var(--ok);border-color:rgba(127,209,160,.3);background:rgba(127,209,160,.07)}
 .fitbar.no{color:var(--warn);border-color:rgba(240,182,90,.3);background:rgba(240,182,90,.07)}
 .fitbar.uni{color:var(--muted);border-color:var(--line);background:var(--panel)}
 .pricebig{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.pricebig .price{font-size:28px}
-.bonus{font-size:12px;font-weight:700;color:var(--cream);padding:4px 8px;border-radius:7px;background:rgba(236,229,211,.1)}
+.pricebig .price{font-size:var(--fs-xl)}
+.bonus{font-size:var(--fs-xs);font-weight:700;color:var(--cream);padding:4px 8px;border-radius:var(--r-s);background:rgba(236,229,211,.1)}
 .opt{display:flex;flex-direction:column;gap:8px}
-.opt .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.opt .lbl{font-size:var(--fs-xs);color:var(--muted);font-weight:600}
 .sw{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,.3)}
-.row-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line);text-align:left;width:100%}
+.row-card{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);text-align:left;width:100%}
 .row-card .t{flex:1;min-width:0}
-.row-card b{display:block;font-size:14px}
-.row-card span{font-size:12px;color:var(--muted)}
+.row-card b{display:block;font-size:var(--fs-s)}
+.row-card span{font-size:var(--fs-xs);color:var(--muted)}
 .row-card>.ico{color:var(--cream)}
 .row-card.on{border-color:var(--cream)}
-.toggle{position:relative;width:46px;height:28px;border-radius:14px;background:#33373d;flex:none;transition:background .2s}
+.toggle{position:relative;width:46px;height:28px;border-radius:var(--r-m);background:#33373d;flex:none;transition:background .2s}
 .toggle::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
 .toggle.on{background:var(--ok)}
 .toggle.on::after{transform:translateX(18px)}
 .desc{margin:0;color:#cbc7bf;line-height:1.55;max-width:60ch}
-.specs{width:100%;border-collapse:collapse;font-size:13px}
+.specs{width:100%;border-collapse:collapse;font-size:var(--fs-s)}
 .specs td,.specs th{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
 .specs td:first-child{color:var(--muted);width:44%;padding-right:10px}
 .gain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.gain div{padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
-.gain small{display:block;color:var(--muted);font-size:11.5px;margin-bottom:4px}
-.gain b{font:600 20px/1 var(--f-display);font-variant-numeric:tabular-nums}
-.gain em{font-style:normal;color:var(--ok);font-weight:700;font-size:13px;margin-left:6px}
-.credit{font-size:11px;color:#80858d}
+.gain div{padding:12px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line)}
+.gain small{display:block;color:var(--muted);font-size:var(--fs-xs);margin-bottom:4px}
+.gain b{font:600 var(--fs-l)/1 var(--f-display);font-variant-numeric:tabular-nums}
+.gain em{font-style:normal;color:var(--ok);font-weight:700;font-size:var(--fs-s);margin-left:6px}
+.credit{font-size:var(--fs-xs);color:#80858d}
 .actionbar{flex:none;display:flex;gap:10px;align-items:center;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:rgba(13,14,16,.96)}
 .actionbar .btn-cream{flex:1}
-.stepper{display:inline-flex;align-items:center;height:46px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line)}
+.stepper{display:inline-flex;align-items:center;height:46px;border-radius:var(--r-m);background:var(--panel-2);border:1px solid var(--line)}
 .stepper button{width:38px;height:100%;display:grid;place-items:center}
 .stepper span{min-width:22px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
-.stepper.sm{height:34px;border-radius:10px}
-.stepper.sm button{width:32px}
+.stepper.sm{height:40px;border-radius:var(--r-m)}
+.stepper.sm button{width:40px}
 .stepper .ico{width:16px;height:16px;stroke-width:2.4}
 
 /* page title */
 .ptitle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:14px}
-.ptitle h1{margin:0;font:600 26px/1.1 var(--f-display);min-width:0}
-.ptitle>button:not(.iconbtn){color:var(--muted);font-size:13px;font-weight:600}
+.ptitle h1{margin:0;font:600 var(--fs-xl)/1.1 var(--f-display);min-width:0}
+.ptitle>button:not(.iconbtn){color:var(--muted);font-size:var(--fs-s);font-weight:600}
 .backrow{display:flex;align-items:center;gap:10px}
 
 /* cart */
 .citem{display:grid;grid-template-columns:44px minmax(0,1fr);gap:12px;padding:12px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
-.citem .media{border-radius:10px}
+.citem .media{border-radius:var(--r-s)}
 .citem .svc{padding:8px!important;justify-content:center}
-.citem .svc .k{font-size:13px}
-.citem .svc .v{font-size:14px}
+.citem .svc .k{font-size:var(--fs-s)}
+.citem .svc .v{font-size:var(--fs-s)}
 .citem .svc .s,.citem .svc .cap,.citem .svc br{display:none}
 .citem .svc .gl{width:60%;align-self:center}
 .citem .t{display:flex;flex-direction:column;gap:6px;min-width:0}
-.citem .nm{font-weight:600;font-size:13.5px;line-height:1.25}
-.citem .vr{font-size:12px;color:var(--muted)}
+.citem .nm{font-weight:600;font-size:var(--fs-s);line-height:1.25}
+.citem .vr{font-size:var(--fs-xs);color:var(--muted)}
 .citem .bot{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.citem .inst{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding-top:10px;border-top:1px dashed #30343a;font-size:12.5px;text-align:left;width:100%}
+.citem .inst{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding-top:10px;border-top:1px dashed #30343a;font-size:var(--fs-xs);text-align:left;width:100%}
 .citem .inst .t2{flex:1}
 .citem .inst .ico{width:18px;height:18px;color:var(--cream)}
-.citem .warn{grid-column:1/-1;font-size:12px;color:var(--warn)}
-.check{width:22px;height:22px;border-radius:7px;border:1.5px solid #4a4f56;display:grid;place-items:center;flex:none}
+.citem .warn{grid-column:1/-1;font-size:var(--fs-xs);color:var(--warn)}
+.check{width:22px;height:22px;border-radius:var(--r-s);border:1.5px solid #4a4f56;display:grid;place-items:center;flex:none}
 .check.on{background:var(--ok);border-color:var(--ok);color:#0d0e10}
 .check .ico{width:14px;height:14px;stroke-width:3}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
-.seg button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:9px;font-size:12.5px;font-weight:700}
-.seg button small{font-weight:500;color:var(--muted);font-size:11px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line)}
+.seg button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:var(--r-s);font-size:var(--fs-xs);font-weight:700}
+.seg button small{font-weight:500;color:var(--muted);font-size:var(--fs-xs)}
 .seg button.on{background:var(--panel-2);box-shadow:inset 0 0 0 1px #3d4148}
 .seg button.on small{color:var(--cream)}
 .slots{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
-.day{flex:none;width:52px;height:58px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.day small{font-size:11px;color:var(--muted)}
-.day b{font:600 18px/1 var(--f-display)}
+.day{flex:none;width:52px;height:58px;border-radius:var(--r-m);background:var(--panel-2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.day small{font-size:var(--fs-xs);color:var(--muted)}
+.day b{font:600 var(--fs-l)/1 var(--f-display)}
 .day.on{background:var(--cream);color:#121214;border-color:var(--cream)}
 .day.on small{color:#4a4740}
 .promo{display:flex;gap:8px}
-.promo input{flex:1;min-width:0;height:46px;padding:0 14px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);text-transform:uppercase;font-family:var(--f-mono);font-size:16px;letter-spacing:.06em;outline:0}
+.promo input{flex:1;min-width:0;height:46px;padding:0 14px;border-radius:var(--r-m);background:var(--panel-2);border:1px solid var(--line);text-transform:uppercase;font-size:var(--fs-m);outline:0}
 .sum{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
-.sum .l{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:#cbc7bf;font-variant-numeric:tabular-nums}
+.sum .l{display:flex;justify-content:space-between;gap:10px;font-size:var(--fs-s);color:#cbc7bf;font-variant-numeric:tabular-nums}
 .sum .l.minus span:last-child{color:var(--ok)}
 .sum .tot{display:flex;justify-content:space-between;align-items:baseline;padding-top:10px;margin-top:2px;border-top:1px solid var(--line)}
-.sum .tot b{font:600 24px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.sum .tot b{font:600 var(--fs-xl)/1 var(--f-display);font-variant-numeric:tabular-nums}
 .empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:48px 12px}
 .empty .big{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);color:var(--muted)}
 .empty .big .ico{width:32px;height:32px}
-.empty h3{margin:0;font:600 20px var(--f-display)}
+.empty h3{margin:0;font:600 var(--fs-l) var(--f-display)}
 .empty p{margin:0;color:var(--muted);max-width:30ch}
 
 /* profile */
 .prof{display:flex;align-items:center;gap:14px;padding-top:16px}
-.ava{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font:700 22px var(--f-display);color:#121214;background:linear-gradient(160deg,#fff,#b9bec6 45%,#6b727b 60%,#e3e6ea);flex:none}
-.prof b{display:block;font:600 20px/1.15 var(--f-display)}
-.prof span{font-size:12.5px;color:var(--muted)}
-.club{position:relative;border-radius:18px;padding:18px;overflow:hidden;color:#141416;
-  background:linear-gradient(115deg,#d9dde2 0%,#f7f8f9 22%,#a9afb7 46%,#e6e9ec 64%,#9aa0a8 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.6);text-align:left;width:100%}
-.club::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(0,0,0,.035) 0 1px,transparent 1px 3px);pointer-events:none}
-.club .top2{display:flex;justify-content:space-between;align-items:flex-start;position:relative}
-.club .lvl{font:700 12px/1 var(--f-body);letter-spacing:.2em}
-.club .nm{font:700 15px/1 var(--f-display);letter-spacing:.12em;margin-top:6px}
-.club img{width:86px}
-.club .bal{position:relative;display:flex;align-items:baseline;gap:8px;margin-top:14px}
-.club .bal b{font:700 34px/1 var(--f-display);font-variant-numeric:tabular-nums}
-.club .bal span{font-size:13px;font-weight:700}
-.club .prog{position:relative;margin-top:14px;height:6px;border-radius:3px;background:rgba(0,0,0,.15);overflow:hidden}
-.club .prog i{position:absolute;inset:0 auto 0 0;background:#141416;border-radius:3px}
-.club .foot{position:relative;display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:12px;font-weight:600}
+.ava{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;font:700 var(--fs-l) var(--f-display);color:#121214;background:linear-gradient(160deg,#fff,#b9bec6 45%,#6b727b 60%,#e3e6ea);flex:none}
+.prof b{display:block;font:600 var(--fs-l)/1.15 var(--f-display)}
+.prof span{font-size:var(--fs-xs);color:var(--muted)}
 .gcar{width:250px;border-radius:var(--r);overflow:hidden;background:var(--panel);border:1px solid var(--line);text-align:left;display:flex;flex-direction:column}
 .gcar.on{border-color:var(--cream)}
 .gcar .ph{width:100%;aspect-ratio:16/9;background:var(--panel-2);display:grid;place-items:center;color:var(--muted);position:relative;overflow:hidden}
 .gcar .ph img{width:100%;height:100%;object-fit:cover}
-.gcar .ph .nm{font:700 17px/1.15 var(--f-display);color:#4a4f56;text-align:center;padding:0 12px;text-wrap:balance}
+.gcar .ph .nm{font:700 var(--fs-m)/1.15 var(--f-display);color:#4a4f56;text-align:center;padding:0 12px;text-wrap:balance}
 .gcar .ph .badge{position:absolute;top:8px;left:8px}
 .gcar .t{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
-.gcar .t b{font-size:14px}
+.gcar .t b{font-size:var(--fs-s)}
 .gcar .t .mono{color:var(--muted)}
-.gadd{width:130px;border-radius:var(--r);border:1px dashed #3a3e44;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:13px;font-weight:600}
+.gadd{width:130px;border-radius:var(--r);border:1px dashed #3a3e44;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:var(--fs-s);font-weight:600}
 .appt{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;padding:14px;border-radius:var(--r);background:var(--panel);border:1px solid var(--line)}
-.appt .d{border-radius:12px;background:var(--cream);color:#121214;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0}
-.appt .d b{font:700 24px/1 var(--f-display)}
-.appt .d small{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.appt .d{border-radius:var(--r-m);background:var(--cream);color:#121214;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0}
+.appt .d b{font:700 var(--fs-xl)/1 var(--f-display)}
+.appt .d small{font-size:var(--fs-xs);font-weight:700}
 .appt .t{display:flex;flex-direction:column;gap:3px;min-width:0}
-.appt .t b{font-size:14.5px}
-.appt .t span{font-size:12.5px;color:var(--muted)}
+.appt .t b{font-size:var(--fs-s)}
+.appt .t span{font-size:var(--fs-xs);color:var(--muted)}
 .appt .acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
 .order{border-radius:var(--r);background:var(--panel);border:1px solid var(--line);overflow:hidden}
 .order>button{display:flex;flex-direction:column;gap:6px;padding:13px 14px;width:100%;text-align:left}
 .order .r1{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .order .r1 .mono{color:var(--muted)}
-.order .r2{font-size:13.5px;font-weight:600}
+.order .r2{font-size:var(--fs-s);font-weight:600}
 .order .r3{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:12px;font-size:11.5px;font-weight:700;white-space:nowrap}
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border-radius:var(--r-m);font-size:var(--fs-xs);font-weight:700;white-space:nowrap}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .pill.done{color:var(--ok);background:rgba(127,209,160,.1)}
 .pill.ship{color:#7db7ff;background:rgba(125,183,255,.1)}
 .pill.wait{color:var(--warn);background:rgba(240,182,90,.1)}
 .pill.new{color:var(--cream);background:rgba(236,229,211,.1)}
 .tl{list-style:none;margin:0;padding:4px 14px 14px;display:flex;flex-direction:column}
-.tl li{position:relative;padding:0 0 12px 22px;font-size:12.5px;color:var(--muted)}
+.tl li{position:relative;padding:0 0 12px 22px;font-size:var(--fs-xs);color:var(--muted)}
 .tl li::before{content:"";position:absolute;left:4px;top:5px;width:8px;height:8px;border-radius:50%;background:#3a3e44}
 .tl li::after{content:"";position:absolute;left:7.5px;top:15px;bottom:-3px;width:1px;background:#3a3e44}
 .tl li:last-child::after{display:none}
@@ -448,13 +423,13 @@ button.search{width:100%;text-align:left;font-size:14px}
 .menu>*{display:flex;align-items:center;gap:12px;padding:14px;width:100%;text-align:left;border-bottom:1px solid var(--line);text-decoration:none}
 .menu>*:last-child{border-bottom:0}
 .menu .t{flex:1;min-width:0;font-weight:600}
-.menu .t small{display:block;font-weight:500;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.menu .v{color:var(--muted);font-size:13px}
+.menu .t small{display:block;font-weight:500;color:var(--muted);font-size:var(--fs-xs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu .v{color:var(--muted);font-size:var(--fs-s)}
 .menu>*>.ico:first-child{color:var(--cream)}
-.foot-note{margin-top:26px;text-align:center;color:#7a7f87;font-size:11.5px}
+.foot-note{margin-top:26px;text-align:center;color:#7a7f87;font-size:var(--fs-xs)}
 
 /* russian plate */
-.plate{display:inline-flex;align-items:stretch;height:26px;border:2px solid #111;border-radius:4px;background:#fff;color:#111;font:600 15px/22px var(--f-mono);overflow:hidden;align-self:flex-start}
+.plate{display:inline-flex;align-items:stretch;height:26px;border:2px solid #111;border-radius:4px;background:#fff;color:#111;font:600 15px/22px var(--f-display);overflow:hidden;align-self:flex-start}
 .plate .m{padding:0 7px;letter-spacing:.04em;display:flex;align-items:center;gap:4px}
 .plate .m em{font-style:normal;font-size:17px}
 .plate .rg{display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:2px solid #111;padding:0 5px;font-size:11px;line-height:1}
@@ -463,57 +438,59 @@ button.search{width:100%;text-align:left;font-size:14px}
 
 /* car picker */
 .brands{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.brand{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line);text-align:left;min-width:0}
-.brand b{font:600 15px/1.15 var(--f-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.brand small{color:var(--muted);font-size:11.5px}
+.brand{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);text-align:left;min-width:0}
+.brand b{font:600 var(--fs-m)/1.15 var(--f-display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.brand small{color:var(--muted);font-size:var(--fs-xs)}
 .mlist{display:flex;flex-direction:column;gap:8px}
-.mrow{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;background:var(--panel);border:1px solid var(--line);text-align:left;width:100%}
-.mrow .ph{width:72px;height:46px;border-radius:8px;flex:none;overflow:hidden;background:var(--panel-2);display:grid;place-items:center;color:var(--muted);font:700 13px var(--f-display)}
+.mrow{display:flex;align-items:center;gap:12px;padding:10px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);text-align:left;width:100%}
+.mrow .ph{width:72px;height:46px;border-radius:var(--r-s);flex:none;overflow:hidden;background:var(--panel-2);display:grid;place-items:center;color:var(--muted);font:700 var(--fs-s) var(--f-display)}
 .mrow .ph img{width:100%;height:100%;object-fit:cover}
 .mrow .t{flex:1;min-width:0}
-.mrow b{display:block;font-size:14.5px}
-.mrow span{font-size:12px;color:var(--muted)}
-.modrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line);text-align:left;width:100%}
-.modrow b{font:600 16px/1.2 var(--f-display)}
-.modrow .hp{font:600 16px/1.2 var(--f-display);color:var(--cream);text-align:right;white-space:nowrap}
-.modrow span{grid-column:1/-1;font-size:12px;color:var(--muted)}
+.mrow b{display:block;font-size:var(--fs-s)}
+.mrow span{font-size:var(--fs-xs);color:var(--muted)}
+.modrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);text-align:left;width:100%}
+.modrow b{font:600 var(--fs-m)/1.2 var(--f-display)}
+.modrow .hp{font:600 var(--fs-m)/1.2 var(--f-display);color:var(--cream);text-align:right;white-space:nowrap}
+.modrow span{grid-column:1/-1;font-size:var(--fs-xs);color:var(--muted)}
 .modrow.on{border-color:var(--cream)}
-.crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:var(--fs-s);color:var(--muted)}
 .crumbs button{color:var(--cream);font-weight:600}
 
 /* tab bar */
 .tabbar{position:relative;z-index:3;flex:none;display:grid;grid-template-columns:repeat(4,1fr);padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:#101113}
 .tab{min-height:50px;justify-content:center}
 .tab.on .ico{stroke-width:2.2}
-.tab{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-size:11px;font-weight:600;color:var(--muted)}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-size:var(--fs-xs);font-weight:600;color:var(--muted)}
 .tab.on{color:var(--cream)}
 .tab .dot{top:2px;right:calc(50% - 22px)}
 
 /* sheet */
 .sheet{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,.55);animation:fade .2s}
 .sheet .panel{max-height:90%;overflow-y:auto;overscroll-behavior:contain;background:#141518;border-top:1px solid var(--line);border-radius:22px 22px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;animation:up .32s cubic-bezier(.2,.8,.2,1)}
-.sheet .grab{width:40px;height:5px;border-radius:3px;background:#3a3e44;align-self:center;flex:none;box-shadow:0 0 0 12px transparent}
+.sheet .grab{width:40px;height:5px;border-radius:var(--r-s);background:#3a3e44;align-self:center;flex:none;box-shadow:0 0 0 12px transparent}
 .sheet.closing{pointer-events:none}
-.field input,.field textarea,.field select{font-size:16px}
-.sheet h2{margin:0;font:600 20px/1.2 var(--f-display)}
+.sheet .panel:focus{outline:none}
+.sheet .panel>*{flex-shrink:0}
+.field input,.field textarea,.field select{font-size:var(--fs-m)}
+.sheet h2{margin:0;font:600 var(--fs-l)/1.2 var(--f-display)}
 .sheet .shead{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .field{display:flex;flex-direction:column;gap:6px}
-.field label{font-size:12px;color:var(--muted);font-weight:600}
-.field input,.field textarea,.field select{height:46px;padding:0 14px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);outline:0}
+.field label{font-size:var(--fs-xs);color:var(--muted);font-weight:600}
+.field input,.field textarea,.field select{height:46px;padding:0 14px;border-radius:var(--r-m);background:var(--panel-2);border:1px solid var(--line);outline:0}
 .field textarea{height:72px;padding:12px 14px;resize:none}
 .field input:focus,.field textarea:focus{border-color:#4a4f56}
 .success{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:10px 0}
 .success .okc{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(127,209,160,.12);color:var(--ok)}
 .success .okc .ico{width:32px;height:32px;stroke-width:2.4}
-.success h2{font-size:22px}
+.success h2{font-size:var(--fs-l)}
 .success p{margin:0;color:var(--muted);max-width:32ch}
-.prose{display:flex;flex-direction:column;gap:12px;font-size:13.5px;color:#cbc7bf;line-height:1.55}
-.prose h3{margin:6px 0 0;font:600 15px var(--f-display);color:var(--fg)}
+.prose{display:flex;flex-direction:column;gap:12px;font-size:var(--fs-s);color:#cbc7bf;line-height:1.55}
+.prose h3{margin:6px 0 0;font:600 var(--fs-m) var(--f-display);color:var(--fg)}
 .prose p{margin:0}
-.note{display:flex;gap:10px;padding:12px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:13px}
+.note{display:flex;gap:10px;padding:12px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);font-size:var(--fs-s)}
 .note .ico{color:var(--cream)}
 .note small{display:block;color:var(--muted)}
-.toast{position:absolute;left:50%;bottom:150px;z-index:30;transform:translate(-50%,20px);opacity:0;pointer-events:none;padding:11px 16px;border-radius:12px;background:var(--cream);color:#121214;font-weight:700;font-size:13px;max-width:90%;text-align:center;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.toast{position:absolute;left:50%;bottom:150px;z-index:30;transform:translate(-50%,20px);opacity:0;pointer-events:none;padding:11px 16px;border-radius:var(--r-m);background:var(--cream);color:#121214;font-weight:700;font-size:var(--fs-s);max-width:90%;text-align:center;transition:.25s;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fade{from{opacity:0}}
@@ -524,7 +501,7 @@ button.search{width:100%;text-align:left;font-size:14px}
   <aside class="brief">
     <img src="img/gtj-wordmark.svg" alt="GTJ">
     <h1>Магазин тюнинга китайских авто в Telegram</h1>
-    <p>Прототип мини-приложения: подбор по автомобилю из базы на 21 марку, каталог из 16 рубрик, корзина с записью в бокс и личный кабинет.</p>
+    <p>Мини-приложение: подбор по машине из базы на 21 марку, каталог из 6 разделов, заявка и запись в бокс, личный кабинет.</p>
     <nav aria-label="Экраны прототипа">
       <button data-act="tab" data-v="home">Главная <span>→</span></button>
       <button data-act="carsheet">Выбор автомобиля <span>→</span></button>
@@ -548,36 +525,47 @@ button.search{width:100%;text-align:left;font-size:14px}
     <div id="bottom"></div>
     <nav class="tabbar" id="tabbar" aria-label="Разделы"></nav>
     <div id="sheet"></div>
-    <div id="story"></div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </div>
 </div>
 
 <script src="data/cars.js"></script>
 <script src="data/catalog.js"></script>
+<script src="data/shop.js"></script>
 <script>
 /* ======================= data ======================= */
 const IMG = 'img/';
 const BOT = 'https://t.me/GTJdetailing_bot';
+const SHOP = window.GTJ_SHOP || {};
+const TERMS = SHOP.terms || {};
 const CARS = window.GTJ_CARS, ENG = window.GTJ_ENGINES;
-const CATS = window.GTJ_CATS, P = window.GTJ_PRODUCTS, CREDITS = window.GTJ_CREDITS;
+const CATS = window.GTJ_CATS, CREDITS = window.GTJ_CREDITS;
+/* merch is not a product line: it stays out of the catalogue */
+const P = window.GTJ_PRODUCTS.filter(p => p.cat !== 'merch');
 const PM = Object.fromEntries(P.map(p => [p.id, p]));
 const CATM = Object.fromEntries(CATS.map(c => [c.id, c]));
-/* stories: work from the box, the way shops in apps show it (cover, title, frames with a call to action) */
-const STORIES = [
-  { id: 'box', t: 'Работы', cover: 'work-intercooler.jpg', items: [
-    { img: 'work-intercooler.jpg', t: 'Интеркулер на Preface', s: 'Stage 2 за один день в боксе', cta: ['product', 'intercooler', 'Интеркулер'] },
-    { img: 'work-monjaro.jpg', t: 'Пакет охлаждения на Monjaro', s: 'Радиатор, патрубки и термостат', cta: ['cat', 'cooling', 'Охлаждение'] },
-    { img: 'work-lift.jpg', t: 'Диски и занижение', s: 'Preface на койловерах', cta: ['product', 'coilovers', 'Койловеры'] } ] },
-  { id: 'wheels', t: 'Диски', cover: 'wheels2.jpg', items: [
-    { img: 'wheels2.jpg', t: 'Кованые диски', s: 'Подбираем вылет под ваш кузов', cta: ['product', 'wheels', 'Диски'] },
-    { img: 'wheels3.jpg', t: 'Чёрный глянец', s: 'Под красные суппорты' },
-    { img: 'wheels4.jpg', t: 'Шиномонтаж в боксе', s: 'Балансировка и хранение' } ] },
-  { id: 'color', t: 'Цвет', cover: 'preface-purple.jpg', items: [
-    { img: 'preface-purple.jpg', t: 'Preface в цветном полиуретане', s: 'Защита и новый цвет сразу', cta: ['product', 'colorwrap', 'Цветной полиуретан'] } ] },
-  { id: 'club', t: 'Клуб', cover: 'meet2.jpg', items: [
-    { img: 'meet2.jpg', t: 'Сходка GTJ Club', s: 'Preface и Monjaro наших клиентов', cta: ['club', '', 'Про GTJ Club'] } ] },
+/* six sections instead of sixteen rubrics; power and detailing are the two front doors */
+const GROUPS = [
+  { id: 'power', n: 'Мощность', s: 'Прошивка, впуск, выпуск, турбо', g: 'gauge', cats: ['chip', 'turbo', 'intake', 'exhaust', 'engine', 'cooling'] },
+  { id: 'detailing', n: 'Детейлинг', s: 'Керамика, плёнка, мойка, химия', g: 'spray', cats: ['detail', 'chem'] },
+  { id: 'chassis', n: 'Тормоза и подвеска', g: 'brake', cats: ['brakes', 'susp'] },
+  { id: 'exterior', n: 'Внешний вид', g: 'car', cats: ['ext'] },
+  { id: 'interior', n: 'Салон и электрика', g: 'seat', cats: ['int', 'elec'] },
+  { id: 'parts', n: 'Шланги и фитинги', g: 'hose', cats: ['hoses', 'fittings'] },
 ];
+const GM = Object.fromEntries(GROUPS.map(g => [g.id, g]));
+const groupOf = cat => GROUPS.find(g => g.cats.includes(cat));
+/* the box's own work: real photos, each leads to what was done */
+const WORKS = [
+  { img: 'work-intercooler.jpg', t: 'Интеркулер на Preface', s: 'Stage 2 за один день', to: 'intercooler' },
+  { img: 'work-monjaro.jpg', t: 'Охлаждение на Monjaro', s: 'Радиатор и патрубки', to: 'radiator' },
+  { img: 'work-lift.jpg', t: 'Диски и занижение', s: 'Preface на койловерах', to: 'coilovers' },
+  { img: 'preface-purple.jpg', t: 'Цветной полиуретан', s: 'Защита и новый цвет', to: 'colorwrap' },
+  { img: 'wheels3.jpg', t: 'Кованые диски', s: 'Подбор вылета под кузов', to: 'wheels' },
+  { img: 'meet2.jpg', t: 'Машины наших клиентов', s: 'Preface и Monjaro', to: null },
+];
+const PACK = ['stage2', 'downpipe', 'intercooler', 'dv'];
+const INTERESTS = ['Мощность', 'Тормоза и подвеска', 'Внешний вид', 'Детейлинг', 'Другое'];
 
 /* ======================= icons ======================= */
 const IC = {
@@ -606,6 +594,8 @@ const IC = {
   edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
   shield:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
   qr:'<rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/>',
+  star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
   photo:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-8 8"/>',
   /* category glyphs */
   turbo:'<circle cx="11" cy="13" r="6.5"/><circle cx="11" cy="13" r="2"/><path d="M11 6.5h8.5v4.5h-3.2"/><path d="M11 11c1.8-1.5 1.5-3.5 0-4.5M13 13c1.5 1.8 3.5 1.5 4.5 0M11 15c-1.8 1.5-1.5 3.5 0 4.5M9 13c-1.5-1.8-3.5-1.5-4.5 0"/>',
@@ -632,46 +622,43 @@ const ic = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hi
 /* ======================= state ======================= */
 const tg = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) ? window.Telegram.WebApp : null;
 const tgUser = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+const tgName = tgUser ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') : '';
 const load = (k, d) => { try { const v = JSON.parse(localStorage.getItem('gtj-' + k) || 'null'); return v == null ? d : v; } catch (e) { return d; } };
 const save = (k, v) => { try { localStorage.setItem('gtj-' + k, JSON.stringify(v)); } catch (e) {} };
-
+/* a new visitor starts clean: no sample orders, bonuses or cars that are not theirs */
 const S = {
   tab: 'home', product: null, carInfo: null, pv: null, pqty: 1, pinst: false,
-  onlyFit: true, cat: 'all', q: '', sort: 'pop',
-  cart: load('cart', [{ id: 'dv', v: null, qty: 1, inst: true }, { id: 'struts', v: 'red', qty: 1, inst: false }]),
-  fav: new Set(load('fav', ['intercooler', 'bbk6'])),
-  garage: load('garage', [{ b: 'geely', m: 'monjaro', i: 0, plate: ['К', '238', 'МЖ', '178'] }]),
-  active: load('active', 0),
-  delivery: 'pickup', day: null, time: null, promo: '', promoOk: false, promoMsg: '', useBonus: false,
-  bonus: 4890, openOrder: 'GTJ-2471',
-  notify: load('notify', { orders: true, box: true, promo: false }),
-  addr: load('addr', [{ t: 'Пункт СДЭК', a: 'Санкт-Петербург, ул. Профессора Попова, 23' }]),
-  me: load('me', { name: tgUser ? [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') : 'Дмитрий Королёв', phone: '+7 921 555-23-88' }),
+  onlyFit: true, group: 'all',
+  cart: load('cart2', []),
+  fav: new Set(load('fav2', [])),
+  garage: load('garage2', []),
+  active: load('active2', 0),
+  delivery: 'pickup', needDelivery: false, day: null, time: null,
+  promo: '', promoOk: false, promoMsg: '', promoOpen: false,
+  addr: load('addr2', []),
+  me: load('me2', { name: tgName, phone: '' }),
   picker: { step: 'brand', b: null, m: null, q: '' },
-  seen: new Set(load('seen', [])),
-  orders: [
-    { id: 'GTJ-2471', date: '6 окт', items: 'Распорки TTCR-II, красный', sum: 27900, st: 'ship', stText: 'В пути · СДЭК', step: 3 },
-    { id: 'GTJ-2468', date: '4 окт', items: 'Интеркулер увеличенный + установка', sum: 70000, st: 'wait', stText: 'Ждёт установки', step: 2 },
-    { id: 'GTJ-2417', date: '28 сен', items: 'Клапан DV+, адаптер, установка', sum: 29300, st: 'done', stText: 'Выполнен', step: 4 },
-  ],
+  orders: load('orders2', []), openOrder: null,
+  src: load('src', ''), ref: load('ref', ''),
 };
+if (!S.me.name && tgName) S.me.name = tgName;
 S.cart = S.cart.filter(i => PM[i.id]);
 S.garage = S.garage.filter(g => resolveCar(g));
 if (S.active >= S.garage.length) S.active = 0;
-const persist = () => { save('cart', S.cart); save('fav', [...S.fav]); save('garage', S.garage); save('active', S.active); save('notify', S.notify); save('addr', S.addr); save('me', S.me); save('seen', [...S.seen]); };
+const persist = () => { save('cart2', S.cart); save('fav2', [...S.fav]); save('garage2', S.garage); save('active2', S.active); save('addr2', S.addr); save('me2', S.me); save('orders2', S.orders); save('src', S.src); save('ref', S.ref); };
 
 /* ======================= helpers ======================= */
 const rub = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const CM = (t, w = 640) => 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(t) + '?width=' + w;
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function resolveCar(g) {
   const b = CARS.find(x => x.id === g.b); if (!b) return null;
   const m = b.models.find(x => x.id === g.m); if (!m || !m.m[g.i]) return null;
   const d = m.m[g.i];
   return { b, m, d, eng: d[1], fuel: d[7], key: b.id + '/' + m.id, title: b.n + ' ' + m.n, short: m.n, spec: modSpec(d) };
 }
-function modSpec(d) { return `${d[0]} · ${d[2]} л.с. · ${d[4]} · ${d[5]}`; }
+function modSpec(d) { return `${d[0]}, ${d[2]} л.с., ${d[4]}, ${d[5]} привод`; }
 const car = () => S.garage[S.active] ? resolveCar(S.garage[S.active]) : null;
+const carLine = c => c ? `${c.title} ${c.d[0]}, ${c.d[2]} л.с.` : '';
 function fits(p, c = car()) {
   if (!c) return true;
   const f = p.fit;
@@ -693,34 +680,27 @@ function stageGain(p, c = car()) {
 }
 const unitPrice = (p, v) => { const vr = p.v && p.v.find(x => x.id === v); return vr && vr.p ? vr.p : p.p; };
 const minPrice = p => p.v ? Math.min(...p.v.map(x => x.p || p.p)) : p.p;
-function pimg(p, v) {
-  const vr = p.v && p.v.find(x => x.id === v);
-  if (vr && vr.img) return IMG + vr.img;
-  if (p.img) return IMG + p.img;
-  if (p.cm) return CM(p.cm);
-  return null;
-}
-const gallery = (p, v) => { const vr = p.v && p.v.find(x => x.id === v); if (vr && vr.img) return [IMG + vr.img]; if (p.gal) return p.gal.map(x => IMG + x); const one = pimg(p, v); return one ? [one] : []; };
-const isContain = p => ['dv.jpg', 'bov.jpg', 'coilovers.jpg', 'pedals.jpg', 'turbo.jpg', 'struts-red.jpg'].includes(p.img) || (p.cm && /\.png$/i.test(p.cm));
 const cartCount = () => S.cart.reduce((a, i) => a + i.qty, 0);
 const inCart = id => S.cart.some(i => i.id === id);
 const haptic = t => { try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(t || 'light'); } catch (e) {} };
 const hSel = () => { try { tg && tg.HapticFeedback && tg.HapticFeedback.selectionChanged(); } catch (e) {} };
 const hNote = t => { try { tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred(t); } catch (e) {} };
 const plural = (n, a, b, c) => { const m10 = n % 10, m100 = n % 100; return m10 === 1 && m100 !== 11 ? a : (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? b : c); };
+const goal = (name, params) => { try { if (SHOP.metrikaId && window.ym) window.ym(+SHOP.metrikaId, 'reachGoal', name, params || {}); } catch (e) {} };
+/* first sentence of the description = what the part gives you */
+const benefit = p => (p.d || '').split(/(?<=[.!?])\s/)[0].replace(/\.$/, '');
 
 const glyph = p => p.g || CATM[p.cat].g;
 const pic = (p, cls = '') => `<span class="pic ${cls}">${ic(glyph(p))}</span>`;
-function gainLine(p) { const g = stageGain(p); return g && g.dhp > 0 ? `<span class="gainl">+${g.dhp} л.с. · до ${g.hp}</span>` : ''; }
+function gainLine(p) { const g = stageGain(p); return g && g.dhp > 0 ? `<span class="gainl">+${g.dhp} л.с., до ${g.hp}</span>` : ''; }
 function fitLabel(p) {
-  const c = car(); if (!c) return '';
-  if (universal(p)) return `<span class="fits uni"><span>Универсальный</span></span>`;
+  const c = car(); if (!c || universal(p)) return '';
   return fits(p, c) ? `<span class="fits">${ic('check')}<span>Подходит к ${esc(c.short)}</span></span>` : `<span class="fits no"><span>Не для ${esc(c.short)}</span></span>`;
 }
 function priceHtml(p) { return `<span class="price">${p.v && p.v.some(x => x.p) ? 'от ' : ''}${rub(minPrice(p))}</span>${p.old ? `<span class="old">${rub(p.old)}</span>` : ''}`; }
 const addBtn = p => `<button class="addbtn ${inCart(p.id) ? 'in' : ''}" data-act="quickadd" data-v="${p.id}" aria-label="${inCart(p.id) ? 'В корзине' : 'В корзину'}">${ic(inCart(p.id) ? 'check' : 'plus')}</button>`;
 const badgeHtml = p => p.badge ? `<span class="badge ${['Хит', 'Пакет'].includes(p.badge) ? 'red' : ''}">${p.badge}</span>` : '';
-/* compact card for the home rows: icon, name, fit, price */
+/* compact card for the home rows */
 function pcard(p) {
   const fav = S.fav.has(p.id);
   return `<div class="card">
@@ -730,107 +710,110 @@ function pcard(p) {
     <div class="pr"><div class="pp2">${priceHtml(p)}</div>${addBtn(p)}</div>
   </div>`;
 }
-/* catalog row: the list reads like a price list, no pictures */
+/* catalogue row: name, what it gives, fit, price */
 function prow(p) {
   return `<div class="prow">
     <button class="cbtn" data-act="product" data-v="${p.id}" aria-label="${esc(p.n)}">${pic(p)}</button>
-    <button class="t" data-act="product" data-v="${p.id}"><b>${esc(p.n)}</b>${gainLine(p) || fitLabel(p)}</button>
+    <button class="t" data-act="product" data-v="${p.id}"><b>${esc(p.n)}</b><span class="ben">${esc(benefit(p))}</span>${gainLine(p) || fitLabel(p)}</button>
     <div class="r"><div class="pp2">${priceHtml(p)}</div>${addBtn(p)}</div>
   </div>`;
 }
-function carPhoto(m, cls = '') {
-  return m.img ? `<img src="${IMG}${m.img}" alt="" loading="lazy">` : `<span class="nm ${cls}">${esc(m.n)}</span>`;
-}
+function carPhoto(m) { return `<img src="${IMG}${m.img}" alt="" loading="lazy">`; }
 function plateHtml(pl) {
   if (!pl) return '';
   return `<span class="plate"><span class="m"><em>${pl[0]}</em>${pl[1]}<em>${pl[2]}</em></span><span class="rg">${pl[3]}<small>RUS<i></i></small></span></span>`;
 }
+const hasContacts = () => !!(SHOP.address || SHOP.phone || SHOP.hours);
 
 /* ======================= screens ======================= */
-function mycarCard() {
-  const c = car();
-  if (!c) return `<button class="mycar empty" data-act="carsheet"><span class="ph">${ic('plus')}</span><span class="t"><span class="eyebrow">Мой авто</span><b>Выберите автомобиль</b><span>21 марка · покажем то, что подходит</span></span>${ic('chev')}</button>`;
-  return `<button class="mycar" data-act="carsheet"><span class="ph"><img src="${IMG}${c.m.img}" alt=""></span>
-    <span class="t"><span class="eyebrow">Мой авто${S.garage.length > 1 ? ` · ${S.active + 1} из ${S.garage.length}` : ''}</span><b>${esc(c.title)}</b><span>${esc(c.spec)}</span></span>${ic('down')}</button>`;
+function packInfo(c = car()) {
+  const items = PACK.map(id => PM[id]).filter(p => p && fits(p, c));
+  const parts = items.reduce((a, p) => a + p.p, 0);
+  const inst = items.reduce((a, p) => a + (p.inst || 0), 0);
+  return { items, parts, inst, total: parts + inst, gain: c && stageGain(PM.stage2, c) };
 }
-const SHORT = { brakes: 'Тормоза', exhaust: 'Выхлоп', susp: 'Подвеска', elec: 'Электрика', ext: 'Экстерьер', int: 'Салон', intake: 'Впуск', turbo: 'Турбины', engine: 'Мотор', cooling: 'Радиаторы', hoses: 'Шланги', fittings: 'Фитинги', chem: 'Химия', chip: 'Чип-тюнинг', detail: 'Детейлинг', merch: 'Мерч' };
+function heroHtml() {
+  const c = car();
+  if (!c) return `<div class="hero">
+    <img src="${IMG}car-preface.jpg" alt="Geely Preface">
+    <div class="copy">
+      <h3>Подберём тюнинг под вашу машину</h3>
+      <p>Выберите марку и модель: покажем детали, которые подходят, и посчитаем прирост мощности.</p>
+      <button class="btn btn-cream btn-block" data-act="carsheet">Выбрать машину</button>
+      <button class="btn btn-ghost btn-block" data-act="lead" data-v="calc">Задать вопрос менеджеру</button>
+    </div></div>`;
+  const pk = packInfo(c); const g = pk.gain;
+  return `<div class="hero">
+    <div class="hcar"><img src="${IMG}${c.m.img}" alt="${esc(c.title)}"><button class="hchange" data-act="carsheet" aria-label="Сменить машину">${esc(c.title)} ${esc(c.d[0])}${ic('down')}</button></div>
+    <div class="copy">
+      ${g && g.dhp > 0 ? `<h3>+${g.dhp} л.с. за один день</h3>
+      <p>${c.d[2]} → ${g.hp} л.с., ${c.d[3]} → ${g.nm} Н·м. Прошивка, даунпайп, интеркулер и клапан — ставим в нашем боксе и замеряем на стенде.</p>
+      <button class="btn btn-cream btn-block" data-act="pack">Пакет Stage 2 под ключ — ${rub(pk.total)}</button>`
+      : `<h3>Тюнинг и детейлинг для ${esc(c.short)}</h3>
+      <p>Подберём детали и работы под вашу комплектацию и скажем точную цену.</p>`}
+      <button class="btn ${g && g.dhp > 0 ? 'btn-ghost' : 'btn-cream'} btn-block" data-act="lead" data-v="calc">Рассчитать для моей машины</button>
+    </div></div>`;
+}
 function vHome() {
   const c = car();
   const hits = P.filter(p => !p.svc && !universal(p) && fits(p)).sort((a, b) => b.pop - a.pop).slice(0, 8);
-  const pack = ['stage2', 'downpipe', 'intercooler', 'dv'].map(id => PM[id]).filter(p => fits(p));
-  const packSum = pack.reduce((a, p) => a + p.p, 0);
-  const g2 = c && stageGain(PM.stage2, c);
-  const counts = Object.fromEntries(CATS.map(k => [k.id, P.filter(p => p.cat === k.id && (!c || fits(p))).length]));
+  const count = g => P.filter(p => g.cats.includes(p.cat) && (!c || fits(p))).length;
+  const [big1, big2, ...rest] = GROUPS;
+  const bigTile = g => `<button class="gtile big" data-act="group" data-v="${g.id}"><span class="ci">${ic(g.g)}</span><b>${g.n}</b><small>${g.s}</small><span class="cnt">${count(g)} ${plural(count(g), 'позиция', 'позиции', 'позиций')}</span></button>`;
+  const tile = g => `<button class="gtile" data-act="group" data-v="${g.id}"><span class="ci">${ic(g.g)}</span><b>${g.n}</b><span class="cnt">${count(g)}</span></button>`;
   return `
   <div class="top">
     <div class="brandrow">
       <img src="${IMG}gtj-wordmark.svg" alt="GTJ">
-      <div class="t"><b>TUNING · DETAILING</b><span>Тюнинг и детейлинг китайских авто</span></div>
-      <button class="iconbtn" data-act="notifs" aria-label="Уведомления">${ic('bell')}<span class="dot">2</span></button>
+      <div class="t"><b>Тюнинг и детейлинг</b><span>китайских автомобилей</span></div>
+      <button class="iconbtn" data-act="contact" aria-label="Связаться с нами">${ic('chat')}</button>
     </div>
   </div>
-  <div class="hscroll stories" role="list" aria-label="Истории">${STORIES.map((s, i) => `<button class="story ${S.seen.has(s.id) ? 'seen' : ''}" role="listitem" data-act="story" data-v="${i}"><span class="ring"><img src="${IMG}${s.cover}" alt=""></span><span>${s.t}</span></button>`).join('')}</div>
-  <div style="height:12px"></div>
-  ${mycarCard()}
-  <div class="hero">
-    <span class="tag">STAGE 2</span>
-    <img src="${IMG}${c ? c.m.img : 'car-preface.jpg'}" alt="${c ? esc(c.title) : 'Geely Preface'}">
-    <div class="copy">
-      <span class="eyebrow">${c && g2 ? `Пакет для ${esc(c.short)} ${c.d[0]}` : 'Пакет для турбомоторов'}</span>
-      <h3>${g2 && g2.dhp > 0 ? `+${g2.dhp} л.с. за день` : 'Мощность за день'}</h3>
-      <p>${g2 ? `${c.d[2]} → ${g2.hp} л.с., ${c.d[3]} → ${g2.nm} Н·м. ` : ''}Даунпайп, интеркулер, клапан DV+ и прошивка. Ставим в своём боксе, замер на стенде до и после.</p>
-      <div class="row"><button class="btn btn-cream btn-sm" data-act="product" data-v="stage2">Собрать пакет</button>${pack.length > 1 ? `<span class="mono" style="color:var(--muted)">${pack.length} позиции · ${rub(packSum)}</span>` : ''}</div>
-    </div>
-  </div>
+  ${heroHtml()}
   <section class="sec">
-    <div class="sec-h"><h2>Каталог</h2><button data-act="cat" data-v="all">Всё · ${P.length}${ic('chev')}</button></div>
-    <div class="cats">${CATS.map(k => `<button class="cat" data-act="cat" data-v="${k.id}" aria-label="${esc(k.n)}"><span class="ci">${ic(k.g)}</span><span class="cn">${SHORT[k.id] || k.n}</span><small class="num">${counts[k.id]}</small></button>`).join('')}</div>
+    <div class="sec-h"><h2>Что делаем</h2><button data-act="group" data-v="all">Весь каталог${ic('chev')}</button></div>
+    <div class="gbig">${bigTile(big1)}${bigTile(big2)}</div>
+    <div class="gsmall">${rest.map(tile).join('')}</div>
   </section>
   ${hits.length ? `<section class="sec">
-    <div class="sec-h"><h2>${c ? 'Хиты для ' + esc(c.short) : 'Хиты продаж'}</h2><button data-act="cat" data-v="all">Все${ic('chev')}</button></div>
+    <div class="sec-h"><h2>${c ? 'Популярное для ' + esc(c.short) : 'Популярное'}</h2><button data-act="group" data-v="all">Все${ic('chev')}</button></div>
     <div class="hscroll">${hits.map(pcard).join('')}</div>
   </section>` : ''}
   <section class="sec">
-    <div class="sec-h"><h2>Чип-тюнинг</h2><button data-act="cat" data-v="chip">Все услуги${ic('chev')}</button></div>
-    <div class="grid">${['stage1', 'stage2'].map(id => pcard(PM[id])).join('')}</div>
-  </section>
-  <section class="sec">
-    <div class="sec-h"><h2>Детейлинг</h2><button data-act="cat" data-v="detail">Все услуги${ic('chev')}</button></div>
-    <div class="hscroll">${P.filter(p => p.cat === 'detail').map(pcard).join('')}</div>
+    <div class="sec-h"><h2>Работы бокса</h2>${SHOP.channel ? `<button data-act="channel">Больше в канале${ic('chev')}</button>` : ''}</div>
+    <div class="hscroll">${WORKS.map(w => `<button class="work" ${w.to && PM[w.to] ? `data-act="product" data-v="${w.to}"` : 'tabindex="-1"'}><img src="${IMG}${w.img}" alt="" loading="lazy"><span class="wt"><b>${w.t}</b><span>${w.s}</span></span></button>`).join('')}</div>
+    ${SHOP.reviewsUrl ? `<button class="row-card" data-act="reviews">${ic('star')}<div class="t"><b>${SHOP.rating ? `${esc(SHOP.rating)} на Яндекс Картах` : 'Отзывы клиентов'}</b><span>Читать отзывы о GTJ</span></div>${ic('chev')}</button>` : ''}
+    ${hasContacts() ? `<button class="row-card" data-act="contacts">${ic('pin')}<div class="t"><b>${esc(SHOP.address || 'Бокс GTJ')}</b><span>${esc(SHOP.hours || 'Адрес и часы работы')}</span></div>${ic('chev')}</button>` : ''}
   </section>`;
 }
 
-function catalogList() {
+function catalogList(gid = S.group) {
   const c = car();
-  let list = P.filter(p => (S.cat === 'all' || p.cat === S.cat) && (!S.onlyFit || !c || fits(p)));
-  if (S.q) {
-    const words = S.q.toLowerCase().split(/\s+/).filter(Boolean);
-    list = list.filter(p => { const hay = (p.n + ' ' + p.art + ' ' + p.d + ' ' + CATM[p.cat].n).toLowerCase(); return words.every(w => hay.includes(w)); });
-  }
-  if (S.sort === 'asc') list.sort((a, b) => minPrice(a) - minPrice(b));
-  else if (S.sort === 'desc') list.sort((a, b) => minPrice(b) - minPrice(a));
-  else list.sort((a, b) => (b.pop || 0) - (a.pop || 0));
-  return list;
+  const list = P.filter(p => (gid === 'all' || GM[gid].cats.includes(p.cat)) && (!S.onlyFit || !c || fits(p)));
+  return list.sort((a, b) => (b.pop || 0) - (a.pop || 0));
 }
-function gridHtml() {
-  const list = catalogList(); const n = list.length; const c = car();
-  return `<div class="toolbar"><span class="num">${n} ${plural(n, 'позиция', 'позиции', 'позиций')}</span>
-      <select id="sort" aria-label="Сортировка"><option value="pop" ${S.sort === 'pop' ? 'selected' : ''}>Популярные</option><option value="asc" ${S.sort === 'asc' ? 'selected' : ''}>Сначала дешевле</option><option value="desc" ${S.sort === 'desc' ? 'selected' : ''}>Сначала дороже</option></select></div>
-    ${n ? `<div class="plist">${list.map(prow).join('')}</div>` :
-      `<div class="empty"><div class="big">${ic('search')}</div><h3>Ничего не нашли</h3><p>${S.onlyFit && c ? `Для ${esc(c.title)} в этой рубрике пока нет позиций. Снимите фильтр по авто или спросите менеджера: привезём под заказ.` : 'В этой рубрике пока пусто.'}</p><button class="btn btn-ghost btn-sm" data-act="resetfilters">Сбросить фильтры</button></div>`}`;
+function listHtml() {
+  const c = car();
+  const empty = `<div class="empty"><div class="big">${ic('wrench')}</div><h3>Пока ничего не нашли</h3><p>${S.onlyFit && c ? `Для ${esc(c.title)} здесь пока нет готовых позиций. Привезём под заказ — напишите, что ищете.` : 'В этом разделе пока пусто.'}</p><button class="btn btn-cream btn-sm" data-act="lead" data-v="calc">Спросить менеджера</button>${S.onlyFit && c ? `<button class="btn btn-ghost btn-sm" data-act="onlyfit">Показать для всех машин</button>` : ''}</div>`;
+  if (S.group === 'all') {
+    const blocks = GROUPS.map(g => { const l = catalogList(g.id); return l.length ? `<div class="lgroup"><h3>${g.n}</h3><div class="plist">${l.map(prow).join('')}</div></div>` : ''; }).join('');
+    return blocks || empty;
+  }
+  const l = catalogList();
+  return l.length ? `<div class="plist">${l.map(prow).join('')}</div>` : empty;
 }
 function vCatalog() {
   const c = car();
   return `
   <div class="top">
-    <div class="ptitle" style="padding-top:2px"><h1>${S.cat === 'all' ? 'Каталог' : esc(CATM[S.cat].n)}</h1><button class="iconbtn" data-act="tab" data-v="cart" aria-label="Корзина">${ic('cart')}${cartCount() ? `<span class="dot">${cartCount()}</span>` : ''}</button></div>
+    <div class="ptitle" style="padding-top:2px"><h1>${S.group === 'all' ? 'Каталог' : esc(GM[S.group].n)}</h1><button class="iconbtn" data-act="tab" data-v="cart" aria-label="Корзина">${ic('cart')}${cartCount() ? `<span class="dot">${cartCount()}</span>` : ''}</button></div>
     <div class="chips">
-      ${c ? `<button class="chip ${S.onlyFit ? 'on' : ''}" data-act="onlyfit">${S.onlyFit ? ic('check') : ''}${S.onlyFit ? 'Для ' + esc(c.short) : 'Все авто'}${S.onlyFit ? ic('close') : ''}</button>` : `<button class="chip" data-act="carsheet">${ic('plus')}Выбрать авто</button>`}
-      <button class="chip ${S.cat === 'all' ? 'on' : ''}" data-act="cat" data-v="all">Все</button>
-      ${CATS.map(k => `<button class="chip ${S.cat === k.id ? 'on' : ''}" data-act="cat" data-v="${k.id}">${k.n}</button>`).join('')}
+      ${c ? `<button class="chip ${S.onlyFit ? 'on' : ''}" data-act="onlyfit">${S.onlyFit ? ic('check') + 'Для ' + esc(c.short) : 'Для всех машин'}</button>` : `<button class="chip" data-act="carsheet">${ic('plus')}Выбрать машину</button>`}
+      <button class="chip ${S.group === 'all' ? 'on' : ''}" data-act="group" data-v="all">Все</button>
+      ${GROUPS.map(g => `<button class="chip ${S.group === g.id ? 'on' : ''}" data-act="group" data-v="${g.id}">${g.n}</button>`).join('')}
     </div>
   </div>
-  <div id="gridwrap" style="display:flex;flex-direction:column;gap:12px">${gridHtml()}</div>`;
+  <div style="display:flex;flex-direction:column;gap:16px">${listHtml()}</div>`;
 }
 
 function vProduct() {
@@ -839,7 +822,9 @@ function vProduct() {
   const g = stageGain(p, c);
   const fitOk = fits(p, c);
   const vr = p.v && p.v.find(x => x.id === v);
+  const grp = groupOf(p.cat);
   const fitsTxt = Array.isArray(p.fit) ? p.fit.map(e => ENG[e].n).join(', ') : p.fit === 'turbo' ? 'Турбированные бензиновые и дизельные моторы' : p.fit === 'ice' ? 'Любые автомобили с ДВС, включая гибриды' : p.fit && p.fit.models ? p.fit.models.map(k => { const [b, m] = k.split('/'); const B = CARS.find(x => x.id === b); return B.n + ' ' + B.models.find(x => x.id === m).n; }).join(', ') : 'Любой автомобиль';
+  const showCar = c && fitOk;
   return `
   <div class="pp">
     <div class="pnav">
@@ -850,172 +835,162 @@ function vProduct() {
         <button class="iconbtn glass" data-act="fav" data-v="${p.id}" aria-label="В избранное" style="${S.fav.has(p.id) ? 'color:var(--red)' : ''}">${ic('heart', S.fav.has(p.id) ? 'filled' : '')}</button>
       </div>
     </div>
-    <div style="height:68px"></div>
+    ${showCar ? `<div class="pcar"><img src="${IMG}${c.m.img}" alt="${esc(c.title)}"><span>${pic(p)}Для вашего ${esc(c.title)}</span></div>` : '<div style="height:68px"></div>'}
     <div class="pbody">
-      <div class="phead">${pic(p, 'lg')}<div class="meta"><span>${esc(CATM[p.cat].n)}</span>${p.svc ? `<span>${ic('clock', 'i14')} ${p.instT}</span>` : `<span class="stock">В наличии · ${p.st} шт</span>`}<span class="mono">Арт. ${p.art}</span></div></div>
+      ${showCar ? '' : `<div class="phead">${pic(p, 'lg')}<div class="meta"><span>${esc(grp ? grp.n : CATM[p.cat].n)}</span></div></div>`}
+      <div class="meta">${p.svc ? `<span>${ic('clock', 'i14')} ${p.instT}</span>` : `<span class="stock">${p.st > 0 ? 'В наличии' : 'Под заказ, 5–7 дней'}</span>`}${showCar ? `<span>${esc(grp ? grp.n : CATM[p.cat].n)}</span>` : ''}</div>
       <h1>${esc(p.n)}</h1>
-      ${!c ? `<button class="fitbar uni" data-act="carsheet">${ic('plus')}Выберите автомобиль, чтобы проверить совместимость</button>`
-        : universal(p) ? `<div class="fitbar uni">${ic('check')}Подходит к любому автомобилю</div>`
+      <p class="lead">${esc(benefit(p))}</p>
+      ${!c ? `<button class="fitbar uni" data-act="carsheet">${ic('plus')}Выберите машину, чтобы проверить совместимость</button>`
+        : universal(p) ? ''
         : `<div class="fitbar ${fitOk ? 'ok' : 'no'}">${ic(fitOk ? 'check' : 'info')}${fitOk ? `Подходит к вашему ${esc(c.title)} ${c.d[0]}` : `Не подходит к ${esc(c.title)} ${c.d[0]}. Подберём аналог`}</div>`}
-      ${g && g.dhp > 0 ? `<div class="gain"><div><small>Мощность</small><b>${g.hp}</b> л.с.<em>+${g.dhp}</em></div><div><small>Момент</small><b>${g.nm}</b> Н·м<em>+${g.dnm}</em></div></div><span class="hint">Ориентир для ${esc(ENG[c.eng].n)}, итог фиксируем замером на диностенде.</span>` : ''}
-      <div class="pricebig"><span class="price">${rub(price)}</span>${p.old ? `<span class="old" style="font-size:15px">${rub(p.old)}</span>` : ''}<span class="bonus">+${Math.round(price * 0.05).toLocaleString('ru-RU')} бонусов</span></div>
-      ${p.v ? `<div class="opt"><span class="lbl">${p.v[0].sw ? 'Цвет' : 'Вариант'}: ${esc(vr.l)}</span><div class="chips wrap">${p.v.map(x => `<button class="chip ${x.id === v ? 'on' : ''}" data-act="variant" data-v="${x.id}">${x.sw ? `<span class="sw" style="background:${x.sw}"></span>` : ''}${esc(x.l)}${x.p && x.p !== p.p && !/₽/.test(x.l) ? ` · ${rub(x.p)}` : ''}</button>`).join('')}</div></div>` : ''}
-      ${p.inst != null ? `<button class="row-card" data-act="pinst">${ic('wrench')}<div class="t"><b>Установка в боксе GTJ</b><span>+${rub(p.inst)} · ${p.instT} · время выберете в корзине</span></div><span class="toggle ${S.pinst ? 'on' : ''}" role="switch" aria-checked="${S.pinst}"></span></button>` : ''}
-      ${p.svc ? `<div class="row-card">${ic('pin')}<div class="t"><b>Выполняем в боксе GTJ</b><span>Запись на удобное время при оформлении</span></div></div>` : ''}
+      ${g && g.dhp > 0 ? `<div class="gain"><div><small>Мощность</small><b>${g.hp}</b> л.с.<em>+${g.dhp}</em></div><div><small>Момент</small><b>${g.nm}</b> Н·м<em>+${g.dnm}</em></div></div><span class="hint">Ориентир для ${esc(ENG[c.eng].n)}, итог фиксируем замером на стенде.</span>` : ''}
+      <div class="pricebig"><span class="price">${rub(price)}</span>${p.old ? `<span class="old">${rub(p.old)}</span>` : ''}</div>
+      ${p.v ? `<div class="opt"><span class="lbl">${p.v[0].sw ? 'Цвет' : 'Вариант'}: ${esc(vr.l)}</span><div class="chips wrap">${p.v.map(x => `<button class="chip ${x.id === v ? 'on' : ''}" data-act="variant" data-v="${x.id}">${x.sw ? `<span class="sw" style="background:${x.sw}"></span>` : ''}${esc(x.l)}${x.p && x.p !== p.p && !/₽/.test(x.l) ? `, ${rub(x.p)}` : ''}</button>`).join('')}</div></div>` : ''}
+      ${p.inst != null ? `<button class="row-card" data-act="pinst" role="switch" aria-checked="${S.pinst}">${ic('wrench')}<div class="t"><b>Установка в боксе GTJ</b><span>+${rub(p.inst)}, ${p.instT}. Время выберете в корзине</span></div><span class="toggle ${S.pinst ? 'on' : ''}"></span></button>` : ''}
+      ${p.svc ? `<div class="row-card">${ic('pin')}<div class="t"><b>Делаем в боксе GTJ</b><span>День и время выберете при оформлении</span></div></div>` : ''}
+      ${p.stage ? `<div class="note">${ic('shield')}<div><b>Про гарантию дилера</b><small>Дилер может отказать в гарантии на двигатель после прошивки. Заводскую прошивку сохраняем и можем вернуть.</small></div></div>` : ''}
       <p class="desc">${esc(p.d)}</p>
       <div class="opt"><span class="lbl">Характеристики</span><table class="specs"><tbody>${p.sp.map(s => `<tr><td>${esc(s[0])}</td><td>${esc(s[1])}</td></tr>`).join('')}</tbody></table></div>
-      <div class="opt"><span class="lbl">Совместимость</span><p class="desc" style="font-size:13px">${esc(fitsTxt)}</p></div>
+      <div class="opt"><span class="lbl">Совместимость</span><p class="desc">${esc(fitsTxt)}</p></div>
+      <button class="row-card" data-act="lead" data-v="ask">${ic('chat')}<div class="t"><b>Есть вопрос по детали?</b><span>Менеджер ответит в Telegram</span></div>${ic('chev')}</button>
     </div>
   </div>`;
 }
 
 function slotDays() {
   const names = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']; const out = []; const d = new Date();
-  for (let i = 1; out.length < 6 && i < 10; i++) { const x = new Date(d); x.setDate(d.getDate() + i); if (x.getDay() === 0) continue; out.push({ key: x.toISOString().slice(0, 10), w: names[x.getDay()], n: x.getDate(), m: x.toLocaleString('ru-RU', { month: 'short' }).replace('.', '') }); }
+  for (let i = 1; out.length < 6 && i < 10; i++) { const x = new Date(d); x.setDate(d.getDate() + i); if (x.getDay() === 0) continue; out.push({ key: `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`, w: names[x.getDay()], n: x.getDate(), m: x.toLocaleString('ru-RU', { month: 'short' }).replace('.', '') }); }
   return out;
 }
 const TIMES = ['10:00', '12:00', '14:00', '16:00', '18:00'];
+const delivCost = () => S.needDelivery ? (S.delivery === 'courier' ? 690 : 450) : 0;
 function totals() {
   let goods = 0, svc = 0, inst = 0;
   S.cart.forEach(i => { const p = PM[i.id]; const u = unitPrice(p, i.v) * i.qty; if (p.svc) svc += u; else goods += u; if (i.inst && p.inst) inst += p.inst * i.qty; });
   const promo = S.promoOk ? Math.round(goods * 0.10) : 0;
-  const deliv = S.delivery === 'cdek' ? 450 : S.delivery === 'courier' ? 690 : 0;
-  const pre = goods + svc + inst - promo + deliv;
-  const maxBonus = Math.min(S.bonus, Math.floor(pre * 0.2));
-  const bonus = S.useBonus ? maxBonus : 0;
-  const total = Math.max(0, pre - bonus);
-  return { goods, svc, inst, promo, deliv, bonus, maxBonus, total, earn: Math.round(total * 0.05) };
+  const deliv = delivCost();
+  const total = Math.max(0, goods + svc + inst - promo + deliv);
+  return { goods, svc, inst, promo, deliv, total };
 }
 const needsSlot = () => S.cart.some(i => (i.inst && PM[i.id].inst) || PM[i.id].svc);
+const shippable = () => S.cart.some(i => !PM[i.id].svc && !i.inst);
 
 function vCart() {
   if (!S.cart.length) return `
     <div class="ptitle"><h1>Корзина</h1></div>
-    <div class="empty"><div class="big">${ic('cart')}</div><h3>Корзина пуста</h3><p>Выберите авто, и каталог покажет детали, которые к нему подходят.</p><button class="btn btn-cream" data-act="cat" data-v="all">Открыть каталог</button></div>`;
+    <div class="empty"><div class="big">${ic('cart')}</div><h3>Корзина пуста</h3><p>Выберите машину — каталог покажет то, что к ней подходит.</p><button class="btn btn-cream" data-act="group" data-v="all">Открыть каталог</button></div>`;
   const t = totals(); const days = slotDays(); const c = car();
   if (!S.day || !days.some(d => d.key === S.day)) S.day = days[0].key;
   const busy = (k, tm) => (k.charCodeAt(9) + tm.charCodeAt(1)) % 4 === 0;
   return `
-  <div class="ptitle"><h1>Корзина <span class="num" style="color:var(--muted);font-size:18px">${cartCount()}</span></h1><button data-act="clear">Очистить</button></div>
-  <section class="sec" style="margin-top:14px;gap:10px">
+  <div class="ptitle"><h1>Корзина <span class="num" style="color:var(--muted);font-size:var(--fs-l)">${cartCount()}</span></h1><button data-act="clear">Очистить</button></div>
+  <section class="sec" style="margin-top:16px;gap:8px">
     ${S.cart.map((i, ix) => { const p = PM[i.id]; const vr = p.v && p.v.find(x => x.id === i.v); return `
     <div class="citem">
       <button class="cbtn" data-act="product" data-v="${p.id}" aria-label="${esc(p.n)}">${pic(p)}</button>
       <div class="t">
         <span class="nm">${esc(p.n)}</span>
-        <span class="vr">${vr ? esc(vr.l) + ' · ' : ''}<span class="mono">${p.art}</span></span>
+        ${vr ? `<span class="vr">${esc(vr.l)}</span>` : ''}
         <div class="bot">
-          <span class="price" style="font-size:15px">${rub(unitPrice(p, i.v) * i.qty)}</span>
-          ${p.svc ? '' : `<div class="stepper sm"><button data-act="qty" data-v="${ix}" data-d="-1" aria-label="Меньше">${ic(i.qty > 1 ? 'minus' : 'trash')}</button><span>${i.qty}</span><button data-act="qty" data-v="${ix}" data-d="1" aria-label="Больше">${ic('plus')}</button></div>`}
-          ${p.svc ? `<button class="iconbtn" style="width:34px;height:34px" data-act="qty" data-v="${ix}" data-d="-1" aria-label="Удалить">${ic('trash')}</button>` : ''}
+          <span class="price">${rub(unitPrice(p, i.v) * i.qty)}</span>
+          ${p.svc ? `<button class="iconbtn" data-act="qty" data-v="${ix}" data-d="-1" aria-label="Удалить">${ic('trash')}</button>` : `<div class="stepper sm"><button data-act="qty" data-v="${ix}" data-d="-1" aria-label="${i.qty > 1 ? 'Меньше' : 'Удалить'}">${ic(i.qty > 1 ? 'minus' : 'trash')}</button><span>${i.qty}</span><button data-act="qty" data-v="${ix}" data-d="1" aria-label="Больше">${ic('plus')}</button></div>`}
         </div>
       </div>
-      ${c && !fits(p, c) ? `<span class="warn">Не подходит к ${esc(c.title)} — уточним с менеджером</span>` : ''}
-      ${p.inst != null ? `<button class="inst" data-act="inst" data-v="${ix}">${ic('wrench')}<span class="t2">Установка в боксе <span style="color:var(--muted)">· ${p.instT}</span></span><span class="num" style="color:var(--muted)">+${rub(p.inst * i.qty)}</span><span class="check ${i.inst ? 'on' : ''}">${i.inst ? ic('check') : ''}</span></button>` : ''}
+      ${c && !fits(p, c) ? `<span class="warn">Не подходит к ${esc(c.title)}, уточним с менеджером</span>` : ''}
+      ${p.inst != null ? `<button class="inst" data-act="inst" data-v="${ix}" role="checkbox" aria-checked="${!!i.inst}">${ic('wrench')}<span class="t2">Установка в боксе, ${p.instT}</span><span class="num" style="color:var(--muted)">+${rub(p.inst * i.qty)}</span><span class="check ${i.inst ? 'on' : ''}">${i.inst ? ic('check') : ''}</span></button>` : ''}
     </div>`; }).join('')}
   </section>
-  <section class="sec">
-    <div class="sec-h"><h2>Получение</h2></div>
-    <div class="seg">
-      <button class="${S.delivery === 'pickup' ? 'on' : ''}" data-act="deliv" data-v="pickup">${ic('store')}Самовывоз<small>бесплатно</small></button>
-      <button class="${S.delivery === 'cdek' ? 'on' : ''}" data-act="deliv" data-v="cdek">${ic('truck')}СДЭК<small>от 450 ₽</small></button>
-      <button class="${S.delivery === 'courier' ? 'on' : ''}" data-act="deliv" data-v="courier">${ic('pin')}Курьер<small>690 ₽</small></button>
+  ${needsSlot() ? `<section class="sec">
+    <div class="sec-h"><h2>Запись в бокс</h2></div>
+    <div class="slots">
+      <span class="hint">Выберите день и время. Менеджер подтвердит запись в Telegram.</span>
+      <div class="hscroll" style="margin:0 -12px;padding:0 12px">${days.map(d => `<button class="day ${S.day === d.key ? 'on' : ''}" data-act="day" data-v="${d.key}" aria-pressed="${S.day === d.key}"><small>${d.w}</small><b>${d.n}</b><small>${d.m}</small></button>`).join('')}</div>
+      <div class="chips wrap">${TIMES.map(tm => `<button class="chip ${S.time === tm ? 'on' : ''}" data-act="time" data-v="${tm}" ${busy(S.day, tm) ? 'disabled aria-label="' + tm + ', занято"' : ''}>${tm}</button>`).join('')}</div>
     </div>
-    ${S.delivery !== 'pickup' ? `<button class="row-card" data-act="addresses">${ic('pin')}<div class="t"><b>${esc(S.addr[0] ? S.addr[0].t : 'Добавьте адрес')}</b><span>${esc(S.addr[0] ? S.addr[0].a : 'Нажмите, чтобы указать адрес доставки')}</span></div>${ic('chev')}</button>` : ''}
-    ${needsSlot() ? `<div class="slots">
-      <div style="display:flex;align-items:center;gap:8px;font-weight:700">${ic('clock')}Запись в бокс</div>
-      <span class="hint">В заказе есть установка или услуга. Выберите день и время, бокс подтвердит в чате.</span>
-      <div class="hscroll" style="margin:0 -12px;padding:0 12px">${days.map(d => `<button class="day ${S.day === d.key ? 'on' : ''}" data-act="day" data-v="${d.key}"><small>${d.w}</small><b>${d.n}</b><small>${d.m}</small></button>`).join('')}</div>
-      <div class="chips wrap">${TIMES.map(tm => `<button class="chip ${S.time === tm ? 'on' : ''}" data-act="time" data-v="${tm}" ${busy(S.day, tm) ? 'disabled' : ''}>${tm}</button>`).join('')}</div>
-    </div>` : ''}
-  </section>
-  <section class="sec">
-    <div class="sec-h"><h2>Скидки</h2></div>
-    <div class="promo"><input id="promo" value="${esc(S.promo)}" placeholder="Промокод" aria-label="Промокод"><button class="btn btn-ghost" data-act="promo">Применить</button></div>
-    <span class="hint ${S.promoMsg ? (S.promoOk ? 'ok' : 'err') : ''}">${S.promoMsg || 'Для проверки введите GTJ10: −10% на детали'}</span>
-    <button class="row-card" data-act="bonus">${ic('gift')}<div class="t"><b>Списать бонусы</b><span>Доступно ${S.bonus.toLocaleString('ru-RU')}, можно оплатить до 20% заказа</span></div><span class="toggle ${S.useBonus ? 'on' : ''}" role="switch" aria-checked="${S.useBonus}"></span></button>
-  </section>
+  </section>` : ''}
+  ${shippable() ? `<section class="sec">
+    <button class="row-card" data-act="needdeliv" role="switch" aria-checked="${S.needDelivery}">${ic('truck')}<div class="t"><b>Нужна доставка</b><span>${S.needDelivery ? 'СДЭК или курьер' : 'Иначе заберёте в боксе бесплатно'}</span></div><span class="toggle ${S.needDelivery ? 'on' : ''}"></span></button>
+    ${S.needDelivery ? `<div class="seg two">
+      <button class="${S.delivery !== 'courier' ? 'on' : ''}" data-act="deliv" data-v="cdek" aria-pressed="${S.delivery !== 'courier'}">СДЭК<small>от 450 ₽</small></button>
+      <button class="${S.delivery === 'courier' ? 'on' : ''}" data-act="deliv" data-v="courier" aria-pressed="${S.delivery === 'courier'}">Курьер по городу<small>690 ₽</small></button>
+    </div>
+    <button class="row-card" data-act="addresses">${ic('pin')}<div class="t"><b>${esc(S.addr[0] ? S.addr[0].t : 'Добавьте адрес')}</b><span>${esc(S.addr[0] ? S.addr[0].a : 'Куда доставить заказ')}</span></div>${ic('chev')}</button>` : ''}
+  </section>` : ''}
   <section class="sec">
     <div class="sum">
       <div class="l"><span>Детали</span><span>${rub(t.goods)}</span></div>
       ${t.svc ? `<div class="l"><span>Услуги</span><span>${rub(t.svc)}</span></div>` : ''}
       ${t.inst ? `<div class="l"><span>Установка</span><span>${rub(t.inst)}</span></div>` : ''}
-      ${t.promo ? `<div class="l minus"><span>Промокод GTJ10</span><span>−${rub(t.promo)}</span></div>` : ''}
-      ${t.bonus ? `<div class="l minus"><span>Бонусы</span><span>−${rub(t.bonus)}</span></div>` : ''}
-      <div class="l"><span>Доставка</span><span>${t.deliv ? rub(t.deliv) : 'бесплатно'}</span></div>
+      ${t.promo ? `<div class="l minus"><span>Промокод ${esc(S.promo)}</span><span>−${rub(t.promo)}</span></div>` : ''}
+      ${t.deliv ? `<div class="l"><span>Доставка</span><span>${rub(t.deliv)}</span></div>` : ''}
       <div class="tot"><span>Итого</span><b>${rub(t.total)}</b></div>
-      <span class="hint" style="text-align:right">Начислим +${t.earn.toLocaleString('ru-RU')} бонусов</span>
     </div>
+    ${S.promoOpen || S.promoOk ? `<div class="promo"><input id="promo" value="${esc(S.promo)}" placeholder="Промокод" aria-label="Промокод" autocomplete="off"><button class="btn btn-ghost" data-act="promo">Применить</button></div>
+    ${S.promoMsg ? `<span class="hint ${S.promoOk ? 'ok' : 'err'}" role="status">${S.promoMsg}</span>` : ''}` : `<button class="linkbtn" data-act="promoopen">Есть промокод?</button>`}
   </section>`;
 }
 
 function vProfile() {
-  const initials = S.me.name.split(' ').map(s => s[0]).slice(0, 2).join('');
-  const uname = tgUser && tgUser.username ? '@' + tgUser.username : '@dkorolev_monjaro';
+  const name = S.me.name || 'Гость';
+  const initials = name.split(' ').map(s => s[0]).slice(0, 2).join('');
+  const uname = tgUser && tgUser.username ? '@' + tgUser.username : '';
   const favs = P.filter(p => S.fav.has(p.id));
+  const next = S.orders.find(o => o.slot);
   return `
   <div class="prof">
-    <div class="ava">${esc(initials)}</div>
-    <div style="flex:1;min-width:0"><b>${esc(S.me.name)}</b><span>${esc(uname)} · клиент с марта 2025</span></div>
+    <div class="ava">${S.me.name ? esc(initials) : ic('user')}</div>
+    <div style="flex:1;min-width:0"><b>${esc(name)}</b><span>${esc([uname, S.me.phone].filter(Boolean).join(', ') || 'Добавьте телефон, чтобы менеджеру было проще связаться')}</span></div>
     <button class="iconbtn" aria-label="Редактировать профиль" data-act="editme">${ic('edit')}</button>
   </div>
+  ${next ? `<section class="sec">
+    <div class="sec-h"><h2>Ближайшая запись</h2></div>
+    <div class="appt"><div class="d"><b>${esc(next.slotDay)}</b><small>${esc(next.slotMon)}</small></div>
+      <div class="t"><b>${esc(next.items)}</b><span>${esc(next.slotText)}</span><span>Ждёт подтверждения менеджера</span>
+      ${hasContacts() ? `<div class="acts"><button class="btn btn-ghost btn-sm" data-act="contacts">${ic('pin')}Как проехать</button></div>` : ''}</div></div>
+  </section>` : ''}
   <section class="sec">
-    <button class="club" data-act="club">
-      <div class="top2"><div><div class="lvl">GTJ CLUB</div><div class="nm">SILVER · 5%</div></div><img src="${IMG}gtj-wordmark.svg" alt=""></div>
-      <div class="bal"><b>${S.bonus.toLocaleString('ru-RU')}</b><span>бонусов</span></div>
-      <div class="prog"><i style="width:59%"></i></div>
-      <div class="foot"><span>До GOLD · 7%: ещё 61 200 ₽</span><span class="mono">1 бонус = 1 ₽</span></div>
-    </button>
-  </section>
-  <section class="sec">
-    <div class="sec-h"><h2>Мой гараж</h2><button data-act="carsheet">Добавить</button></div>
-    <div class="hscroll">
+    <div class="sec-h"><h2>Мои машины</h2><button data-act="carsheet">Добавить${ic('chev')}</button></div>
+    ${S.garage.length ? `<div class="hscroll">
       ${S.garage.map((g, ix) => { const c = resolveCar(g); return `
       <div class="gcar ${ix === S.active ? 'on' : ''}">
-        <button class="ph" data-act="carinfo" data-v="${ix}" aria-label="${esc(c.title)}">${carPhoto(c.m)}${ix === S.active ? '<span class="badge red">Активный</span>' : ''}</button>
+        <button class="ph" data-act="carinfo" data-v="${ix}" aria-label="${esc(c.title)}">${carPhoto(c.m)}${ix === S.active ? '<span class="badge red">Выбрана</span>' : ''}</button>
         <div class="t"><b>${esc(c.title)}</b>
           ${plateHtml(g.plate)}
-          <span class="mono">${esc(c.spec)}</span>
-          <div style="display:flex;gap:6px;margin-top:4px">
-            ${ix === S.active ? `<button class="btn btn-ghost btn-sm" style="flex:1" data-act="carinfo" data-v="${ix}">Характеристики</button>` : `<button class="btn btn-cream btn-sm" style="flex:1" data-act="setactive" data-v="${ix}">Сделать активным</button>`}
-            <button class="iconbtn" style="width:36px;height:36px" data-act="rmcar" data-v="${ix}" aria-label="Удалить из гаража">${ic('trash')}</button>
+          <span class="spec">${esc(c.spec)}</span>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            ${ix === S.active ? `<button class="btn btn-ghost btn-sm" style="flex:1" data-act="carinfo" data-v="${ix}">Характеристики</button>` : `<button class="btn btn-cream btn-sm" style="flex:1" data-act="setactive" data-v="${ix}">Подбирать для неё</button>`}
+            <button class="iconbtn" data-act="rmcar" data-v="${ix}" aria-label="Удалить из гаража">${ic('trash')}</button>
           </div>
         </div>
       </div>`; }).join('')}
-      <button class="gadd" data-act="carsheet">${ic('plus')}Добавить авто</button>
-    </div>
+      <button class="gadd" data-act="carsheet">${ic('plus')}Добавить машину</button>
+    </div>` : `<button class="mycar empty" data-act="carsheet"><span class="ph">${ic('plus')}</span><span class="t"><b>Добавьте свою машину</b><span>Каталог покажет только то, что к ней подходит</span></span>${ic('chev')}</button>`}
   </section>
   <section class="sec">
-    <div class="sec-h"><h2>Ближайшая запись</h2></div>
-    <div class="appt">
-      <div class="d"><small>окт</small><b>12</b><small>сб</small></div>
-      <div class="t"><b>Установка интеркулера</b><span>Monjaro · заказ GTJ-2468</span><span>11:00 · бокс GTJ · около 3 часов</span>
-        <div class="acts"><button class="btn btn-ghost btn-sm" data-act="reschedule">Перенести</button><button class="btn btn-ghost btn-sm" data-act="about">${ic('pin')}Как проехать</button></div></div>
-    </div>
-  </section>
-  <section class="sec">
-    <div class="sec-h"><h2>Заказы</h2><span class="hint">${S.orders.length} ${plural(S.orders.length, 'заказ', 'заказа', 'заказов')}</span></div>
-    ${S.orders.map(o => { const steps = o.st === 'wait' ? ['Оформлен', 'Оплачен', 'Деталь в боксе', 'Установка', 'Готово'] : ['Оформлен', 'Оплачен', 'Собран', 'В пути', 'Получен']; return `
+    <div class="sec-h"><h2>Заказы и заявки</h2></div>
+    ${S.orders.length ? S.orders.map(o => `
     <div class="order">
-      <button data-act="order" data-v="${o.id}">
-        <div class="r1"><span class="mono">${o.id} · ${o.date}</span><span class="pill ${o.st}">${o.stText}</span></div>
+      <button data-act="order" data-v="${o.id}" aria-expanded="${S.openOrder === o.id}">
+        <div class="r1"><span class="hint">${o.kind}, ${o.date}</span><span class="pill new">${o.status}</span></div>
         <div class="r2">${esc(o.items)}</div>
-        <div class="r3"><span class="price" style="font-size:15px">${rub(o.sum)}</span>${ic(S.openOrder === o.id ? 'down' : 'chev')}</div>
+        <div class="r3"><span class="price">${o.sum ? rub(o.sum) : ''}</span>${ic(S.openOrder === o.id ? 'down' : 'chev')}</div>
       </button>
-      ${S.openOrder === o.id ? `<ol class="tl">${steps.map((s, i) => `<li class="${i <= o.step ? 'on' : ''}"><b>${s}</b>${i === o.step ? ' — сейчас' : ''}</li>`).join('')}</ol>` : ''}
-    </div>`; }).join('')}
+      ${S.openOrder === o.id ? `<p class="hint" style="margin:0;padding:0 16px 16px">${esc(o.note)}</p>` : ''}
+    </div>`).join('') : `<div class="note">${ic('info')}<div><b>Пока пусто</b><small>Здесь появятся ваши заказы и заявки.</small></div></div>`}
   </section>
   <section class="sec">
     <div class="menu">
-      <button data-act="favs">${ic('heart')}<span class="t">Избранное<small>${favs.map(p => p.n).join(', ') || 'пока пусто'}</small></span><span class="v num">${favs.length}</span>${ic('chev')}</button>
-      <button data-act="addresses">${ic('pin')}<span class="t">Адреса доставки<small>${esc(S.addr.map(a => a.a).join('; ') || 'не добавлены')}</small></span><span class="v num">${S.addr.length}</span>${ic('chev')}</button>
-      <button data-act="notifsettings">${ic('bell')}<span class="t">Уведомления<small>${[S.notify.orders && 'заказы', S.notify.box && 'записи в бокс', S.notify.promo && 'акции'].filter(Boolean).join(', ') || 'выключены'}</small></span>${ic('chev')}</button>
-      <button data-act="club">${ic('gift')}<span class="t">Бонусы и уровни<small>Silver 5% · история начислений</small></span>${ic('chev')}</button>
-      <a href="${BOT}" target="_blank" rel="noopener" data-act="manager">${ic('chat')}<span class="t">Написать менеджеру<small>Подбор деталей, сроки, гарантия</small></span>${ic('chev')}</a>
-      <button data-act="about">${ic('info')}<span class="t">О магазине, доставка и гарантия</span>${ic('chev')}</button>
+      <button data-act="lead" data-v="calc">${ic('chat')}<span class="t">Написать менеджеру<small>Подбор, цены, запись в бокс</small></span>${ic('chev')}</button>
+      ${hasContacts() ? `<button data-act="contacts">${ic('pin')}<span class="t">Контакты бокса<small>${esc(SHOP.address || SHOP.phone)}</small></span>${ic('chev')}</button>` : ''}
+      <button data-act="favs">${ic('heart')}<span class="t">Избранное<small>${favs.length ? esc(favs.map(p => p.n).join(', ')) : 'Пока пусто'}</small></span>${favs.length ? `<span class="v num">${favs.length}</span>` : ''}${ic('chev')}</button>
+      <button data-act="faq">${ic('info')}<span class="t">Частые вопросы<small>Гарантия, сроки, надёжность</small></span>${ic('chev')}</button>
+      ${tgUser ? `<button data-act="invite">${ic('share')}<span class="t">Пригласить друга<small>Ссылка для чатов владельцев</small></span>${ic('chev')}</button>` : ''}
+      <button data-act="about">${ic('shield')}<span class="t">Условия и гарантия<small>Доставка, оплата, возврат</small></span>${ic('chev')}</button>
     </div>
   </section>
-  <p class="foot-note">GTJ · прототип мини-приложения · цены, остатки и заказы демонстрационные<br>Характеристики авто — по открытым источникам (drom.ru, сайты брендов)</p>`;
+  ${SHOP.seller ? `<p class="foot-note">${esc(SHOP.seller)}${SHOP.ogrn ? `, ОГРН ${esc(SHOP.ogrn)}` : ''}${SHOP.inn ? `, ИНН ${esc(SHOP.inn)}` : ''}</p>` : ''}
+  <p class="foot-note"><button class="linkbtn" data-act="policy">Политика конфиденциальности</button></p>`;
 }
 
 function vCarInfo() {
@@ -1028,11 +1003,11 @@ function vCarInfo() {
     <div class="pnav"><div class="pbar" aria-hidden="true" style="padding-right:68px"><b>${esc(c.title)}</b></div><button class="iconbtn glass" data-act="back" aria-label="Назад">${ic('back')}</button></div>
     <div class="media" style="aspect-ratio:16/10;background:var(--panel-2);display:grid;place-items:center">${c.m.img ? `<img src="${IMG}${c.m.img}" alt="">` : `<span style="font:700 34px var(--f-display);color:#3a3e44">${esc(c.title)}</span>`}</div>
     <div class="pbody">
-      <span class="eyebrow">${esc(c.m.b)} · ${esc(c.m.y)}</span>
+      <span class="hint">${esc(c.m.b)}, ${esc(c.m.y)}</span>
       <h1>${esc(c.title)}</h1>
       ${plateHtml(g.plate)}
       <table class="specs"><tbody>
-        <tr><td>Двигатель</td><td>${esc(c.d[0])} · ${esc(E.n)}</td></tr>
+        <tr><td>Двигатель</td><td>${esc(c.d[0])}, ${esc(E.n)}</td></tr>
         <tr><td>Мощность</td><td class="num">${c.d[2]} л.с.</td></tr>
         <tr><td>Крутящий момент</td><td class="num">${c.d[3]} Н·м</td></tr>
         <tr><td>Коробка</td><td>${esc(c.d[4])}</td></tr>
@@ -1042,8 +1017,8 @@ function vCarInfo() {
       </tbody></table>
       ${s1 && s1.dhp > 0 ? `<div class="opt"><span class="lbl">Потенциал прошивки</span>
         <div class="gain"><div><small>Stage 1</small><b>${s1.hp}</b> л.с.<em>+${s1.dhp}</em></div><div><small>Stage 2</small><b>${s2.hp}</b> л.с.<em>+${s2.dhp}</em></div></div></div>` : ''}
-      <button class="btn btn-cream btn-block" data-act="shopfor" data-v="${S.carInfo.ix}">Детали для ${esc(c.short)} · ${fitN}</button>
-      ${c.m.m.length > 1 ? `<div class="opt"><span class="lbl">Другие модификации ${esc(c.title)}</span>${c.m.m.map((d, i) => `<button class="modrow ${i === g.i ? 'on' : ''}" data-act="setmod" data-v="${i}"><b>${esc(d[0])}</b><span class="hp">${d[2]} л.с.</span><span>${d[3]} Н·м · ${esc(d[4])} · ${esc(d[5])} · ${esc(d[6])}</span></button>`).join('')}</div>` : ''}
+      <button class="btn btn-cream btn-block" data-act="shopfor" data-v="${S.carInfo.ix}">Детали для ${esc(c.short)}: ${fitN}</button>
+      ${c.m.m.length > 1 ? `<div class="opt"><span class="lbl">Другие модификации ${esc(c.title)}</span>${c.m.m.map((d, i) => `<button class="modrow ${i === g.i ? 'on' : ''}" data-act="setmod" data-v="${i}"><b>${esc(d[0])}</b><span class="hp">${d[2]} л.с.</span><span>${d[3]} Н·м, ${esc(d[4])}, ${esc(d[5])}, ${esc(d[6])}</span></button>`).join('')}</div>` : ''}
       <span class="credit">Данные справочные, по открытым источникам. Перед заказом деталей менеджер сверит VIN.</span>
     </div>
   </div>`;
@@ -1056,27 +1031,27 @@ function pickerHtml() {
   if (pk.step === 'brand') {
     if (q) {
       const hits = []; CARS.forEach(b => b.models.forEach(m => { if ((b.n + ' ' + m.n).toLowerCase().includes(q)) hits.push([b, m]); }));
-      body = hits.length ? `<div class="mlist">${hits.map(([b, m]) => `<button class="mrow" data-act="pickmodel" data-v="${b.id}|${m.id}"><span class="ph">${m.img ? `<img src="${IMG}${m.img}" alt="">` : esc(b.n.slice(0, 3))}</span><span class="t"><b>${esc(b.n)} ${esc(m.n)}</b><span>${esc(m.b)} · ${esc(m.y)} · ${m.m.length} ${plural(m.m.length, 'модификация', 'модификации', 'модификаций')}</span></span>${ic('chev')}</button>`).join('')}</div>`
+      body = hits.length ? `<div class="mlist">${hits.map(([b, m]) => `<button class="mrow" data-act="pickmodel" data-v="${b.id}|${m.id}"><span class="ph">${m.img ? `<img src="${IMG}${m.img}" alt="">` : esc(b.n.slice(0, 3))}</span><span class="t"><b>${esc(b.n)} ${esc(m.n)}</b><span>${esc(m.b)}, ${esc(m.y)}, ${m.m.length} ${plural(m.m.length, 'модификация', 'модификации', 'модификаций')}</span></span>${ic('chev')}</button>`).join('')}</div>`
         : `<p class="hint">Не нашли «${esc(pk.q)}». Напишите менеджеру, подберём вручную.</p>`;
     } else {
       const top = CARS.filter(b => b.top), rest = CARS.filter(b => !b.top);
       const bbtn = b => `<button class="brand" data-act="pickbrand" data-v="${b.id}"><b>${esc(b.n)}</b><small>${b.models.length} ${plural(b.models.length, 'модель', 'модели', 'моделей')}</small></button>`;
-      body = `<span class="lbl eyebrow">Популярные в России</span><div class="brands">${top.map(bbtn).join('')}</div><span class="lbl eyebrow">Остальные марки</span><div class="brands">${rest.map(bbtn).join('')}</div>`;
+      body = `<span class="lbl">Популярные в России</span><div class="brands">${top.map(bbtn).join('')}</div><span class="lbl">Остальные марки</span><div class="brands">${rest.map(bbtn).join('')}</div>`;
     }
   } else if (pk.step === 'model') {
     const b = CARS.find(x => x.id === pk.b);
     body = `<div class="crumbs"><button data-act="pickstep" data-v="brand">Марки</button>${ic('chev', 'i14')}<span>${esc(b.n)}</span></div>
-      <div class="mlist">${b.models.map(m => `<button class="mrow" data-act="pickmodel" data-v="${b.id}|${m.id}"><span class="ph">${m.img ? `<img src="${IMG}${m.img}" alt="">` : esc(m.n.slice(0, 6))}</span><span class="t"><b>${esc(m.n)}</b><span>${esc(m.b)} · ${esc(m.y)} · от ${Math.min(...m.m.map(d => d[2]))} л.с.</span></span>${ic('chev')}</button>`).join('')}</div>`;
+      <div class="mlist">${b.models.map(m => `<button class="mrow" data-act="pickmodel" data-v="${b.id}|${m.id}"><span class="ph">${m.img ? `<img src="${IMG}${m.img}" alt="">` : esc(m.n.slice(0, 6))}</span><span class="t"><b>${esc(m.n)}</b><span>${esc(m.b)}, ${esc(m.y)}, от ${Math.min(...m.m.map(d => d[2]))} л.с.</span></span>${ic('chev')}</button>`).join('')}</div>`;
   } else {
     const b = CARS.find(x => x.id === pk.b); const m = b.models.find(x => x.id === pk.m);
     body = `<div class="crumbs"><button data-act="pickstep" data-v="brand">Марки</button>${ic('chev', 'i14')}<button data-act="pickstep" data-v="model">${esc(b.n)}</button>${ic('chev', 'i14')}<span>${esc(m.n)}</span></div>
-      <span class="hint">${esc(m.b)} · ${esc(m.y)}. Выберите модификацию — по ней подберём детали и прошивку.</span>
-      <div class="mlist">${m.m.map((d, i) => `<button class="modrow" data-act="pickmod" data-v="${i}"><b>${esc(d[0])} · ${esc(d[5])}</b><span class="hp">${d[2]} л.с.</span><span>${d[3]} Н·м · ${esc(d[4])} · ${esc(d[6])} · ${esc(ENG[d[1]].n)}</span></button>`).join('')}</div>`;
+      <span class="hint">${esc(m.b)}, ${esc(m.y)}. Выберите модификацию — по ней подберём детали и прошивку.</span>
+      <div class="mlist">${m.m.map((d, i) => `<button class="modrow" data-act="pickmod" data-v="${i}"><b>${esc(d[0])}, ${esc(d[5])}</b><span class="hp">${d[2]} л.с.</span><span>${d[3]} Н·м, ${esc(d[4])}, ${esc(d[6])}, ${esc(ENG[d[1]].n)}</span></button>`).join('')}</div>`;
   }
   return `<div class="shead"><h2>${pk.step === 'mod' ? 'Модификация' : pk.step === 'model' ? 'Модель' : 'Выберите автомобиль'}</h2><button class="iconbtn" data-act="closesheet" aria-label="Закрыть">${ic('close')}</button></div>
     <div id="pickbody" style="display:flex;flex-direction:column;gap:10px">${body}</div>`;
 }
-function openPicker(step = 'brand') { S.picker = { step, b: null, m: null, q: '' }; sheet(pickerHtml()); }
+function openPicker(step = 'brand') { S.picker = { step, b: null, m: null, q: '' }; sheet(pickerHtml(), { stack: sheetOpen() && !$('#pickbody') }); }
 function refreshPicker() { const el = document.getElementById('pickbody'); if (el && S.picker.step === 'brand') { const tmp = document.createElement('div'); tmp.innerHTML = pickerHtml(); el.innerHTML = tmp.querySelector('#pickbody').innerHTML; } else sheet(pickerHtml()); }
 
 /* ======================= render ======================= */
@@ -1123,10 +1098,10 @@ function render(opt = {}) {
     const already = S.cart.some(i => i.id === p.id && i.v === S.pv);
     bottom.innerHTML = `<div class="actionbar">
       ${p.svc ? '' : `<div class="stepper"><button data-act="pqty" data-d="-1" aria-label="Меньше">${ic('minus')}</button><span>${S.pqty}</span><button data-act="pqty" data-d="1" aria-label="Больше">${ic('plus')}</button></div>`}
-      ${already ? `<button class="btn btn-ghost" style="flex:1" data-act="tab" data-v="cart">${ic('check')}В корзине · перейти</button>` : `<button class="btn btn-cream" data-act="addp">${p.svc ? 'Записаться' : 'В корзину'} · <span class="num">${rub(price)}</span></button>`}
+      ${already ? `<button class="btn btn-ghost" style="flex:1" data-act="tab" data-v="cart">${ic('check')}В корзине, перейти</button>` : `<button class="btn btn-cream" data-act="addp">${p.svc ? 'Записаться' : 'В корзину'}<span class="num">${rub(price)}</span></button>`}
     </div>`;
   } else if (!S.carInfo && S.tab === 'cart' && S.cart.length) {
-    bottom.innerHTML = `<div class="actionbar"><button class="btn btn-cream" data-act="checkout">Оформить заказ · <span class="num">${rub(totals().total)}</span></button></div>`;
+    bottom.innerHTML = `<div class="actionbar"><button class="btn btn-cream" data-act="checkout">Оформить заказ<span class="num">${rub(totals().total)}</span></button></div>`;
   } else bottom.innerHTML = '';
 
   const sub = !!(S.product || S.carInfo);
@@ -1165,19 +1140,17 @@ function render(opt = {}) {
 function onScroll() {
   const v = $('#view'), vp = $('#vp'); const st = v.scrollTop;
   vp.classList.toggle('scrolled', st > 2);
-  const g = v.querySelector('#gal, .pp > .media');
+  const g = v.querySelector('.pcar, .pp > .media');
   vp.classList.toggle('far', st > (g ? g.offsetHeight - 70 : 56));
 }
 
-/* Telegram's own Back button closes whatever is on top: story, sheet, then the pushed screen */
+/* Telegram's own Back button closes whatever is on top: a sheet, then the pushed screen */
 const sheetOpen = () => !!document.querySelector('#sheet .sheet:not(.closing)');
-const storyOpen = () => !!document.querySelector('#story .sv:not(.out)');
 function syncBack() {
   if (!tg) return;
-  try { (S.product || S.carInfo || sheetOpen() || storyOpen()) ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) {}
+  try { (S.product || S.carInfo || sheetOpen()) ? tg.BackButton.show() : tg.BackButton.hide(); } catch (e) {}
 }
 function goBack(noAnim) {
-  if (storyOpen()) return closeStory();
   if (sheetOpen()) return sheet('');
   if (S.product) S.product = null; else if (S.carInfo) S.carInfo = null; else return;
   render({ noAnim });
@@ -1190,9 +1163,10 @@ function toast(msg) {
 
 /* bottom sheet: slides up once, swaps content in place, slides down to close (also by dragging) */
 let sheetFocus = null;
-function sheet(html) {
+function sheet(html, opt = {}) {
   const host = $('#sheet');
-  const cur = host.querySelector('.sheet:not(.closing)');
+  const open = host.querySelectorAll('.sheet:not(.closing)');
+  const cur = open[open.length - 1];
   if (!html) {
     if (!cur) return;
     cur.classList.add('closing');
@@ -1203,10 +1177,10 @@ function sheet(html) {
       p.animate([{ transform: from }, { transform: 'translateY(105%)' }], { duration: 240, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards' });
       cur.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: 'forwards' }).onfinish = () => cur.remove();
     }
-    if (sheetFocus && document.contains(sheetFocus)) try { sheetFocus.focus({ preventScroll: true }); } catch (e) {}
+    if (open.length === 1 && sheetFocus && document.contains(sheetFocus)) try { sheetFocus.focus({ preventScroll: true }); } catch (e) {}
     syncBack(); return;
   }
-  if (cur) {
+  if (cur && !opt.stack) {
     const p = cur.querySelector('.panel');
     const sameTitle = (p.querySelector('h2') || {}).textContent === (/<h2>(.*?)<\/h2>/.exec(html) || [])[1];
     const st = p.scrollTop;
@@ -1214,10 +1188,11 @@ function sheet(html) {
     p.scrollTop = sameTitle ? st : 0;
     markLoaded(p); return;
   }
-  sheetFocus = document.activeElement;
+  if (!cur) sheetFocus = document.activeElement;
   host.insertAdjacentHTML('beforeend', `<div class="sheet" data-act="closesheet"><div class="panel" data-stop="1" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div></div>`);
   const p = host.lastElementChild.querySelector('.panel'); markLoaded(p);
   const h = p.querySelector('h2'); if (h) { p.setAttribute('aria-label', h.textContent); }
+  p.tabIndex = -1; try { p.focus({ preventScroll: true }); } catch (e) {}
   syncBack();
 }
 const sheetHead = t => `<div class="shead"><h2>${t}</h2><button class="iconbtn" data-act="closesheet" aria-label="Закрыть">${ic('close')}</button></div>`;
@@ -1228,129 +1203,238 @@ function openProduct(id) {
   sheet('');
 }
 
-/* sheets */
+/* ======================= leads: where every request goes ======================= */
+const nowDate = () => new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }).replace('.', '');
+function leadText(x) {
+  const lines = [`GTJ: ${x.kind}`];
+  if (x.items) lines.push(x.items);
+  if (x.interest) lines.push('Интересует: ' + x.interest);
+  if (x.car) lines.push('Машина: ' + x.car);
+  if (x.slot) lines.push('Запись: ' + x.slot);
+  if (x.delivery) lines.push('Получение: ' + x.delivery);
+  if (x.total) lines.push('Сумма: ' + rub(x.total));
+  if (x.comment) lines.push('Комментарий: ' + x.comment);
+  lines.push('Имя: ' + (x.name || '—') + (x.phone ? ', ' + x.phone : '') + (x.username ? ', @' + x.username : ''));
+  if (x.src) lines.push('Источник: ' + x.src);
+  if (x.ref) lines.push('Пригласил: ' + x.ref);
+  return lines.join('\n');
+}
+async function sendLead(x) {
+  Object.assign(x, { car: x.car || carLine(car()), name: S.me.name, phone: S.me.phone, username: tgUser && tgUser.username, src: S.src, ref: S.ref });
+  const text = leadText(x);
+  goal(x.kind === 'Заказ' ? 'order_sent' : 'lead_sent', { kind: x.kind });
+  if (SHOP.leadEndpoint) {
+    try {
+      const r = await fetch(SHOP.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, lead: x, initData: tg ? tg.initData : '' }) });
+      if (r.ok) return { how: 'sent', text };
+    } catch (e) {}
+  }
+  if (SHOP.manager) {
+    const url = `https://t.me/${SHOP.manager.replace(/^@/, '')}?text=${encodeURIComponent(text)}`;
+    try { tg && tg.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, '_blank', 'noopener'); } catch (e) {}
+    return { how: 'chat', text };
+  }
+  return { how: 'none', text };
+}
+function doneSheet(title, res, extra = '') {
+  const msg = res.how === 'sent' ? 'Менеджер GTJ ответит вам в Telegram. Подтверждение придёт от бота.'
+    : res.how === 'chat' ? 'Открыли чат с менеджером и подставили текст заявки — нажмите «Отправить».'
+    : 'Отправьте этот текст менеджеру GTJ, он ответит в Telegram.';
+  sheet(`<div class="success"><div class="okc">${ic('check')}</div><h2>${title}</h2><p>${msg}</p>${extra}
+    ${res.how === 'none' ? `<pre class="leadtxt">${esc(res.text)}</pre><button class="btn btn-ghost btn-block" data-act="copylead">Скопировать текст</button>` : ''}
+    <button class="btn btn-cream btn-block" data-act="gotoorders">Мои заказы и заявки</button></div>`);
+  doneSheet.text = res.text;
+}
+function consentHtml(id) {
+  return `<label class="consent"><input type="checkbox" id="${id}" required><span>Согласен на обработку персональных данных по <button type="button" class="linkbtn" data-act="policy">политике конфиденциальности</button></span></label>`;
+}
+function rememberOrder(o) { S.orders.unshift(Object.assign({ id: 'L' + Date.now(), date: nowDate(), status: 'Отправлено' }, o)); S.openOrder = S.orders[0].id; persist(); }
+
+/* a question or a price request without buying anything */
+function leadSheet(kind = 'calc', productId) {
+  const c = car(); const p = productId && PM[productId];
+  const title = kind === 'pack' ? 'Записаться на пакет Stage 2' : kind === 'ask' ? 'Вопрос по детали' : 'Рассчитать для моей машины';
+  sheet(`${sheetHead(title)}
+    <form id="lform" class="form" novalidate data-kind="${kind}" data-p="${p ? p.id : ''}">
+      <button type="button" class="row-card" data-act="carsheet">${c ? `<span class="mini">${carPhoto(c.m)}</span>` : ic('plus')}<div class="t"><b>${c ? esc(c.title) : 'Выберите машину'}</b><span>${c ? esc(c.spec) : 'Так расчёт будет точнее'}</span></div>${ic('chev')}</button>
+      ${p ? `<div class="note">${pic(p)}<div><b>${esc(p.n)}</b><small>${rub(unitPrice(p, S.pv))}</small></div></div>` : ''}
+      ${kind === 'calc' ? `<div class="opt"><span class="lbl">Что интересует</span><div class="chips wrap">${INTERESTS.map(n => `<button type="button" class="chip" data-act="interest" aria-pressed="false">${n}</button>`).join('')}</div></div>` : ''}
+      <div class="field"><label for="l-com">${kind === 'ask' ? 'Ваш вопрос' : 'Комментарий'}</label><textarea id="l-com" placeholder="${kind === 'ask' ? 'Например: встанет ли с заводским бампером?' : 'Например: хочу больше мощности и тише выхлоп'}"></textarea></div>
+      <div class="field"><label for="l-phone">Телефон, если удобнее звонок</label><input id="l-phone" value="${esc(S.me.phone)}" inputmode="tel" autocomplete="tel" placeholder="+7"></div>
+      ${consentHtml('l-ok')}
+      <span class="hint" id="lerr" role="alert"></span>
+      <button class="btn btn-cream btn-block" type="submit">Отправить менеджеру</button>
+    </form>`);
+}
+async function submitLead(form) {
+  const kind = form.dataset.kind; const p = PM[form.dataset.p];
+  if (!$('#l-ok').checked) { hNote('error'); $('#lerr').className = 'hint err'; $('#lerr').textContent = 'Отметьте согласие на обработку данных — без него не сможем ответить.'; return; }
+  const phone = $('#l-phone').value.trim(); if (phone) S.me.phone = phone;
+  const interest = [...form.querySelectorAll('[data-act=interest][aria-pressed=true]')].map(b => b.textContent).join(', ');
+  const pk = kind === 'pack' ? packInfo() : null;
+  const x = { kind: kind === 'pack' ? 'Пакет Stage 2' : kind === 'ask' ? 'Вопрос' : 'Расчёт', interest, comment: $('#l-com').value.trim(),
+    items: pk ? pk.items.map(i => i.n).join(', ') + ' + установка' : p ? p.n : '', total: pk ? pk.total : 0 };
+  const res = await sendLead(x);
+  rememberOrder({ kind: x.kind, items: x.items || x.interest || 'Заявка менеджеру', sum: x.total, note: res.how === 'none' ? 'Текст заявки нужно отправить менеджеру вручную.' : 'Ответ придёт в Telegram.' });
+  hNote('success'); doneSheet('Заявка готова', res); render();
+}
+
+/* the Stage 2 pack as one thing you can book or buy */
+function packSheet() {
+  const c = car(); if (!c) { openPicker(); return; }
+  const pk = packInfo(c); const g = pk.gain;
+  sheet(`${sheetHead('Пакет Stage 2')}
+    <div class="hcar small"><img src="${IMG}${c.m.img}" alt=""></div>
+    ${g && g.dhp > 0 ? `<div class="gain"><div><small>Мощность</small><b>${g.hp}</b> л.с.<em>+${g.dhp}</em></div><div><small>Момент</small><b>${g.nm}</b> Н·м<em>+${g.dnm}</em></div></div>` : ''}
+    <div class="plist">${pk.items.map(p => `<div class="prow"><span class="cbtn">${pic(p)}</span><span class="t"><b>${esc(p.n)}</b><span class="ben">${esc(benefit(p))}</span></span><div class="r"><span class="price">${rub(p.p)}</span></div></div>`).join('')}</div>
+    <div class="sum">
+      <div class="l"><span>Детали и прошивка</span><span>${rub(pk.parts)}</span></div>
+      <div class="l"><span>Установка в боксе</span><span>${rub(pk.inst)}</span></div>
+      <div class="tot"><span>Под ключ</span><b>${rub(pk.total)}</b></div>
+      <span class="hint">Один день в боксе, замер на стенде до и после. Итоговые цифры фиксируем по замеру.</span>
+    </div>
+    <button class="btn btn-cream btn-block" data-act="lead" data-v="pack">Записаться на пакет</button>
+    <button class="btn btn-ghost btn-block" data-act="packcart">Добавить всё в корзину</button>`);
+  goal('pack_open');
+}
+
 function checkoutSheet() {
   const t = totals();
   if (needsSlot() && !S.time) { hNote('error'); toast('Выберите время записи в бокс'); const el = document.querySelector('.slots'); el && el.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+  if (S.needDelivery && !S.addr.length) { hNote('error'); toast('Добавьте адрес доставки'); addrSheet(); return; }
   sheet(`${sheetHead('Оформление')}
-    <form id="cform" style="display:flex;flex-direction:column;gap:12px" novalidate>
+    <form id="cform" class="form" novalidate>
       <div class="field"><label for="f-name">Имя</label><input id="f-name" value="${esc(S.me.name)}" autocomplete="name" required></div>
-      <div class="field"><label for="f-phone">Телефон</label><input id="f-phone" value="${esc(S.me.phone)}" inputmode="tel" autocomplete="tel" required></div>
+      <div class="field"><label for="f-phone">Телефон</label><input id="f-phone" value="${esc(S.me.phone)}" inputmode="tel" autocomplete="tel" placeholder="+7" required></div>
       <div class="field"><label for="f-com">Комментарий</label><textarea id="f-com" placeholder="Например: позвонить за час до установки"></textarea></div>
-      <div class="opt"><span class="lbl">Оплата</span>
-        <div class="seg"><button type="button" class="on" data-act="pay">${ic('card')}Картой<small>онлайн</small></button><button type="button" data-act="pay">${ic('qr')}СБП<small>по QR</small></button><button type="button" data-act="pay">${ic('store')}При получении<small>в боксе</small></button></div></div>
-      <div class="sum" style="background:var(--panel-2)">
-        ${car() ? `<div class="l"><span>Автомобиль</span><span>${esc(car().title)}</span></div>` : ''}
-        ${needsSlot() ? `<div class="l"><span>Запись в бокс</span><span>${new Date(S.day).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}, ${S.time}</span></div>` : ''}
-        <div class="l"><span>Получение</span><span>${{ pickup: 'Самовывоз', cdek: 'СДЭК', courier: 'Курьер' }[S.delivery]}</span></div>
+      <div class="sum">
+        ${car() ? `<div class="l"><span>Машина</span><span>${esc(car().title)}</span></div>` : ''}
+        ${needsSlot() ? `<div class="l"><span>Запись в бокс</span><span>${new Date(S.day + 'T12:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}, ${S.time}</span></div>` : ''}
+        <div class="l"><span>Получение</span><span>${S.needDelivery ? (S.delivery === 'courier' ? 'Курьер' : 'СДЭК') : 'В боксе'}</span></div>
         <div class="tot"><span>К оплате</span><b>${rub(t.total)}</b></div>
+        <span class="hint">${esc(TERMS.payment || '')}</span>
       </div>
-      <span class="hint" id="cerr"></span>
-      <button class="btn btn-cream btn-block" type="submit">Подтвердить заказ</button>
+      ${consentHtml('f-ok')}
+      <span class="hint" id="cerr" role="alert"></span>
+      <button class="btn btn-cream btn-block" type="submit">Отправить заказ менеджеру</button>
     </form>`);
-  $('#cform').addEventListener('submit', e => {
-    e.preventDefault();
-    const name = $('#f-name').value.trim(), phone = $('#f-phone').value.trim();
-    if (!name || phone.replace(/\D/g, '').length < 10) { hNote('error'); $('#cerr').className = 'hint err'; $('#cerr').textContent = 'Укажите имя и телефон, чтобы менеджер мог подтвердить заказ.'; return; }
-    S.me = { name, phone }; placeOrder();
-  });
 }
-function placeOrder() {
+async function placeOrder() {
+  const name = $('#f-name').value.trim(), phone = $('#f-phone').value.trim();
+  const err = m => { hNote('error'); $('#cerr').className = 'hint err'; $('#cerr').textContent = m; };
+  if (!name || phone.replace(/\D/g, '').length < 10) return err('Укажите имя и телефон, чтобы менеджер мог подтвердить заказ.');
+  if (!$('#f-ok').checked) return err('Отметьте согласие на обработку данных.');
+  S.me = { name, phone };
   const t = totals();
-  const id = 'GTJ-' + (2472 + S.orders.filter(o => o.st === 'new').length);
-  const names = S.cart.map(i => PM[i.id].n.split(',')[0]).join(', ');
-  const order = { id, date: 'сегодня', items: names, sum: t.total, st: 'new', stText: 'Оформлен', step: 0 };
-  S.orders.unshift(order);
-  S.bonus = S.bonus - t.bonus + t.earn;
-  S.cart = []; S.useBonus = false; S.promoOk = false; S.promo = ''; S.promoMsg = ''; S.time = null; S.openOrder = id;
-  hNote('success');
-  sheet(`<div class="success"><div class="okc">${ic('check')}</div><h2>Заказ ${id} оформлен</h2>
-    <p>Менеджер GTJ подтвердит детали в чате с ботом. Начислим +${t.earn.toLocaleString('ru-RU')} бонусов после получения.</p>
-    <button class="btn btn-cream btn-block" data-act="gotoorders">Мои заказы</button></div>`);
-  render();
+  const items = S.cart.map(i => { const p = PM[i.id]; const vr = p.v && p.v.find(x => x.id === i.v); return `${p.n}${vr ? ` (${vr.l})` : ''} × ${i.qty}${i.inst ? ' + установка' : ''}`; }).join('; ');
+  const slotDate = needsSlot() ? new Date(S.day + 'T12:00') : null;
+  const slot = slotDate ? `${slotDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}, ${S.time}` : '';
+  const res = await sendLead({ kind: 'Заказ', items, total: t.total, slot, delivery: S.needDelivery ? `${S.delivery === 'courier' ? 'курьер' : 'СДЭК'}, ${S.addr[0] ? S.addr[0].a : ''}` : 'в боксе', comment: $('#f-com').value.trim() + (S.promoOk ? ` Промокод ${S.promo}.` : '') });
+  rememberOrder({ kind: 'Заказ', items: S.cart.map(i => PM[i.id].n).join(', '), sum: t.total, note: res.how === 'none' ? 'Текст заказа нужно отправить менеджеру вручную.' : 'Менеджер подтвердит заказ в Telegram.',
+    slot: !!slotDate, slotDay: slotDate ? String(slotDate.getDate()) : '', slotMon: slotDate ? slotDate.toLocaleString('ru-RU', { month: 'short' }).replace('.', '') : '', slotText: slot });
+  S.cart = []; S.promoOk = false; S.promo = ''; S.promoMsg = ''; S.promoOpen = false; S.time = null;
+  hNote('success'); doneSheet('Заказ готов', res); render();
 }
 function favSheet() {
   const f = P.filter(p => S.fav.has(p.id));
-  sheet(`${sheetHead('Избранное')}${f.length ? `<div class="grid">${f.map(pcard).join('')}</div>` : `<div class="empty" style="padding:24px 0"><div class="big">${ic('heart')}</div><p>Отмечайте товары сердечком, они появятся здесь.</p></div>`}`);
+  sheet(`${sheetHead('Избранное')}${f.length ? `<div class="plist">${f.map(prow).join('')}</div>` : `<div class="empty" style="padding:24px 0"><div class="big">${ic('heart')}</div><p>Отмечайте товары сердечком, они появятся здесь.</p></div>`}`);
 }
 function addrSheet() {
-  sheet(`${sheetHead('Адреса доставки')}
-    <div class="mlist">${S.addr.map((a, i) => `<div class="row-card">${ic('pin')}<div class="t"><b>${esc(a.t)}</b><span>${esc(a.a)}</span></div><button class="iconbtn" style="width:36px;height:36px" data-act="rmaddr" data-v="${i}" aria-label="Удалить">${ic('trash')}</button></div>`).join('') || '<p class="hint">Адресов пока нет.</p>'}</div>
-    <form id="aform" style="display:flex;flex-direction:column;gap:10px" novalidate>
+  sheet(`${sheetHead('Адрес доставки')}
+    ${S.addr.length ? `<div class="mlist">${S.addr.map((a, i) => `<div class="row-card">${ic('pin')}<div class="t"><b>${esc(a.t)}</b><span>${esc(a.a)}</span></div><button class="iconbtn" data-act="rmaddr" data-v="${i}" aria-label="Удалить адрес">${ic('trash')}</button></div>`).join('')}</div>` : ''}
+    <form id="aform" class="form" novalidate>
       <div class="field"><label for="a-t">Название</label><input id="a-t" placeholder="Дом, работа, пункт СДЭК"></div>
       <div class="field"><label for="a-a">Адрес</label><input id="a-a" placeholder="Город, улица, дом, квартира" autocomplete="street-address"></div>
-      <span class="hint" id="aerr"></span>
-      <button class="btn btn-cream btn-block" type="submit">Добавить адрес</button>
+      <span class="hint" id="aerr" role="alert"></span>
+      <button class="btn btn-cream btn-block" type="submit">Сохранить адрес</button>
     </form>`);
-  $('#aform').addEventListener('submit', e => {
-    e.preventDefault(); const t = $('#a-t').value.trim() || 'Адрес', a = $('#a-a').value.trim();
-    if (a.length < 6) { $('#aerr').className = 'hint err'; $('#aerr').textContent = 'Укажите город, улицу и дом.'; return; }
-    S.addr.unshift({ t, a }); persist(); addrSheet(); render(); toast('Адрес сохранён');
-  });
-}
-function notifSettingsSheet() {
-  const row = (k, t, s) => `<button class="row-card" data-act="ntoggle" data-v="${k}"><div class="t"><b>${t}</b><span>${s}</span></div><span class="toggle ${S.notify[k] ? 'on' : ''}" role="switch" aria-checked="${!!S.notify[k]}"></span></button>`;
-  sheet(`${sheetHead('Уведомления')}<span class="hint">Бот присылает их в чат Telegram.</span>
-    ${row('orders', 'Статусы заказов', 'Оплата, сборка, отправка, получение')}
-    ${row('box', 'Записи в бокс', 'Напоминание за день и за 2 часа')}
-    ${row('promo', 'Акции и новинки', 'Не чаще раза в неделю')}`);
-}
-function notifsSheet() {
-  sheet(`${sheetHead('Уведомления')}
-    <div class="note">${ic('truck')}<div><b>GTJ-2471 передан в СДЭК</b><small>Распорки TTCR-II · трек придёт отдельным сообщением · сегодня</small></div></div>
-    <div class="note">${ic('clock')}<div><b>Запись 12 октября, 11:00</b><small>Установка интеркулера на Monjaro · вчера</small></div></div>
-    <button class="btn btn-ghost btn-block" data-act="notifsettings">Настроить уведомления</button>`);
-}
-function clubSheet() {
-  sheet(`${sheetHead('GTJ Club')}
-    <div class="gain"><div><small>Баланс</small><b>${S.bonus.toLocaleString('ru-RU')}</b></div><div><small>Уровень</small><b>Silver</b><em>5%</em></div></div>
-    <table class="specs"><tbody>
-      <tr><td>Bronze</td><td>3% бонусами · с первой покупки</td></tr>
-      <tr><td>Silver</td><td>5% · от 100 000 ₽ покупок</td></tr>
-      <tr><td>Gold</td><td>7% · от 250 000 ₽ и приоритетная запись в бокс</td></tr>
-    </tbody></table>
-    <div class="opt"><span class="lbl">История</span>
-      <div class="note">${ic('plus')}<div><b>+1 465 · GTJ-2417</b><small>Клапан DV+, адаптер, установка · 28 сен</small></div></div>
-      <div class="note">${ic('gift')}<div><b>+500 · день рождения клуба</b><small>1 сен</small></div></div>
-      <div class="note">${ic('minus')}<div><b>−2 000 · оплата GTJ-2390</b><small>Детейлинг-мойка, керамика · 14 авг</small></div></div></div>
-    <span class="hint">Бонусами можно оплатить до 20% заказа. Начисляем после получения.</span>`);
 }
 function editMeSheet() {
   sheet(`${sheetHead('Профиль')}
-    <form id="mform" style="display:flex;flex-direction:column;gap:12px" novalidate>
-      <div class="field"><label for="m-name">Имя и фамилия</label><input id="m-name" value="${esc(S.me.name)}" autocomplete="name"></div>
-      <div class="field"><label for="m-phone">Телефон</label><input id="m-phone" value="${esc(S.me.phone)}" inputmode="tel" autocomplete="tel"></div>
+    <form id="mform" class="form" novalidate>
+      <div class="field"><label for="m-name">Имя</label><input id="m-name" value="${esc(S.me.name)}" autocomplete="name"></div>
+      <div class="field"><label for="m-phone">Телефон</label><input id="m-phone" value="${esc(S.me.phone)}" inputmode="tel" autocomplete="tel" placeholder="+7"></div>
+      <span class="hint">Храним только на вашем телефоне и передаём менеджеру вместе с заявкой.</span>
       <button class="btn btn-cream btn-block" type="submit">Сохранить</button>
     </form>`);
-  $('#mform').addEventListener('submit', e => { e.preventDefault(); S.me = { name: $('#m-name').value.trim() || S.me.name, phone: $('#m-phone').value.trim() }; persist(); sheet(''); render(); toast('Профиль сохранён'); });
 }
-function rescheduleSheet() {
-  const days = slotDays();
-  sheet(`${sheetHead('Перенести запись')}<span class="hint">Установка интеркулера · сейчас 12 октября, 11:00</span>
-    <div class="hscroll" style="margin:0;padding:0">${days.map((d, i) => `<button class="day ${i === 1 ? 'on' : ''}" data-act="rday" data-v="${d.key}"><small>${d.w}</small><b>${d.n}</b><small>${d.m}</small></button>`).join('')}</div>
-    <div class="chips wrap">${TIMES.map((tm, i) => `<button class="chip ${i === 2 ? 'on' : ''}" data-act="rtime" data-v="${tm}">${tm}</button>`).join('')}</div>
-    <button class="btn btn-cream btn-block" data-act="rconfirm">Предложить это время</button>`);
+function contactSheet() {
+  sheet(`${sheetHead('Связаться с GTJ')}
+    <div class="menu">
+      <button data-act="lead" data-v="calc">${ic('chat')}<span class="t">Написать менеджеру<small>Ответим в Telegram</small></span>${ic('chev')}</button>
+      ${SHOP.phone && /\d{5}/.test(SHOP.phone) ? `<a href="tel:${esc(SHOP.phone.replace(/[^\d+]/g, ''))}">${ic('phone')}<span class="t">Позвонить<small>${esc(SHOP.phone)}</small></span>${ic('chev')}</a>` : ''}
+      ${hasContacts() ? `<button data-act="contacts">${ic('pin')}<span class="t">Адрес и часы работы<small>${esc(SHOP.address || SHOP.hours)}</small></span>${ic('chev')}</button>` : ''}
+      ${SHOP.channel ? `<button data-act="channel">${ic('photo')}<span class="t">Канал с работами<small>@${esc(SHOP.channel)}</small></span>${ic('chev')}</button>` : ''}
+    </div>`);
 }
-function aboutSheet() {
-  const carCred = [...new Set(Object.values(window.GTJ_CAR_CREDITS || {}).map(c => `${c[0]} (${c[1]})`))];
-  sheet(`${sheetHead('О магазине')}
-    <div class="perks">
-      <div class="perk"><b>Свой бокс</b>Установка и прошивка в день покупки</div>
-      <div class="perk"><b>12 мес</b>Гарантия на детали и работы</div>
-      <div class="perk"><b>До 7%</b>Бонусами в GTJ Club</div>
+function contactsSheet() {
+  sheet(`${sheetHead('Бокс GTJ')}
+    <div class="menu">
+      ${SHOP.address ? `<div class="mrowx">${ic('pin')}<span class="t">${esc(SHOP.address)}</span></div>` : ''}
+      ${SHOP.hours ? `<div class="mrowx">${ic('clock')}<span class="t">${esc(SHOP.hours)}</span></div>` : ''}
+      ${SHOP.phone && /\d{5}/.test(SHOP.phone) ? `<a href="tel:${esc(SHOP.phone.replace(/[^\d+]/g, ''))}">${ic('phone')}<span class="t">${esc(SHOP.phone)}<small>Позвонить</small></span>${ic('chev')}</a>` : ''}
     </div>
+    ${SHOP.mapUrl ? `<button class="btn btn-cream btn-block" data-act="map">${ic('pin')}Построить маршрут</button>` : ''}
+    <button class="btn btn-ghost btn-block" data-act="lead" data-v="calc">${ic('chat')}Написать менеджеру</button>`);
+}
+function faqSheet() {
+  sheet(`${sheetHead('Частые вопросы')}<div class="prose">${(SHOP.faq || []).map(([q, a]) => `<h3>${esc(q)}</h3><p>${esc(a)}</p>`).join('')}</div>
+    <button class="btn btn-ghost btn-block" data-act="lead" data-v="calc">Задать свой вопрос</button>`);
+}
+const LICENSES = { 'CC0': 'https://creativecommons.org/publicdomain/zero/1.0/deed.ru', 'CC BY 3.0': 'https://creativecommons.org/licenses/by/3.0/deed.ru', 'CC BY 4.0': 'https://creativecommons.org/licenses/by/4.0/deed.ru', 'CC BY-SA 3.0 de': 'https://creativecommons.org/licenses/by-sa/3.0/de/deed.ru', 'CC BY-SA 4.0': 'https://creativecommons.org/licenses/by-sa/4.0/deed.ru' };
+function aboutSheet() {
+  const byLic = {}; Object.values(window.GTJ_CAR_CREDITS || {}).forEach(c => { (byLic[c[1]] = byLic[c[1]] || new Set()).add(c[0]); });
+  sheet(`${sheetHead('Условия и гарантия')}
     <div class="prose">
       <p><b>GTJ</b> — тюнинг и детейлинг китайских автомобилей: детали, установка и прошивка в своём боксе.</p>
-      <h3>Бокс</h3><p>Адрес и часы работы менеджер пришлёт в чате вместе с подтверждением записи.</p>
-      <h3>Доставка</h3><p>Самовывоз из бокса бесплатно. СДЭК по России от 450 ₽, курьер по городу 690 ₽. Крупногабарит (обвесы, диски) — транспортной компанией.</p>
-      <h3>Оплата</h3><p>Картой онлайн, по СБП или при получении в боксе.</p>
-      <h3>Гарантия</h3><p>12 месяцев на детали и работы, 24 месяца на тормозные системы. Прошивку откатываем бесплатно в течение года.</p>
-      <h3>Возврат</h3><p>14 дней на товары без следов установки. Детали под заказ возврату не подлежат.</p>
-      <h3>Данные об автомобилях</h3><p>Характеристики собраны по открытым источникам: каталог drom.ru, сайты брендов, обзоры 2025–2026. Перед заказом сверяем VIN.</p>
-      <h3>Фото</h3><p class="credit" style="font-size:11.5px;line-height:1.5">Фото работ — GTJ. Фото автомобилей — Wikimedia Commons, авторы: ${carCred.map(esc).join(', ')}.</p>
+      ${TERMS.warranty ? `<h3>Гарантия</h3><p>${esc(TERMS.warranty)}</p>` : ''}
+      ${TERMS.delivery ? `<h3>Доставка</h3><p>${esc(TERMS.delivery)}</p>` : ''}
+      ${TERMS.payment ? `<h3>Оплата</h3><p>${esc(TERMS.payment)}</p>` : ''}
+      ${TERMS.returns ? `<h3>Возврат</h3><p>${esc(TERMS.returns)}</p>` : ''}
+      ${SHOP.seller ? `<h3>Продавец</h3><p>${esc(SHOP.seller)}${SHOP.ogrn ? `<br>ОГРН ${esc(SHOP.ogrn)}` : ''}${SHOP.inn ? `<br>ИНН ${esc(SHOP.inn)}` : ''}${SHOP.legalAddress ? `<br>${esc(SHOP.legalAddress)}` : ''}${SHOP.email ? `<br>${esc(SHOP.email)}` : ''}</p>` : ''}
+      <h3>Данные об автомобилях</h3><p>Характеристики собраны по открытым источникам: каталог drom.ru, сайты брендов. Перед заказом деталей менеджер сверяет VIN.</p>
+      <h3>Фото</h3><p class="credit">Фото работ — GTJ. Фото автомобилей — Wikimedia Commons: ${Object.entries(byLic).map(([l, a]) => `${[...a].map(esc).join(', ')} (<a href="${LICENSES[l] || 'https://creativecommons.org/licenses/'}" target="_blank" rel="noopener">${esc(l)}</a>)`).join('; ')}.</p>
     </div>
-    <a class="btn btn-cream btn-block" href="${BOT}" target="_blank" rel="noopener" data-act="manager">${ic('chat')}Написать менеджеру</a>`);
+    <button class="btn btn-ghost btn-block" data-act="policy">Политика конфиденциальности</button>`);
 }
+function policySheet() {
+  const stack = sheetOpen();
+  if (SHOP.policyUrl) { try { tg && tg.openLink ? tg.openLink(SHOP.policyUrl) : window.open(SHOP.policyUrl, '_blank', 'noopener'); } catch (e) {} return; }
+  const op = SHOP.seller || 'магазин GTJ';
+  sheet(`${sheetHead('Политика конфиденциальности')}
+    <div class="prose">
+      <p>Оператор персональных данных — ${esc(op)}${SHOP.ogrn ? `, ОГРН ${esc(SHOP.ogrn)}` : ''}${SHOP.legalAddress ? `, ${esc(SHOP.legalAddress)}` : ''}.</p>
+      <h3>Какие данные</h3><p>Имя, телефон, имя пользователя Telegram, адрес доставки, марка и модель автомобиля, госномер, если вы его указали, и текст заявки.</p>
+      <h3>Зачем</h3><p>Чтобы подобрать детали, оформить и выполнить заказ, записать в бокс и связаться с вами по заявке.</p>
+      <h3>Где хранятся</h3><p>Профиль, гараж и корзина хранятся на вашем устройстве. Заявки передаются менеджеру через Telegram и хранятся до выполнения заказа и в сроки, которые требует закон.</p>
+      <h3>Ваши права</h3><p>Вы можете узнать, какие данные мы храним, исправить их или отозвать согласие${SHOP.email ? ` — напишите на ${esc(SHOP.email)}` : ' — напишите менеджеру'}.</p>
+      <p>Обработка ведётся по Федеральному закону № 152-ФЗ «О персональных данных».</p>
+    </div>`, { stack });
+}
+function inviteSheet() {
+  const url = `${BOT}/shop?startapp=ref_${tgUser ? tgUser.id : ''}`;
+  sheet(`${sheetHead('Пригласить друга')}
+    <p class="hint" style="font-size:var(--fs-m)">Отправьте ссылку в чат владельцев своей модели. Мы увидим, что друг пришёл от вас.</p>
+    <div class="leadtxt">${esc(url)}</div>
+    <button class="btn btn-cream btn-block" data-act="invitesend">Поделиться в Telegram</button>
+    <button class="btn btn-ghost btn-block" data-act="invitecopy">Скопировать ссылку</button>`);
+  inviteSheet.url = url;
+}
+const copy = (t, ok) => { try { navigator.clipboard.writeText(t).then(() => toast(ok), () => toast('Не получилось скопировать')); } catch (e) { toast('Не получилось скопировать'); } };
+const openExt = url => { try { tg && tg.openLink ? tg.openLink(url) : window.open(url, '_blank', 'noopener'); } catch (e) {} };
+const openTg = url => { try { tg && tg.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, '_blank', 'noopener'); } catch (e) {} };
+
+/* keep keyboard focus inside an open sheet */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Tab' || !sheetOpen()) return;
+  const p = document.querySelector('#sheet .sheet:not(.closing) .panel'); if (!p) return;
+  const f = [...p.querySelectorAll('button,a[href],input,textarea,select,[tabindex]:not([tabindex="-1"])')].filter(el => !el.disabled && el.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f.at(-1);
+  if (!p.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
 
 /* ======================= events ======================= */
 document.addEventListener('click', e => {
@@ -1360,19 +1444,19 @@ document.addEventListener('click', e => {
   if (stop && el.dataset.act === 'closesheet' && el.classList.contains('sheet')) return;
   if (el.closest('.brief')) sheet('');
   const a = el.dataset.act, v = el.dataset.v, d = +el.dataset.d;
-  if (['tab', 'cat', 'variant', 'deliv', 'day', 'time', 'pay', 'rday', 'rtime', 'onlyfit', 'pickbrand', 'pickmodel', 'order', 'inst', 'pinst', 'bonus', 'ntoggle'].includes(a)) hSel();
+  if (['tab', 'group', 'variant', 'deliv', 'day', 'time', 'onlyfit', 'pickbrand', 'pickmodel', 'order', 'inst', 'pinst', 'needdeliv', 'interest'].includes(a)) hSel();
   switch (a) {
     case 'tab':
       if (S.tab === v && !S.product && !S.carInfo) { $('#view').scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }); return; }
       S.tab = v; S.product = null; S.carInfo = null; sheet(''); break;
-    case 'story': openStory(+v); return;
-    case 'product': openProduct(v); break;
+    case 'group': S.group = v; S.tab = 'catalog'; S.product = null; S.carInfo = null; SCROLL.catalog = 0; render.reset = true; sheet(''); break;
+    case 'product': openProduct(v); goal('product_open', { id: v }); break;
     case 'back': goBack(); return;
-    case 'fav': S.fav.has(v) ? S.fav.delete(v) : S.fav.add(v); haptic(); if (sheetOpen() && !S.product && $('#sheet h2') && $('#sheet h2').textContent === 'Избранное') { favSheet(); } break;
+    case 'fav': S.fav.has(v) ? S.fav.delete(v) : S.fav.add(v); haptic(); if (sheetOpen() && $('#sheet h2') && $('#sheet h2').textContent === 'Избранное') favSheet(); break;
     case 'quickadd': {
       if (inCart(v)) { S.tab = 'cart'; S.product = null; S.carInfo = null; sheet(''); break; }
       const p = PM[v]; if (p.v || p.svc) { openProduct(v); break; }
-      S.cart.push({ id: v, v: null, qty: 1, inst: false }); hNote('success'); toast('Добавлено в корзину'); break; }
+      S.cart.push({ id: v, v: null, qty: 1, inst: false }); hNote('success'); toast('Добавлено в корзину'); goal('add_to_cart', { id: v }); break; }
     case 'variant': S.pv = v; break;
     case 'pinst': S.pinst = !S.pinst; break;
     case 'pqty': S.pqty = Math.max(1, Math.min(9, S.pqty + d)); break;
@@ -1380,130 +1464,90 @@ document.addEventListener('click', e => {
       const p = PM[S.product];
       const ex = S.cart.find(i => i.id === p.id && i.v === S.pv);
       if (ex) ex.qty += S.pqty; else S.cart.push({ id: p.id, v: S.pv, qty: p.svc ? 1 : S.pqty, inst: p.svc ? false : S.pinst });
-      hNote('success'); toast(p.svc ? 'Услуга в корзине, время выберете при оформлении' : 'Добавлено в корзину'); break; }
-    case 'qty': { const it = S.cart[+v]; it.qty += d; if (it.qty <= 0 || PM[it.id].svc) S.cart.splice(+v, 1); break; }
+      hNote('success'); toast(p.svc ? 'Услуга в корзине, время выберете там' : 'Добавлено в корзину'); goal('add_to_cart', { id: p.id }); break; }
+    case 'qty': { const it = S.cart[+v]; it.qty += d; if (it.qty <= 0 || PM[it.id].svc) { S.cart.splice(+v, 1); toast('Удалено из корзины'); } break; }
     case 'inst': S.cart[+v].inst = !S.cart[+v].inst; break;
-    case 'clear': S.cart = []; break;
-    case 'cat': S.cat = v; S.tab = 'catalog'; S.product = null; S.carInfo = null; SCROLL.catalog = 0; render.reset = true; sheet(''); break;
+    case 'clear': S.cart = []; toast('Корзина очищена'); break;
     case 'onlyfit': S.onlyFit = !S.onlyFit; break;
-    case 'resetfilters': S.onlyFit = false; S.cat = 'all'; S.q = ''; break;
     /* car picker */
     case 'carsheet': openPicker(); return;
     case 'pickbrand': S.picker.step = 'model'; S.picker.b = v; sheet(pickerHtml()); return;
     case 'pickmodel': { const [b, m] = v.split('|'); S.picker.b = b; S.picker.m = m; S.picker.step = 'mod'; sheet(pickerHtml()); return; }
-    case 'pickstep': S.picker.step = v; if (v === 'brand') S.picker.q = ''; sheet(pickerHtml()); return;
+    case 'pickstep': S.picker.step = v; sheet(pickerHtml()); return;
     case 'pickmod': {
       const g = { b: S.picker.b, m: S.picker.m, i: +v };
       let ix = S.garage.findIndex(x => x.b === g.b && x.m === g.m && x.i === g.i);
       if (ix < 0) { S.garage.push(g); ix = S.garage.length - 1; }
       S.active = ix; S.onlyFit = true; sheet(''); haptic('medium');
-      const c = resolveCar(g); toast(`${c.title} в гараже · подбор включён`); break; }
+      { const lf = $('#lform'); if (lf) setTimeout(() => leadSheet(lf.dataset.kind, lf.dataset.p || null), 0); } goal('car_selected', { car: g.b + '/' + g.m });
+      toast(resolveCar(g).title + ' выбрана, каталог подстроен'); break; }
     case 'setactive': S.active = +v; toast('Подбор для ' + resolveCar(S.garage[+v]).title); break;
-    case 'rmcar': S.garage.splice(+v, 1); if (S.active >= S.garage.length) S.active = Math.max(0, S.garage.length - 1); S.carInfo = null; toast('Автомобиль удалён из гаража'); break;
+    case 'rmcar': { const t = resolveCar(S.garage[+v]).title; S.garage.splice(+v, 1); if (S.active >= S.garage.length) S.active = Math.max(0, S.garage.length - 1); S.carInfo = null; toast(t + ' удалена из гаража'); break; }
     case 'carinfo': S.carInfo = { ix: +v }; break;
     case 'setmod': S.garage[S.carInfo.ix].i = +v; break;
-    case 'shopfor': S.active = +v; S.onlyFit = true; S.cat = 'all'; S.q = ''; S.tab = 'catalog'; S.carInfo = null; SCROLL.catalog = 0; break;
+    case 'shopfor': S.active = +v; S.onlyFit = true; S.group = 'all'; S.tab = 'catalog'; S.carInfo = null; SCROLL.catalog = 0; break;
+    /* leads */
+    case 'lead': leadSheet(v, v === 'ask' ? S.product : null); return;
+    case 'interest': { const on = el.getAttribute('aria-pressed') !== 'true'; el.setAttribute('aria-pressed', on); el.classList.toggle('on', on); return; }
+    case 'pack': packSheet(); return;
+    case 'packcart': {
+      packInfo().items.forEach(p => { if (!inCart(p.id)) S.cart.push({ id: p.id, v: null, qty: 1, inst: p.inst != null }); });
+      sheet(''); S.tab = 'cart'; S.product = null; S.carInfo = null; hNote('success'); toast('Пакет в корзине, выберите время установки'); goal('pack_to_cart'); break; }
+    case 'copylead': copy(doneSheet.text || '', 'Текст скопирован'); return;
+    case 'contact': contactSheet(); return;
+    case 'contacts': contactsSheet(); return;
+    case 'map': openExt(SHOP.mapUrl); return;
+    case 'reviews': openExt(SHOP.reviewsUrl); return;
+    case 'channel': openTg('https://t.me/' + SHOP.channel.replace(/^@/, '')); return;
+    case 'faq': faqSheet(); return;
+    case 'policy': policySheet(); return;
+    case 'invite': inviteSheet(); return;
+    case 'invitesend': openTg('https://t.me/share/url?url=' + encodeURIComponent(inviteSheet.url) + '&text=' + encodeURIComponent('Тюнинг и детейлинг китайских авто — GTJ')); return;
+    case 'invitecopy': copy(inviteSheet.url, 'Ссылка скопирована'); return;
     /* cart */
+    case 'needdeliv': S.needDelivery = !S.needDelivery; if (S.needDelivery && S.delivery === 'pickup') S.delivery = 'cdek'; break;
     case 'deliv': S.delivery = v; break;
     case 'day': S.day = v; S.time = null; break;
     case 'time': S.time = v; break;
+    case 'promoopen': S.promoOpen = true; render(); { const i = $('#promo'); i && i.focus(); } return;
     case 'promo': {
       S.promo = ($('#promo').value || '').trim().toUpperCase();
       S.promoOk = S.promo === 'GTJ10';
       S.promoMsg = S.promoOk ? 'Промокод применён: −10% на детали' : (S.promo ? 'Такого промокода нет. Проверьте написание' : 'Введите промокод');
+      if (!S.promoOk) hNote('error');
       break; }
-    case 'bonus': S.useBonus = !S.useBonus; break;
-    case 'checkout': checkoutSheet(); return;
-    case 'pay': el.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); return;
+    case 'checkout': checkoutSheet(); goal('checkout_open'); return;
     case 'gotoorders': sheet(''); S.tab = 'profile'; S.product = null; S.carInfo = null; break;
     /* profile */
     case 'order': S.openOrder = S.openOrder === v ? null : v; break;
     case 'favs': favSheet(); return;
     case 'addresses': addrSheet(); return;
     case 'rmaddr': S.addr.splice(+v, 1); persist(); addrSheet(); break;
-    case 'notifsettings': notifSettingsSheet(); return;
-    case 'ntoggle': S.notify[v] = !S.notify[v]; persist(); notifSettingsSheet(); break;
-    case 'notifs': notifsSheet(); return;
-    case 'club': clubSheet(); return;
     case 'editme': editMeSheet(); return;
-    case 'reschedule': rescheduleSheet(); return;
-    case 'rday': case 'rtime': el.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); return;
-    case 'rconfirm': sheet(''); toast('Запрос на перенос отправлен менеджеру'); return;
     case 'about': aboutSheet(); return;
-    case 'manager': if (tg && tg.openTelegramLink) { e.preventDefault(); tg.openTelegramLink(BOT); } return;
     case 'closesheet': sheet(''); return;
     case 'share': {
       const url = BOT + '/shop?startapp=' + S.product;
-      try { if (tg && tg.openTelegramLink) { tg.openTelegramLink('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(PM[S.product].n)); return; } } catch (err) {}
-      try { navigator.clipboard.writeText(url).then(() => toast('Ссылка на товар скопирована'), () => toast(url)); } catch (err) { toast(url); }
-      return; }
+      if (tg && tg.openTelegramLink) { openTg('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(PM[S.product].n)); return; }
+      copy(url, 'Ссылка на товар скопирована'); return; }
   }
   render();
 });
-document.addEventListener('input', e => {
-  if (e.target.id === 'q') { S.q = e.target.value; $('#gridwrap').innerHTML = gridHtml(); }
-  if (e.target.id === 'carq') { S.picker.q = e.target.value; refreshPicker(); }
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.id === 'lform') submitLead(f);
+  else if (f.id === 'cform') placeOrder();
+  else if (f.id === 'aform') {
+    const t = $('#a-t').value.trim() || 'Адрес', a = $('#a-a').value.trim();
+    if (a.length < 6) { hNote('error'); $('#aerr').className = 'hint err'; $('#aerr').textContent = 'Укажите город, улицу и дом.'; return; }
+    S.addr.unshift({ t, a }); persist(); sheet(''); render(); toast('Адрес сохранён');
+  } else if (f.id === 'mform') { S.me = { name: $('#m-name').value.trim(), phone: $('#m-phone').value.trim() }; persist(); sheet(''); render(); toast('Профиль сохранён'); }
 });
-document.addEventListener('change', e => { if (e.target.id === 'sort') { S.sort = e.target.value; $('#gridwrap').innerHTML = gridHtml(); } });
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.target.id === 'q') e.target.blur();
-  if (e.key === 'Escape') { if (storyOpen()) closeStory(); else if (sheetOpen()) sheet(''); }
+  if (e.key === 'Enter' && e.target.id === 'promo') { e.preventDefault(); document.querySelector('[data-act=promo]').click(); }
+  if (e.key === 'Escape' && sheetOpen()) sheet('');
 });
-
-/* ======================= stories ======================= */
-const SV = { i: 0, j: 0, held: 0, moved: false };
-function openStory(i, j = 0) {
-  const s = STORIES[i]; if (!s) return closeStory();
-  SV.i = i; SV.j = j; S.seen.add(s.id); persist();
-  const it = s.items[j];
-  const host = $('#story');
-  const fresh = !host.querySelector('.sv:not(.out)');
-  host.innerHTML = `<div class="sv" role="dialog" aria-modal="true" aria-label="${esc(s.t)}" ${fresh ? '' : 'style="animation:none"'}>
-    <img class="sv-img" src="${IMG}${it.img}" alt="${esc(it.t)}">
-    <div class="sv-bars">${s.items.map((_, k) => `<i class="${k < j ? 'done' : ''}"><b class="${k === j ? 'run' : ''}"></b></i>`).join('')}</div>
-    <div class="sv-head"><img src="${IMG}${s.cover}" alt=""><b>${esc(s.t)}</b><span style="opacity:.7">GTJ</span><button data-sv="close" aria-label="Закрыть">${ic('close')}</button></div>
-    <button class="sv-tap l" data-sv="prev" aria-label="Предыдущая"></button><button class="sv-tap r" data-sv="next" aria-label="Следующая"></button>
-    <div class="sv-cap"><b>${esc(it.t)}</b><span>${esc(it.s)}</span>${it.cta ? `<button class="btn btn-cream btn-block" data-sv="cta">${esc(it.cta[2])}</button>` : ''}</div>
-  </div>`;
-  const nxt = s.items[j + 1] || (STORIES[i + 1] && STORIES[i + 1].items[0]); if (nxt) new Image().src = IMG + nxt.img;
-  const bar = host.querySelector('b.run'); if (bar) bar.addEventListener('animationend', storyNext, { once: true });
-  if (fresh) hSel();
-  syncBack();
-}
-function storyNext() { const s = STORIES[SV.i]; if (SV.j < s.items.length - 1) openStory(SV.i, SV.j + 1); else if (SV.i < STORIES.length - 1) openStory(SV.i + 1, 0); else closeStory(); }
-function storyPrev() { if (SV.j > 0) openStory(SV.i, SV.j - 1); else if (SV.i > 0) openStory(SV.i - 1, 0); else openStory(SV.i, 0); }
-function closeStory() {
-  const sv = $('#story .sv:not(.out)'); if (!sv) return;
-  sv.style.animation = ''; sv.classList.add('out');
-  const done = () => { if (sv.parentNode) sv.parentNode.innerHTML = ''; syncBack(); };
-  if (REDUCED) done(); else setTimeout(done, 200);
-  render();
-}
-(() => {
-  const host = $('#story'); let y0 = 0, x0 = 0;
-  host.addEventListener('pointerdown', e => { const sv = host.querySelector('.sv'); if (!sv) return; SV.held = e.timeStamp; SV.moved = false; y0 = e.clientY; x0 = e.clientX; sv.classList.add('paused'); });
-  host.addEventListener('pointermove', e => { const sv = host.querySelector('.sv'); if (!sv || !SV.held) return; const dy = e.clientY - y0; if (dy > 10 && dy > Math.abs(e.clientX - x0)) { SV.moved = true; sv.style.transform = `translateY(${dy}px) scale(${1 - dy / 2000})`; sv.style.animation = 'none'; } });
-  const up = e => {
-    const sv = host.querySelector('.sv'); if (!sv) return; sv.classList.remove('paused');
-    const dy = e.clientY - y0;
-    if (SV.moved) { SV.held = 0; if (dy > 110) closeStory(); else { sv.style.transition = 'transform .2s'; sv.style.transform = ''; } return; }
-    SV.long = e.timeStamp - SV.held > 300; SV.held = 0;
-  };
-  host.addEventListener('pointerup', up); host.addEventListener('pointercancel', up);
-  host.addEventListener('click', e => {
-    const b = e.target.closest('[data-sv]'); if (!b || SV.moved || SV.long) { SV.long = false; return; }
-    const k = b.dataset.sv; const it = STORIES[SV.i].items[SV.j];
-    if (k === 'close') closeStory();
-    else if (k === 'next') { hSel(); storyNext(); }
-    else if (k === 'prev') { hSel(); storyPrev(); }
-    else if (k === 'cta' && it.cta) {
-      const [t, id] = it.cta; closeStory();
-      if (t === 'product') { openProduct(id); render(); }
-      else if (t === 'cat') { S.cat = id; S.tab = 'catalog'; SCROLL.catalog = 0; render.reset = true; render(); }
-      else if (t === 'club') clubSheet();
-    }
-  });
-})();
 
 /* ======================= gestures ======================= */
 (() => {
@@ -1594,19 +1638,29 @@ function closeStory() {
   host.addEventListener('touchend', sEnd); host.addEventListener('touchcancel', sEnd);
 })();
 
-/* ======================= telegram ======================= */
-if (tg) {
-  try {
-    tg.ready(); tg.expand();
-    const at = v => tg.isVersionAtLeast && tg.isVersionAtLeast(v);
-    if (at('7.7') && tg.disableVerticalSwipes) tg.disableVerticalSwipes();   // scrolling down no longer collapses the app
-    if (at('6.1')) { tg.setHeaderColor('#0d0e10'); tg.setBackgroundColor('#0d0e10'); }
-    if (at('7.10') && tg.setBottomBarColor) tg.setBottomBarColor('#101113');
-    tg.BackButton.onClick(() => goBack());
-    const sp = tg.initDataUnsafe && tg.initDataUnsafe.start_param;
-    if (sp && PM[sp]) openProduct(sp);
-  } catch (e) {}
-  document.getElementById('tgbar').hidden = true;
-}
+/* ======================= telegram, source, analytics ======================= */
+(() => {
+  const sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || new URLSearchParams(location.search).get('startapp') || '';
+  if (sp) {
+    if (PM[sp]) openProduct(sp);
+    else if (sp.startsWith('ref_')) { if (!S.ref) S.ref = sp.slice(4); }
+    else S.src = sp.slice(0, 64);
+  }
+  if (SHOP.metrikaId) {
+    (function (m, e, t, r, i, k, a) { m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); }; m[i].l = 1 * new Date(); k = e.createElement(t); a = e.getElementsByTagName(t)[0]; k.async = 1; k.src = r; a.parentNode.insertBefore(k, a); })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym');
+    window.ym(+SHOP.metrikaId, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, params: { src: S.src || 'direct' } });
+  }
+  if (tg) {
+    try {
+      tg.ready(); tg.expand();
+      const at = v => tg.isVersionAtLeast && tg.isVersionAtLeast(v);
+      if (at('7.7') && tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+      if (at('6.1')) { tg.setHeaderColor('#0d0e10'); tg.setBackgroundColor('#0d0e10'); }
+      if (at('7.10') && tg.setBottomBarColor) tg.setBottomBarColor('#101113');
+      tg.BackButton.onClick(() => goBack());
+    } catch (e) {}
+    document.getElementById('tgbar').hidden = true;
+  }
+})();
 render();
 </script>

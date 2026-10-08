@@ -65,3 +65,20 @@ python3 logo/build_logo.py
 Шрифт Oswald (logo/fonts) — © The Oswald Project Authors, лицензия SIL Open Font License 1.1.
 
 - `img/cars/` — фото всех 97 моделей из базы авто (Wikimedia Commons, авторы и лицензии в `window.GTJ_CAR_CREDITS` в `data/cars.js`, показываются в «О магазине»).
+
+## Настройки магазина — `data/shop.js`
+
+Всё, что клиент видит о самом магазине, задаётся в одном файле: контакты бокса, реквизиты продавца, условия, частые вопросы, счётчик Яндекс Метрики. Пустое поле — блок в приложении не показывается.
+
+### Куда уходят заявки
+
+- `manager: 'brghmn'` — сейчас так: приложение открывает чат с @brghmn и подставляет текст заявки, клиенту остаётся нажать «Отправить».
+- `leadEndpoint` — следующий шаг: заявка уходит менеджеру сама, а клиенту бот присылает подтверждение. Для этого задеплойте `server/worker.js` (Cloudflare Worker): переменные `BOT_TOKEN` (секрет, в репозиторий не кладём), `MANAGER_CHAT_ID`, `ALLOW_ORIGIN`. Адрес воркера впишите в `leadEndpoint`. Воркер принимает только заявки из Telegram — проверяет подпись `initData`.
+
+### Источники трафика
+
+Ссылка `https://t.me/GTJdetailing_bot/shop?startapp=direct_monjaro` — метка `direct_monjaro` попадёт в заявку и в Метрику. `startapp=<id товара>` открывает товар, `startapp=ref_<id>` — приглашение от друга.
+
+### Цели Метрики
+
+`car_selected`, `product_open`, `add_to_cart`, `pack_open`, `pack_to_cart`, `checkout_open`, `lead_sent`, `order_sent`.
