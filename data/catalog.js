@@ -13,7 +13,7 @@ window.GTJ_CATS = [
   { id: 'exhaust',  n: 'Выхлопные системы',          g: 'exhaust' },
   { id: 'susp',     n: 'Подвеска и трансмиссия',     g: 'spring' },
   { id: 'elec',     n: 'Электроника и датчики',      g: 'gauge' },
-  { id: 'ext',      n: 'Экстерьер',                  g: 'car' },
+  { id: 'ext',      n: 'Экстерьер',                  g: 'carf' },
   { id: 'int',      n: 'Интерьер',                   g: 'seat' },
   { id: 'intake',   n: 'Впуск',                      g: 'intake' },
   { id: 'turbo',    n: 'Турбины',                    g: 'turbo' },
