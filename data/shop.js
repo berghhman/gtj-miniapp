@@ -7,7 +7,7 @@ window.GTJ_SHOP = {
      leadEndpoint: адрес сервера-пересыльщика (см. server/README.md) — заявка уйдёт менеджеру сама,
                    клиенту придёт подтверждение от бота. Если задан, используется он. */
   manager: 'brghmn',
-  leadEndpoint: '',
+  leadEndpoint: 'https://gtj-bot.aldiksema.workers.dev',
 
   /* Контакты бокса */
   address: 'дима',            // 'Санкт-Петербург, ул. Примерная, 1, бокс 12'
