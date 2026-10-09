@@ -1268,13 +1268,25 @@ function leadText(x) {
   if (x.ref) lines.push('Пригласил: ' + x.ref);
   return lines.join('\n');
 }
+/* the bot can only write to people who allowed it: ask once, before the first request */
+function askWriteAccess() {
+  return new Promise(res => {
+    try {
+      if (load('wa', false) || !tg.requestWriteAccess || !(tg.isVersionAtLeast && tg.isVersionAtLeast('6.9'))) return res();
+      tg.requestWriteAccess(ok => { if (ok) save('wa', true); res(); });
+      setTimeout(res, 15000);
+    } catch (e) { res(); }
+  });
+}
 async function sendLead(x) {
   Object.assign(x, { car: x.car || carLine(car()), name: S.me.name, phone: S.me.phone, username: tgUser && tgUser.username, src: S.src, ref: S.ref });
   const text = leadText(x);
   goal(x.kind === 'Заказ' ? 'order_sent' : 'lead_sent', { kind: x.kind });
-  if (SHOP.leadEndpoint) {
+  if (SHOP.leadEndpoint && tg) {
+    await askWriteAccess();
     try {
-      const r = await fetch(SHOP.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, lead: x, initData: tg ? tg.initData : '' }) });
+      // text/plain keeps it a simple request: no CORS preflight
+      const r = await fetch(SHOP.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ text, lead: x, initData: tg.initData }) });
       if (r.ok) return { how: 'sent', text };
     } catch (e) {}
   }
