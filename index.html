@@ -266,6 +266,33 @@ img.ld{opacity:1!important}
 .chip::after{content:"";position:absolute;inset:-2px 0}
 .btn .num{margin-left:auto;padding-left:12px}
 .btn-cream:has(.num){justify-content:flex-start}
+/* catalogue cards: no part photos, a tinted tile per section instead */
+.clist{display:flex;flex-direction:column;gap:24px}
+.clist>.hint{margin-bottom:-14px}
+.shelf{display:flex;flex-direction:column;gap:12px}
+.ggrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.gc{position:relative;display:flex;flex-direction:column;min-width:0;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);overflow:hidden;--tint:rgba(236,229,211,.07)}
+.hscroll .gc{width:172px}
+.price small{font-size:var(--fs-xs);font-weight:600;color:var(--muted)}
+.gc.g-power{--tint:rgba(224,38,47,.22)}
+.gc.g-detailing{--tint:rgba(96,160,255,.2)}
+.gc.g-chassis{--tint:rgba(240,182,90,.2)}
+.gc.g-exterior{--tint:rgba(127,209,160,.17)}
+.gc.g-interior{--tint:rgba(176,140,255,.18)}
+.gc-top{position:relative;display:grid;place-items:center;width:100%;height:112px;background:radial-gradient(130% 120% at 85% 0%,var(--tint),transparent 62%),var(--panel-2);border-bottom:1px solid var(--line);color:var(--cream)}
+.gc-top .ico{width:46px;height:46px;stroke-width:1.35}
+.gc-top .badge{position:absolute;top:8px;left:8px}
+.gc-cat{position:absolute;left:10px;bottom:8px;font-size:var(--fs-xs);color:var(--muted)}
+.gc-gain{font:700 var(--fs-2xl)/1 var(--f-display);color:#fff;display:flex;align-items:baseline;gap:4px}
+.gc-gain small{font-size:var(--fs-s);font-weight:600;color:var(--muted)}
+.gc .favbtn{top:4px;right:4px;background:transparent;color:var(--muted);backdrop-filter:none;-webkit-backdrop-filter:none}
+.gc .favbtn.on{color:var(--red)}
+.gc-b{display:flex;flex-direction:column;gap:6px;padding:10px 12px 12px;flex:1;min-width:0}
+.gc .name{font-weight:600;font-size:var(--fs-s);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.5em;text-align:left}
+.gc .pr{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;margin-top:auto;padding-top:4px}
+.gc .price{font-size:var(--fs-m)}
+.gc:has(.gc-top:active,.name:active){transform:scale(.975)}
+.gc{transition:transform .14s cubic-bezier(.2,.8,.2,1)}
 /* chips */
 .chips{display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px}
 .chips::-webkit-scrollbar{display:none}
@@ -697,7 +724,7 @@ function fitLabel(p) {
   const c = car(); if (!c || universal(p)) return '';
   return fits(p, c) ? `<span class="fits">${ic('check')}<span>Подходит к ${esc(c.short)}</span></span>` : `<span class="fits no"><span>Не для ${esc(c.short)}</span></span>`;
 }
-function priceHtml(p) { return `<span class="price">${p.v && p.v.some(x => x.p) ? 'от ' : ''}${rub(minPrice(p))}</span>${p.old ? `<span class="old">${rub(p.old)}</span>` : ''}`; }
+function priceHtml(p) { return `<span class="price">${p.v && p.v.some(x => x.p) ? '<small>от</small> ' : ''}${rub(minPrice(p))}</span>${p.old ? `<span class="old">${rub(p.old)}</span>` : ''}`; }
 const addBtn = p => `<button class="addbtn ${inCart(p.id) ? 'in' : ''}" data-act="quickadd" data-v="${p.id}" aria-label="${inCart(p.id) ? 'В корзине' : 'В корзину'}">${ic(inCart(p.id) ? 'check' : 'plus')}</button>`;
 const badgeHtml = p => p.badge ? `<span class="badge ${['Хит', 'Пакет'].includes(p.badge) ? 'red' : ''}">${p.badge}</span>` : '';
 /* compact card for the home rows */
@@ -710,6 +737,25 @@ function pcard(p) {
     <div class="pr"><div class="pp2">${priceHtml(p)}</div>${addBtn(p)}</div>
   </div>`;
 }
+/* catalogue card: a tinted tile with the part's icon (or the power gain), then name, fit and price */
+function gcard(p) {
+  const fav = S.fav.has(p.id); const g = stageGain(p); const grp = groupOf(p.cat);
+  const short = SHORT[p.cat] || CATM[p.cat].n;
+  return `<div class="gc g-${grp ? grp.id : 'parts'}">
+    <button class="gc-top" data-act="product" data-v="${p.id}" aria-label="${esc(p.n)}">
+      ${g && g.dhp > 0 ? `<span class="gc-gain">+${g.dhp}<small>л.с.</small></span>` : ic(glyph(p))}
+      ${badgeHtml(p)}<span class="gc-cat">${esc(short)}</span>
+    </button>
+    <button class="favbtn ${fav ? 'on' : ''}" data-act="fav" data-v="${p.id}" aria-label="${fav ? 'Убрать из избранного' : 'В избранное'}">${ic('heart')}</button>
+    <div class="gc-b">
+      <button class="name" data-act="product" data-v="${p.id}">${esc(p.n)}</button>
+      ${g && g.dhp > 0 ? `<span class="gainl">${c0(g)}</span>` : fitLabel(p)}
+      <div class="pr"><div class="pp2">${priceHtml(p)}</div>${addBtn(p)}</div>
+    </div>
+  </div>`;
+}
+const c0 = g => `до ${g.hp} л.с., ${g.nm} Н·м`;
+const SHORT = { brakes: 'Тормоза', exhaust: 'Выхлоп', susp: 'Подвеска', elec: 'Электрика', ext: 'Экстерьер', int: 'Салон', intake: 'Впуск', turbo: 'Турбо', engine: 'Мотор', cooling: 'Охлаждение', hoses: 'Шланги', fittings: 'Фитинги', chem: 'Автохимия', chip: 'Чип-тюнинг', detail: 'Детейлинг', merch: 'Мерч' };
 /* catalogue row: name, what it gives, fit, price */
 function prow(p) {
   return `<div class="prow">
@@ -777,7 +823,7 @@ function vHome() {
   </section>
   ${hits.length ? `<section class="sec">
     <div class="sec-h"><h2>${c ? 'Популярное для ' + esc(c.short) : 'Популярное'}</h2><button data-act="group" data-v="all">Все${ic('chev')}</button></div>
-    <div class="hscroll">${hits.map(pcard).join('')}</div>
+    <div class="hscroll">${hits.map(gcard).join('')}</div>
   </section>` : ''}
   <section class="sec">
     <div class="sec-h"><h2>Работы бокса</h2>${SHOP.channel ? `<button data-act="channel">Больше в канале${ic('chev')}</button>` : ''}</div>
@@ -796,11 +842,14 @@ function listHtml() {
   const c = car();
   const empty = `<div class="empty"><div class="big">${ic('wrench')}</div><h3>Пока ничего не нашли</h3><p>${S.onlyFit && c ? `Для ${esc(c.title)} здесь пока нет готовых позиций. Привезём под заказ — напишите, что ищете.` : 'В этом разделе пока пусто.'}</p><button class="btn btn-cream btn-sm" data-act="lead" data-v="calc">Спросить менеджера</button>${S.onlyFit && c ? `<button class="btn btn-ghost btn-sm" data-act="onlyfit">Показать для всех машин</button>` : ''}</div>`;
   if (S.group === 'all') {
-    const blocks = GROUPS.map(g => { const l = catalogList(g.id); return l.length ? `<div class="lgroup"><h3>${g.n}</h3><div class="plist">${l.map(prow).join('')}</div></div>` : ''; }).join('');
+    /* every section as a shelf you can swipe, with a way into the whole section */
+    const blocks = GROUPS.map(g => { const l = catalogList(g.id); return l.length ? `<section class="shelf">
+      <div class="sec-h"><h2>${g.n}</h2><button data-act="group" data-v="${g.id}">Все ${l.length}${ic('chev')}</button></div>
+      <div class="hscroll">${l.slice(0, 8).map(gcard).join('')}</div></section>` : ''; }).join('');
     return blocks || empty;
   }
   const l = catalogList();
-  return l.length ? `<div class="plist">${l.map(prow).join('')}</div>` : empty;
+  return l.length ? `<span class="hint">${l.length} ${plural(l.length, 'позиция', 'позиции', 'позиций')}</span><div class="ggrid">${l.map(gcard).join('')}</div>` : empty;
 }
 function vCatalog() {
   const c = car();
@@ -813,7 +862,7 @@ function vCatalog() {
       ${GROUPS.map(g => `<button class="chip ${S.group === g.id ? 'on' : ''}" data-act="group" data-v="${g.id}">${g.n}</button>`).join('')}
     </div>
   </div>
-  <div style="display:flex;flex-direction:column;gap:16px">${listHtml()}</div>`;
+  <div class="clist">${listHtml()}</div>`;
 }
 
 function vProduct() {
@@ -1337,7 +1386,7 @@ async function placeOrder() {
 }
 function favSheet() {
   const f = P.filter(p => S.fav.has(p.id));
-  sheet(`${sheetHead('Избранное')}${f.length ? `<div class="plist">${f.map(prow).join('')}</div>` : `<div class="empty" style="padding:24px 0"><div class="big">${ic('heart')}</div><p>Отмечайте товары сердечком, они появятся здесь.</p></div>`}`);
+  sheet(`${sheetHead('Избранное')}${f.length ? `<div class="ggrid">${f.map(gcard).join('')}</div>` : `<div class="empty" style="padding:24px 0"><div class="big">${ic('heart')}</div><p>Отмечайте товары сердечком, они появятся здесь.</p></div>`}`);
 }
 function addrSheet() {
   sheet(`${sheetHead('Адрес доставки')}
