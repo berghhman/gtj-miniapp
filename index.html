@@ -151,12 +151,37 @@ img.ld{opacity:1!important}
 .hero h3{margin:0;font:700 var(--fs-xl)/1.1 var(--f-display);color:#fff;text-wrap:balance}
 .hero p{margin:0;color:#c3c0b8;max-width:36ch}
 .hero .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:4px;flex-wrap:wrap}
+.tune{display:flex;flex-direction:column;gap:6px}
+.tpick{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 12px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);text-align:left;transition:border-color .14s,background-color .14s}
+.tpick .ci{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--panel-2);color:var(--cream)}
+.tpick .ci .ico{width:20px;height:20px}
+.tpick .t{flex:1;min-width:0}
+.tpick b{display:block;font-size:var(--fs-s);color:#fff}
+.tpick .t span{display:block;font-size:var(--fs-xs);color:var(--muted);margin-top:2px}
+.tpick[data-v=chip] .t span{color:var(--ok);font-weight:700}
+.tpick .box{flex:none;width:24px;height:24px;border-radius:7px;border:1.5px solid #4a4f56;display:grid;place-items:center;color:transparent}
+.tpick .box .ico{width:15px;height:15px;stroke-width:3}
+.tpick[aria-pressed=true]{border-color:var(--cream);background:#1b1c1f}
+.tpick[aria-pressed=true] .box{background:var(--cream);border-color:var(--cream);color:#121214}
+.tpick:active{transform:scale(.98)}
+.parts-cta{margin-top:10px}
+.field .flabel{font-size:var(--fs-xs);color:var(--muted);font-weight:600}
+.field .photo-pick{display:flex;align-items:center;gap:12px;min-height:64px;padding:12px 14px;border-radius:var(--r-m);background:var(--panel-2);border:1px dashed #4a4f56;color:var(--text,#fff);font-size:var(--fs-s);font-weight:400;cursor:pointer}
+.field .photo-pick>.ico{width:24px;height:24px;color:var(--cream);flex:none}
+.photo-pick b{display:block;font-size:var(--fs-s);color:#fff}
+.photo-pick small{display:block;font-size:var(--fs-xs);color:var(--muted)}
+.field .photo-pick.has{flex-direction:column;align-items:stretch;padding:8px;border-style:solid;cursor:default}
+.photo-pick.has img{width:100%;max-height:220px;object-fit:cover;border-radius:10px;display:block}
+.photo-pick .pp-act{display:flex;gap:8px}
+.photo-pick .pp-act>*{flex:1}
+.field .photo-pick .btn{font-size:var(--fs-s);color:#fff;font-weight:700}
 .hero .tag{position:absolute;top:12px;left:12px;padding:5px 9px;border-radius:var(--r-s);background:var(--red);color:#fff;font:700 var(--fs-xs)/1 var(--f-body);letter-spacing:.08em}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 18px;border-radius:var(--r-m);font-weight:700;font-size:var(--fs-m);white-space:nowrap;text-decoration:none}
 .btn-cream{background:var(--cream);color:#121214}
 .btn-cream:active{filter:brightness(.92)}
 .btn-ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--fg)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
 .btn-sm{height:36px;padding:0 14px;font-size:var(--fs-s);border-radius:var(--r-s)}
 .btn-block{width:100%}
 
@@ -565,7 +590,7 @@ const IMG = 'img/';
 const BOT = 'https://t.me/GTJdetailing_bot';
 const SHOP = window.GTJ_SHOP || {};
 const TERMS = SHOP.terms || {};
-const CARS = window.GTJ_CARS, ENG = window.GTJ_ENGINES;
+const CARS = window.GTJ_CARS, ENG = window.GTJ_ENGINES, CHIP = window.GTJ_CHIP || {};
 const CATS = window.GTJ_CATS, CREDITS = window.GTJ_CREDITS;
 /* merch is not a product line: it stays out of the catalogue */
 const P = window.GTJ_PRODUCTS.filter(p => p.cat !== 'merch');
@@ -592,7 +617,18 @@ const WORKS = [
   { img: 'meet2.jpg', t: 'Машины наших клиентов', s: 'Preface и Monjaro', to: null },
 ];
 const PACK = ['stage2', 'downpipe', 'intercooler', 'dv'];
-const INTERESTS = ['Мощность', 'Тормоза и подвеска', 'Внешний вид', 'Детейлинг', 'Другое'];
+/* what a client can ask us to do with the car: the checklist in the car card and the chips in the request form */
+const TUNE = [
+  { id: 'chip', n: 'Чип-тюнинг', c: 'Чип-тюнинг', s: 'Прошивка блока, замер на стенде', g: 'chip' },
+  { id: 'exhaust', n: 'Выхлоп, впуск и турбо', c: 'Выхлоп и впуск', s: 'Отдача мотора и звук', g: 'exhaust' },
+  { id: 'chassis', n: 'Тормоза и подвеска', c: 'Тормоза и подвеска', s: 'Суппорты, диски, пружины, койловеры', g: 'brake' },
+  { id: 'ext', n: 'Обвес и внешний вид', c: 'Внешний вид', s: 'Бамперы, спойлеры, диски, оклейка', g: 'car' },
+  { id: 'int', n: 'Салон и электрика', c: 'Салон', s: 'Перетяжка, свет, мультимедиа', g: 'seat' },
+  { id: 'detail', n: 'Детейлинг и защита кузова', c: 'Детейлинг', s: 'Плёнка, керамика, полировка', g: 'spray' },
+  { id: 'other', n: 'Не нашли нужного?', c: 'Другое', s: 'Опишите задачу своими словами', g: 'chat' },
+];
+const TM = Object.fromEntries(TUNE.map(t => [t.id, t]));
+const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
 
 /* ======================= icons ======================= */
 const IC = {
@@ -667,6 +703,7 @@ const S = {
   picker: { step: 'brand', b: null, m: null, q: '' },
   orders: load('orders2', []), openOrder: null,
   src: load('src', ''), ref: load('ref', ''),
+  tune: new Set(), partsPhoto: null,
 };
 if (!S.me.name && tgName) S.me.name = tgName;
 S.cart = S.cart.filter(i => PM[i.id]);
@@ -701,8 +738,13 @@ const universal = p => p.fit === 'all';
 function stageGain(p, c = car()) {
   if (!p.stage || !c) return null;
   const E = ENG[c.eng]; if (!E || !E.s1 || !fits(p, c)) return null;
-  const s2 = E.s2 || E.s1;
-  const t = p.stage === 1 ? E.s1 : p.stage === 2 ? s2 : [s2[0] + 45, s2[1] + 80];
+  /* our own dyno figures for the model beat the engine-family estimate */
+  const ov = CHIP[c.key] || {};
+  const add = d => [c.d[2] + d[0], c.d[3] + d[1]];
+  const s1 = ov.s1 ? add(ov.s1) : E.s1;
+  let s2 = ov.s2 ? add(ov.s2) : (E.s2 || E.s1);
+  if (s2[0] < s1[0]) s2 = s1;
+  const t = p.stage === 1 ? s1 : p.stage === 2 ? s2 : [s2[0] + 45, s2[1] + 80];
   return { hp: t[0], nm: t[1], dhp: t[0] - c.d[2], dnm: t[1] - c.d[3] };
 }
 const unitPrice = (p, v) => { const vr = p.v && p.v.find(x => x.id === v); return vr && vr.p ? vr.p : p.p; };
@@ -788,18 +830,28 @@ function heroHtml() {
       <button class="btn btn-cream btn-block" data-act="carsheet">Выбрать машину</button>
       <button class="btn btn-ghost btn-block" data-act="lead" data-v="calc">Задать вопрос менеджеру</button>
     </div></div>`;
-  const pk = packInfo(c); const g = pk.gain;
   return `<div class="hero">
     <div class="hcar"><img src="${IMG}${c.m.img}" alt="${esc(c.title)}"><button class="hchange" data-act="carsheet" aria-label="Сменить машину">${esc(c.title)} ${esc(c.d[0])}${ic('down')}</button></div>
     <div class="copy">
-      ${g && g.dhp > 0 ? `<h3>+${g.dhp} л.с. за один день</h3>
-      <p>${c.d[2]} → ${g.hp} л.с., ${c.d[3]} → ${g.nm} Н·м. Прошивка, даунпайп, интеркулер и клапан — ставим в нашем боксе и замеряем на стенде.</p>
-      <button class="btn btn-cream btn-block" data-act="pack">Пакет Stage 2 под ключ — ${rub(pk.total)}</button>`
-      : `<h3>Тюнинг и детейлинг для ${esc(c.short)}</h3>
-      <p>Подберём детали и работы под вашу комплектацию и скажем точную цену.</p>`}
-      <button class="btn ${g && g.dhp > 0 ? 'btn-ghost' : 'btn-cream'} btn-block" data-act="lead" data-v="calc">Рассчитать для моей машины</button>
+      <h3>Что сделаем с ${esc(c.short)}?</h3>
+      <p>Отметьте, что интересует, и мы посчитаем цену под вашу комплектацию.</p>
+      <div class="tune" role="group" aria-label="Что интересует">${tuneItems(c).map(t => `<button class="tpick" data-act="tune" data-v="${t.id}" aria-pressed="${S.tune.has(t.id)}">
+        <span class="ci">${ic(t.g)}</span><span class="t"><b>${t.n}</b><span>${t.sub || t.s}</span></span><span class="box">${ic('check')}</span></button>`).join('')}</div>
+      ${tuneBtn()}
     </div></div>`;
 }
+/* the checklist for this car: chip tuning shows our real figures, and drops out when the car has nothing to flash */
+function tuneItems(c = car()) {
+  const g = c && stageGain(PM.stage1, c);
+  return TUNE.filter(t => t.id !== 'chip' || (g && g.dhp > 0)).map(t => t.id === 'chip'
+    ? Object.assign({}, t, { sub: `Stage 1: +${g.dhp} л.с. и +${g.dnm} Н·м` }) : t);
+}
+const chipLabel = (c = car()) => { const g = c && stageGain(PM.stage1, c); return 'Чип-тюнинг' + (g && g.dhp > 0 ? ` (Stage 1: +${g.dhp} л.с., +${g.dnm} Н·м)` : ''); };
+function tuneBtn() {
+  const n = S.tune.size;
+  return `<button class="btn btn-cream btn-block" id="tunego" data-act="tunego" ${n ? '' : 'disabled'}>${n ? `Рассчитать стоимость: ${n} ${plural(n, 'пункт', 'пункта', 'пунктов')}` : 'Отметьте хотя бы один пункт'}</button>`;
+}
+const partsCta = () => `<button class="row-card parts-cta" data-act="parts">${ic('wrench')}<div class="t"><b>Оригинальные запчасти под заказ</b><span>Подберём по VIN и привезём</span></div>${ic('chev')}</button>`;
 function vHome() {
   const c = car();
   const hits = P.filter(p => !p.svc && !universal(p) && fits(p)).sort((a, b) => b.pop - a.pop).slice(0, 8);
@@ -816,6 +868,7 @@ function vHome() {
     </div>
   </div>
   ${heroHtml()}
+  ${partsCta()}
   <section class="sec">
     <div class="sec-h"><h2>Что делаем</h2><button data-act="group" data-v="all">Весь каталог${ic('chev')}</button></div>
     <div class="gbig">${bigTile(big1)}${bigTile(big2)}</div>
@@ -898,6 +951,7 @@ function vProduct() {
       ${p.v ? `<div class="opt"><span class="lbl">${p.v[0].sw ? 'Цвет' : 'Вариант'}: ${esc(vr.l)}</span><div class="chips wrap">${p.v.map(x => `<button class="chip ${x.id === v ? 'on' : ''}" data-act="variant" data-v="${x.id}">${x.sw ? `<span class="sw" style="background:${x.sw}"></span>` : ''}${esc(x.l)}${x.p && x.p !== p.p && !/₽/.test(x.l) ? `, ${rub(x.p)}` : ''}</button>`).join('')}</div></div>` : ''}
       ${p.inst != null ? `<button class="row-card" data-act="pinst" role="switch" aria-checked="${S.pinst}">${ic('wrench')}<div class="t"><b>Установка в боксе GTJ</b><span>+${rub(p.inst)}, ${p.instT}. Время выберете в корзине</span></div><span class="toggle ${S.pinst ? 'on' : ''}"></span></button>` : ''}
       ${p.svc ? `<div class="row-card">${ic('pin')}<div class="t"><b>Делаем в боксе GTJ</b><span>День и время выберете при оформлении</span></div></div>` : ''}
+      ${p.stage === 2 && c && packInfo(c).items.length > 1 ? `<button class="row-card" data-act="pack">${ic('gauge')}<div class="t"><b>Пакет Stage 2 под ключ — ${rub(packInfo(c).total)}</b><span>Прошивка, даунпайп, интеркулер и клапан с установкой</span></div>${ic('chev')}</button>` : ''}
       ${p.stage ? `<div class="note">${ic('shield')}<div><b>Про гарантию дилера</b><small>Дилер может отказать в гарантии на двигатель после прошивки. Заводскую прошивку сохраняем и можем вернуть.</small></div></div>` : ''}
       <p class="desc">${esc(p.d)}</p>
       <div class="opt"><span class="lbl">Характеристики</span><table class="specs"><tbody>${p.sp.map(s => `<tr><td>${esc(s[0])}</td><td>${esc(s[1])}</td></tr>`).join('')}</tbody></table></div>
@@ -1031,6 +1085,7 @@ function vProfile() {
   <section class="sec">
     <div class="menu">
       <button data-act="lead" data-v="calc">${ic('chat')}<span class="t">Написать менеджеру<small>Подбор, цены, запись в бокс</small></span>${ic('chev')}</button>
+      <button data-act="parts">${ic('wrench')}<span class="t">Оригинальные запчасти<small>Подберём по VIN и привезём под заказ</small></span>${ic('chev')}</button>
       ${hasContacts() ? `<button data-act="contacts">${ic('pin')}<span class="t">Контакты бокса<small>${esc(SHOP.address || SHOP.phone)}</small></span>${ic('chev')}</button>` : ''}
       <button data-act="favs">${ic('heart')}<span class="t">Избранное<small>${favs.length ? esc(favs.map(p => p.n).join(', ')) : 'Пока пусто'}</small></span>${favs.length ? `<span class="v num">${favs.length}</span>` : ''}${ic('chev')}</button>
       <button data-act="faq">${ic('info')}<span class="t">Частые вопросы<small>Гарантия, сроки, надёжность</small></span>${ic('chev')}</button>
@@ -1259,6 +1314,9 @@ function leadText(x) {
   if (x.items) lines.push(x.items);
   if (x.interest) lines.push('Интересует: ' + x.interest);
   if (x.car) lines.push('Машина: ' + x.car);
+  if (x.vin) lines.push('VIN: ' + x.vin);
+  if (x.oem) lines.push('OEM: ' + x.oem);
+  if (x.photo) lines.push('Фото: ' + x.photo);
   if (x.slot) lines.push('Запись: ' + x.slot);
   if (x.delivery) lines.push('Получение: ' + x.delivery);
   if (x.total) lines.push('Сумма: ' + rub(x.total));
@@ -1278,15 +1336,17 @@ function askWriteAccess() {
     } catch (e) { res(); }
   });
 }
-async function sendLead(x) {
+async function sendLead(x, extra = {}) {
+  const direct = !!(SHOP.leadEndpoint && tg);
   Object.assign(x, { car: x.car || carLine(car()), name: S.me.name, phone: S.me.phone, username: tgUser && tgUser.username, src: S.src, ref: S.ref });
+  if (extra.photo) x.photo = direct ? 'следующим сообщением' : 'прикреплю в чате';
   const text = leadText(x);
   goal(x.kind === 'Заказ' ? 'order_sent' : 'lead_sent', { kind: x.kind });
-  if (SHOP.leadEndpoint && tg) {
+  if (direct) {
     await askWriteAccess();
     try {
       // text/plain keeps it a simple request: no CORS preflight
-      const r = await fetch(SHOP.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ text, lead: x, initData: tg.initData }) });
+      const r = await fetch(SHOP.leadEndpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify({ text, lead: x, initData: tg.initData, photo: extra.photo || undefined }) });
       if (r.ok) return { how: 'sent', text };
     } catch (e) {}
   }
@@ -1314,13 +1374,15 @@ function rememberOrder(o) { S.orders.unshift(Object.assign({ id: 'L' + Date.now(
 /* a question or a price request without buying anything */
 function leadSheet(kind = 'calc', productId) {
   const c = car(); const p = productId && PM[productId];
-  const title = kind === 'pack' ? 'Записаться на пакет Stage 2' : kind === 'ask' ? 'Вопрос по детали' : 'Рассчитать для моей машины';
+  const title = kind === 'pack' ? 'Записаться на пакет Stage 2' : kind === 'ask' ? 'Вопрос по детали' : kind === 'tune' ? 'Расчёт тюнинга' : 'Рассчитать для моей машины';
+  const picked = kind === 'tune' ? S.tune : new Set();
+  const other = picked.has('other');
   sheet(`${sheetHead(title)}
     <form id="lform" class="form" novalidate data-kind="${kind}" data-p="${p ? p.id : ''}">
       <button type="button" class="row-card" data-act="carsheet">${c ? `<span class="mini">${carPhoto(c.m)}</span>` : ic('plus')}<div class="t"><b>${c ? esc(c.title) : 'Выберите машину'}</b><span>${c ? esc(c.spec) : 'Так расчёт будет точнее'}</span></div>${ic('chev')}</button>
       ${p ? `<div class="note">${pic(p)}<div><b>${esc(p.n)}</b><small>${rub(unitPrice(p, S.pv))}</small></div></div>` : ''}
-      ${kind === 'calc' ? `<div class="opt"><span class="lbl">Что интересует</span><div class="chips wrap">${INTERESTS.map(n => `<button type="button" class="chip" data-act="interest" aria-pressed="false">${n}</button>`).join('')}</div></div>` : ''}
-      <div class="field"><label for="l-com">${kind === 'ask' ? 'Ваш вопрос' : 'Комментарий'}</label><textarea id="l-com" placeholder="${kind === 'ask' ? 'Например: встанет ли с заводским бампером?' : 'Например: хочу больше мощности и тише выхлоп'}"></textarea></div>
+      ${kind === 'calc' || kind === 'tune' ? `<div class="opt"><span class="lbl">Что интересует</span><div class="chips wrap">${tuneItems(c).map(t => `<button type="button" class="chip ${picked.has(t.id) ? 'on' : ''}" data-act="interest" data-v="${t.id}" aria-pressed="${picked.has(t.id)}">${t.c}</button>`).join('')}</div></div>` : ''}
+      <div class="field"><label for="l-com" id="l-coml">${kind === 'ask' ? 'Ваш вопрос' : other ? 'Что нужно сделать?' : 'Комментарий'}</label><textarea id="l-com" placeholder="${kind === 'ask' ? 'Например: встанет ли с заводским бампером?' : other ? 'Опишите задачу: что хотите получить, есть ли бюджет и сроки' : 'Например: хочу больше мощности и тише выхлоп'}"></textarea></div>
       <div class="field"><label for="l-phone">Телефон, если удобнее звонок</label><input id="l-phone" value="${esc(S.me.phone)}" inputmode="tel" autocomplete="tel" placeholder="+7"></div>
       ${consentHtml('l-ok')}
       <span class="hint" id="lerr" role="alert"></span>
@@ -1331,12 +1393,18 @@ async function submitLead(form) {
   const kind = form.dataset.kind; const p = PM[form.dataset.p];
   if (!$('#l-ok').checked) { hNote('error'); $('#lerr').className = 'hint err'; $('#lerr').textContent = 'Отметьте согласие на обработку данных — без него не сможем ответить.'; return; }
   const phone = $('#l-phone').value.trim(); if (phone) S.me.phone = phone;
-  const interest = [...form.querySelectorAll('[data-act=interest][aria-pressed=true]')].map(b => b.textContent).join(', ');
+  const ids = [...form.querySelectorAll('[data-act=interest][aria-pressed=true]')].map(b => b.dataset.v);
+  const comment = $('#l-com').value.trim();
+  const fail = m => { hNote('error'); $('#lerr').className = 'hint err'; $('#lerr').textContent = m; };
+  if (ids.includes('other') && !comment) { fail('Опишите, что нужно сделать: так менеджер сразу посчитает.'); $('#l-com').focus(); return; }
+  if (kind === 'ask' && !comment) { fail('Напишите вопрос.'); $('#l-com').focus(); return; }
+  const interest = ids.map(id => id === 'chip' ? chipLabel() : id === 'other' ? 'другое, см. комментарий' : TM[id].n).join(', ');
   const pk = kind === 'pack' ? packInfo() : null;
-  const x = { kind: kind === 'pack' ? 'Пакет Stage 2' : kind === 'ask' ? 'Вопрос' : 'Расчёт', interest, comment: $('#l-com').value.trim(),
+  const x = { kind: kind === 'pack' ? 'Пакет Stage 2' : kind === 'ask' ? 'Вопрос' : kind === 'tune' ? 'Подбор тюнинга' : 'Расчёт', interest, comment,
     items: pk ? pk.items.map(i => i.n).join(', ') + ' + установка' : p ? p.n : '', total: pk ? pk.total : 0 };
   const res = await sendLead(x);
   rememberOrder({ kind: x.kind, items: x.items || x.interest || 'Заявка менеджеру', sum: x.total, note: res.how === 'none' ? 'Текст заявки нужно отправить менеджеру вручную.' : 'Ответ придёт в Telegram.' });
+  if (kind === 'tune') S.tune.clear();
   hNote('success'); doneSheet('Заявка готова', res); render();
 }
 
@@ -1357,6 +1425,68 @@ function packSheet() {
     <button class="btn btn-cream btn-block" data-act="lead" data-v="pack">Записаться на пакет</button>
     <button class="btn btn-ghost btn-block" data-act="packcart">Добавить всё в корзину</button>`);
   goal('pack_open');
+}
+
+/* original parts ordered by VIN: everything the manager needs to find the right part numbers */
+function partsSheet() {
+  const c = car();
+  const latin = c && /^[\x20-\x7E]+$/.test(c.title + c.d[0]) ? `${c.title} ${c.d[0]}` : '';
+  sheet(`${sheetHead('Оригинальные запчасти')}
+    <form id="pform" class="form" novalidate>
+      <p class="hint" style="margin:0">Подберём оригинальные детали по VIN и привезём под заказ. Цену и срок пришлём в Telegram.</p>
+      <div class="field"><label for="p-vin">VIN-номер</label><input id="p-vin" maxlength="20" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="17 символов, есть в СТС" aria-describedby="p-vinh"><span class="hint" id="p-vinh">Латинские буквы и цифры, без I, O и Q</span></div>
+      <div class="field"><label for="p-car">Полное название автомобиля на английском</label><input id="p-car" autocomplete="off" autocorrect="off" spellcheck="false" value="${esc(latin)}" placeholder="Geely Preface 2.0T 2024"></div>
+      <div class="field"><span class="flabel">Фото автомобиля, по возможности</span><div id="p-photo-w"></div></div>
+      <div class="field"><label for="p-oem">OEM-номера деталей, если есть</label><textarea id="p-oem" autocapitalize="characters" spellcheck="false" placeholder="Необязательно. По одному на строку"></textarea></div>
+      <div class="field"><label for="p-com">Какие детали нужны, комментарий к запросу</label><textarea id="p-com" placeholder="Например: передние колодки и диски, салонный фильтр"></textarea></div>
+      <div class="field"><label for="p-phone">Телефон, если удобнее звонок</label><input id="p-phone" value="${esc(S.me.phone)}" inputmode="tel" autocomplete="tel" placeholder="+7"></div>
+      ${consentHtml('p-ok')}
+      <span class="hint" id="perr" role="alert"></span>
+      <button class="btn btn-cream btn-block" type="submit">Отправить запрос</button>
+    </form>`);
+  photoPick();
+}
+function photoPick() {
+  const w = $('#p-photo-w'); if (!w) return;
+  w.innerHTML = S.partsPhoto
+    ? `<div class="photo-pick has"><img src="${S.partsPhoto}" alt="Фото автомобиля"><div class="pp-act"><label class="btn btn-ghost btn-sm">Заменить<input type="file" id="p-photo" accept="image/*" hidden></label><button type="button" class="btn btn-ghost btn-sm" data-act="rmphoto">Убрать</button></div></div>`
+    : `<label class="photo-pick">${ic('photo')}<span><b>Добавить фото</b><small>Общий вид машины или табличка с VIN</small></span><input type="file" id="p-photo" accept="image/*" hidden></label>`;
+}
+/* a phone photo is 3–8 MB: shrink it to 1280 px JPEG before it leaves the device */
+function shrinkPhoto(file) {
+  return new Promise(res => {
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight));
+      const cv = document.createElement('canvas'); cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+      cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
+      res(cv.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); res(null); };
+    img.src = url;
+  });
+}
+async function submitParts(form) {
+  const err = $('#perr'); err.textContent = '';
+  const fail = (m, id) => { hNote('error'); err.className = 'hint err'; err.textContent = m; if (id) $(id).focus(); };
+  const vin = $('#p-vin').value.toUpperCase().replace(/[\s-]/g, '');
+  $('#p-vin').value = vin;
+  const name = $('#p-car').value.trim(), oem = $('#p-oem').value.trim(), comment = $('#p-com').value.trim();
+  if (!VIN_RE.test(vin)) return fail(vin.length !== 17 ? `В VIN 17 символов, сейчас ${vin.length}. Он есть в СТС и под лобовым стеклом.` : 'В VIN только латинские буквы и цифры, без I, O и Q.', '#p-vin');
+  if (name.length < 3) return fail('Напишите марку и модель латиницей, как в документах: например, Geely Preface 2.0T 2024.', '#p-car');
+  if (/[а-яё]/i.test(name)) return fail('Название нужно на английском: так его ищут в каталогах.', '#p-car');
+  if (!comment && !oem) return fail('Напишите, какие детали нужны, или укажите OEM-номера.', '#p-com');
+  if (!$('#p-ok').checked) return fail('Отметьте согласие на обработку данных — без него не сможем ответить.');
+  const phone = $('#p-phone').value.trim(); if (phone) S.me.phone = phone;
+  const btn = form.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Отправляем…';
+  const x = { kind: 'Оригинальные запчасти', car: name, vin, oem: oem.replace(/\n+/g, ', '), comment, photo: S.partsPhoto ? 'отдельным сообщением' : '' };
+  const res = await sendLead(x, { photo: S.partsPhoto });
+  const lostPhoto = S.partsPhoto && res.how !== 'sent';
+  S.partsPhoto = null;
+  rememberOrder({ kind: 'Запчасти', items: comment || 'OEM: ' + x.oem, sum: 0, note: (res.how === 'none' ? 'Текст заявки нужно отправить менеджеру вручную.' : 'Цену и срок пришлём в Telegram.') + ` VIN ${vin}.` });
+  hNote('success');
+  doneSheet('Запрос отправлен', res, lostPhoto ? '<p class="hint">Фото не ушло вместе с заявкой: прикрепите его в чате с менеджером.</p>' : '');
+  render();
 }
 
 function checkoutSheet() {
@@ -1486,6 +1616,15 @@ const openExt = url => { try { tg && tg.openLink ? tg.openLink(url) : window.ope
 const openTg = url => { try { tg && tg.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, '_blank', 'noopener'); } catch (e) {} };
 
 /* keep keyboard focus inside an open sheet */
+document.addEventListener('change', async e => {
+  if (e.target.id !== 'p-photo') return;
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  if (!/^image\//.test(f.type)) { toast('Нужна фотография'); return; }
+  const w = $('#p-photo-w'); if (w) w.innerHTML = '<div class="photo-pick"><span><b>Готовим фото…</b></span></div>';
+  S.partsPhoto = await shrinkPhoto(f);
+  if (!S.partsPhoto) toast('Не получилось открыть фото, попробуйте другое');
+  photoPick();
+});
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab' || !sheetOpen()) return;
   const p = document.querySelector('#sheet .sheet:not(.closing) .panel'); if (!p) return;
@@ -1549,7 +1688,18 @@ document.addEventListener('click', e => {
     case 'shopfor': S.active = +v; S.onlyFit = true; S.group = 'all'; S.tab = 'catalog'; S.carInfo = null; SCROLL.catalog = 0; break;
     /* leads */
     case 'lead': leadSheet(v, v === 'ask' ? S.product : null); return;
-    case 'interest': { const on = el.getAttribute('aria-pressed') !== 'true'; el.setAttribute('aria-pressed', on); el.classList.toggle('on', on); return; }
+    case 'interest': {
+      const on = el.getAttribute('aria-pressed') !== 'true'; el.setAttribute('aria-pressed', on); el.classList.toggle('on', on);
+      if (v === 'other') { const l = $('#l-coml'); if (l) l.textContent = on ? 'Что нужно сделать?' : 'Комментарий'; if (on) { const t = $('#l-com'); t && t.focus(); } }
+      return; }
+    case 'tune': {
+      S.tune.has(v) ? S.tune.delete(v) : S.tune.add(v);
+      el.setAttribute('aria-pressed', S.tune.has(v)); hSel();
+      const b = $('#tunego'); if (b) b.outerHTML = tuneBtn();
+      return; }
+    case 'tunego': leadSheet('tune'); goal('tune_open', { items: [...S.tune].join(',') }); return;
+    case 'parts': partsSheet(); goal('parts_open'); return;
+    case 'rmphoto': S.partsPhoto = null; photoPick(); return;
     case 'pack': packSheet(); return;
     case 'packcart': {
       packInfo().items.forEach(p => { if (!inCart(p.id)) S.cart.push({ id: p.id, v: null, qty: 1, inst: p.inst != null }); });
@@ -1598,6 +1748,7 @@ document.addEventListener('submit', e => {
   e.preventDefault();
   const f = e.target;
   if (f.id === 'lform') submitLead(f);
+  else if (f.id === 'pform') submitParts(f);
   else if (f.id === 'cform') placeOrder();
   else if (f.id === 'aform') {
     const t = $('#a-t').value.trim() || 'Адрес', a = $('#a-a').value.trim();

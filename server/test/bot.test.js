@@ -5,7 +5,11 @@ const { route } = require('../bot');
 
 const env = { BOT_TOKEN: '123:TEST', MANAGER_CHAT_ID: '777', WEBHOOK_SECRET: 's3cret', PUBLIC_URL: 'https://fn.example/gtj', ALLOW_ORIGIN: 'https://berghhman.github.io' };
 let calls = [], reply = () => ({ ok: true, result: {} });
-const fetch = async (url, opt) => { const method = url.split('/').pop(); const payload = JSON.parse(opt.body); calls.push({ method, payload }); return { json: async () => reply(method, payload) }; };
+const fetch = async (url, opt) => {
+  const method = url.split('/').pop();
+  const payload = opt.body instanceof FormData ? Object.fromEntries([...opt.body.entries()].map(([k, v]) => [k, typeof v === 'string' ? v : { type: v.type, size: v.size }])) : JSON.parse(opt.body);
+  calls.push({ method, payload }); return { json: async () => reply(method, payload) };
+};
 const deps = { fetch };
 const req = (body, headers = {}) => route({ method: 'POST', headers, query: {}, body: JSON.stringify(body) }, env, deps);
 const tgHdr = { 'X-Telegram-Bot-Api-Secret-Token': 's3cret' };
@@ -32,6 +36,24 @@ const t = async (name, fn) => { calls = []; reply = () => ({ ok: true, result: {
     assert.deepEqual(toMgr.payload.reply_markup.inline_keyboard[0].map(b => b.callback_data), ['a:5551', 'c:5551']);
     assert.equal(toMgr.payload.reply_markup.inline_keyboard[1][0].url, 'https://t.me/alex_monjaro');
     assert.equal(toClient.payload.chat_id, 5551);
+  });
+
+  await t('фото из заявки на запчасти уходит менеджеру ответом на заявку', async () => {
+    reply = m => (m === 'sendMessage' ? { ok: true, result: { message_id: 42 } } : { ok: true });
+    const jpeg = 'data:image/jpeg;base64,' + Buffer.from('fake-jpeg-bytes').toString('base64');
+    const r = await req({ text: 'GTJ: Оригинальные запчасти\nVIN: LB37624S7PL000001', initData: initData(client), photo: jpeg });
+    assert.equal(r.status, 200);
+    assert.deepEqual(calls.map(c => c.method), ['sendMessage', 'sendPhoto', 'sendMessage']);
+    const ph = calls[1].payload;
+    assert.equal(ph.chat_id, '777');
+    assert.match(ph.caption, /#id5551$/);
+    assert.equal(JSON.parse(ph.reply_parameters).message_id, 42);
+    assert.deepEqual(ph.photo, { type: 'image/jpeg', size: 15 });
+  });
+
+  await t('не-картинка вместо фото не отправляется', async () => {
+    await req({ text: 'x', initData: initData(client), photo: 'data:text/html;base64,PGgxPg==' });
+    assert.deepEqual(calls.map(c => c.method), ['sendMessage', 'sendMessage']);
   });
 
   await t('поддельная или чужая подпись отклоняется', async () => {

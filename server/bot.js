@@ -41,6 +41,21 @@ function api(env, fetchImpl = (u, o) => fetch(u, o)) {
   };
 }
 
+/* фото из заявки приходит как data:image/jpeg;base64,… — отправляем его файлом */
+async function sendPhotoData(env, chatId, dataUrl, caption, replyTo, fetchImpl = (u, o) => fetch(u, o)) {
+  const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl || '');
+  if (!m) return null;
+  const bin = Uint8Array.from(atob(m[2]), ch => ch.charCodeAt(0));
+  if (bin.length > 8e6) return null;
+  const fd = new FormData();
+  fd.append('chat_id', String(chatId));
+  fd.append('caption', caption);
+  if (replyTo) fd.append('reply_parameters', JSON.stringify({ message_id: replyTo, allow_sending_without_reply: true }));
+  fd.append('photo', new Blob([bin], { type: m[1] }), 'car.jpg');
+  const r = await fetchImpl(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+  try { return await r.json(); } catch (e) { return {}; }
+}
+
 /* подпись initData: заявка точно пришла из Telegram от этого пользователя */
 async function checkInitData(initData, token, maxAgeSec = 86400) {
   if (!initData || !token) return null;
@@ -75,6 +90,7 @@ async function handleLead(body, env, deps = {}) {
   const head = `Новая заявка, ${hhmm()}\nКлиент: ${personLine(user)}`;
   const sent = await call('sendMessage', { chat_id: env.MANAGER_CHAT_ID, text: `${head}\n\n${text}\n\n${tagOf(user.id)}`, reply_markup: leadKeyboard(user) });
   if (!sent.ok) return { status: 502, body: 'telegram error' };
+  if (body.photo) await sendPhotoData(env, env.MANAGER_CHAT_ID, body.photo, `Фото к заявке\nКлиент: ${personLine(user)}\n\n${tagOf(user.id)}`, sent.result && sent.result.message_id, deps.fetch);
   await call('sendMessage', { chat_id: user.id, text: `${TEXT.received}\n\n${text}` });
   return { status: 200, body: 'ok' };
 }

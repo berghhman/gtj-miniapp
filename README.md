@@ -81,4 +81,4 @@ python3 logo/build_logo.py
 
 ### Цели Метрики
 
-`car_selected`, `product_open`, `add_to_cart`, `pack_open`, `pack_to_cart`, `checkout_open`, `lead_sent`, `order_sent`.
+`car_selected`, `tune_open`, `parts_open`, `product_open`, `add_to_cart`, `pack_open`, `pack_to_cart`, `checkout_open`, `lead_sent`, `order_sent`.
