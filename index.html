@@ -151,6 +151,15 @@ img.ld{opacity:1!important}
 .hero h3{margin:0;font:700 var(--fs-xl)/1.1 var(--f-display);color:#fff;text-wrap:balance}
 .hero p{margin:0;color:#c3c0b8;max-width:36ch}
 .hero .row{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:4px;flex-wrap:wrap}
+.h3d{position:relative;aspect-ratio:16/9;overflow:hidden;background:radial-gradient(120% 75% at 50% 88%,#2a2c31 0%,#121316 55%,#000 100%)}
+.h3d>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .4s}
+.h3d.on>img{opacity:0!important}
+.h3d-cv{position:absolute;inset:0;width:100%!important;height:100%!important;touch-action:pan-y;cursor:grab;display:block}
+.h3d-cv:active{cursor:grabbing}
+.h3d-hint{position:absolute;right:12px;top:12px;display:inline-flex;align-items:center;gap:2px;padding:6px 10px;border-radius:999px;background:rgba(13,14,16,.7);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#c3c0b8;font-size:var(--fs-xs);font-weight:600;opacity:0;transition:opacity .4s;pointer-events:none;z-index:1}
+.h3d-hint .ico{width:12px;height:12px}
+.h3d.ready:not(.touched) .h3d-hint{opacity:1}
+.h3d.fail .h3d-hint{display:none}
 .tune{display:flex;flex-direction:column;gap:6px}
 .tpick{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 12px;border-radius:var(--r-m);background:var(--panel);border:1px solid var(--line);text-align:left;transition:border-color .14s,background-color .14s}
 .tpick .ci{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--panel-2);color:var(--cream)}
@@ -823,7 +832,7 @@ function packInfo(c = car()) {
 function heroHtml() {
   const c = car();
   if (!c) return `<div class="hero">
-    <img src="${IMG}car-preface.jpg" alt="Geely Preface">
+    ${SHOP.heroModel ? stage3d(SHOP.heroModel) : `<img src="${IMG}car-preface.jpg" alt="Geely Preface">`}
     <div class="copy">
       <h3>Подберём тюнинг под вашу машину</h3>
       <p>Выберите марку и модель: покажем детали, которые подходят, и посчитаем прирост мощности.</p>
@@ -831,7 +840,7 @@ function heroHtml() {
       <button class="btn btn-ghost btn-block" data-act="lead" data-v="calc">Задать вопрос менеджеру</button>
     </div></div>`;
   return `<div class="hero">
-    <div class="hcar"><img src="${IMG}${c.m.img}" alt="${esc(c.title)}"><button class="hchange" data-act="carsheet" aria-label="Сменить машину">${esc(c.title)} ${esc(c.d[0])}${ic('down')}</button></div>
+    <div class="hcar">${c.m.glb ? stage3d(c.m.glb, IMG + c.m.img) : `<img src="${IMG}${c.m.img}" alt="${esc(c.title)}">`}<button class="hchange" data-act="carsheet" aria-label="Сменить машину">${esc(c.title)} ${esc(c.d[0])}${ic('down')}</button></div>
     <div class="copy">
       <h3>Что сделаем с ${esc(c.short)}?</h3>
       <p>Отметьте, что интересует, и мы посчитаем цену под вашу комплектацию.</p>
@@ -850,6 +859,18 @@ const chipLabel = (c = car()) => { const g = c && stageGain(PM.stage1, c); retur
 function tuneBtn() {
   const n = S.tune.size;
   return `<button class="btn btn-cream btn-block" id="tunego" data-act="tunego" ${n ? '' : 'disabled'}>${n ? `Рассчитать стоимость: ${n} ${plural(n, 'пункт', 'пункта', 'пунктов')}` : 'Отметьте хотя бы один пункт'}</button>`;
+}
+/* 3D stage: the photo (if any) shows until the model is ready; without WebGL it simply stays */
+const stage3d = (glb, poster = '') => `<div class="h3d" data-glb="${esc(glb)}">${poster ? `<img src="${poster}" alt="">` : ''}<span class="h3d-hint">${ic('back')}Покрутите${ic('chev')}</span></div>`;
+function mount3d(view) {
+  const el = view.querySelector('.h3d[data-glb]');
+  if (!el) { window.GTJ3D && GTJ3D.park(); return; }
+  const go = () => GTJ3D.attach(el, el.dataset.glb, () => el.classList.add('fail'));
+  if (window.GTJ3D) return go();
+  if (mount3d.loading) return mount3d.loading.then(() => { const e2 = $('#view .h3d[data-glb]'); e2 && GTJ3D.attach(e2, e2.dataset.glb, () => e2.classList.add('fail')); });
+  mount3d.loading = new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'vendor/car3d.js?v=1'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); })
+    .then(() => { if (!GTJ3D.supported()) throw new Error('no webgl'); const e2 = $('#view .h3d[data-glb]'); e2 && GTJ3D.attach(e2, e2.dataset.glb, () => e2.classList.add('fail')); })
+    .catch(() => { const e2 = $('#view .h3d'); e2 && e2.classList.add('fail'); });
 }
 const partsCta = () => `<button class="row-card parts-cta" data-act="parts">${ic('wrench')}<div class="t"><b>Оригинальные запчасти под заказ</b><span>Подберём по VIN и привезём</span></div>${ic('chev')}</button>`;
 function vHome() {
@@ -1216,6 +1237,7 @@ function render(opt = {}) {
 
   view.scrollTop = top;
   markLoaded(view);
+  mount3d(view);
   const nav = $('#navbar'); const nt = sub ? '' : TAB_TITLE[S.tab];
   nav.classList.toggle('on', !!nt); $('#navtitle').textContent = nt;
   onScroll();

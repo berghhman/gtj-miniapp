@@ -82,3 +82,12 @@ python3 logo/build_logo.py
 ### Цели Метрики
 
 `car_selected`, `tune_open`, `parts_open`, `product_open`, `add_to_cart`, `pack_open`, `pack_to_cart`, `checkout_open`, `lead_sent`, `order_sent`.
+
+## 3D-машина
+
+На главной вместо фото может стоять 3D-модель: при открытии она выезжает в кадр, дальше её можно крутить пальцем по горизонтали.
+
+- Модель — файл `.glb` в папке `models/`. Какая показывается на главной, задаёт `heroModel` в `data/shop.js`; пустая строка — обычное фото.
+- Модель для конкретной машины: поле `glb: 'models/имя.glb'` у модели в `data/cars.js`. Тогда она показывается в карточке подбора вместо фото.
+- FBX/OBJ переводятся в GLB так: `npx fbx2gltf --binary -i car.fbx -o car`, затем сжатие текстур `npx @gltf-transform/cli optimize car.glb car-opt.glb --texture-compress webp --texture-size 1024`. Хороший размер — до 1–2 МБ.
+- Просмотрщик — `src/car3d.js` (three.js), собирается в `vendor/car3d.js` командой `npm i && npm run build:3d`. Грузится только когда на экране есть 3D-машина; без WebGL остаётся фото.

@@ -1,0 +1,8 @@
+{
+  "name": "gtj-miniapp",
+  "private": true,
+  "scripts": {
+    "build:3d": "esbuild src/car3d.js --bundle --minify --format=iife --global-name=GTJ3D --target=es2019,safari14 --legal-comments=none --banner:js=\"/* GTJ 3D viewer (src/car3d.js). Includes three.js r169, (c) 2010-2024 three.js authors, MIT License. */\" --outfile=vendor/car3d.js"
+  },
+  "devDependencies": { "esbuild": "0.24.0", "three": "0.169.0" }
+}
