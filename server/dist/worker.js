@@ -1,3 +1,4 @@
+/* GTJ: бот-менеджер для Cloudflare Workers. Собрано из server/bot.js — правьте там и пересоберите. */
 /* GTJ: бот-менеджер.
    Одна функция без базы данных. Каждое сообщение, которое бот присылает менеджеру,
    заканчивается строкой «#id<номер клиента>». Менеджер отвечает на него (свайп → «Ответить»),
@@ -173,4 +174,18 @@ async function route(req, env, deps = {}) {
   return { status: r.status, headers: cors, body: r.body };
 }
 
-module.exports = { route, handleLead, handleUpdate, setup, checkInitData, TEXT };
+
+/* ---------- вход Cloudflare Workers ---------- */
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const body = request.method === 'POST' ? await request.text() : '';
+    const r = await route({
+      method: request.method,
+      headers: Object.fromEntries(request.headers),
+      query: Object.fromEntries(url.searchParams),
+      body,
+    }, env);
+    return new Response(r.status === 204 ? null : r.body, { status: r.status, headers: r.headers || {} });
+  },
+};

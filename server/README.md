@@ -7,8 +7,8 @@
 ## Файлы
 
 - `bot.js` — вся логика.
-- `index.js` — вход для Yandex Cloud Functions (`index.handler`).
-- `local.js` — вход для обычного сервера: `node server/local.js`.
+- `build-worker.js` → `dist/worker.js` — один файл для Cloudflare Workers.
+- `index.js` — вход для Yandex Cloud Functions, `local.js` — для своего сервера.
 - `test/bot.test.js` — проверка без интернета: `node server/test/bot.test.js`.
 
 ## Переменные окружения
@@ -22,19 +22,31 @@
 | `MINIAPP_URL` | Необязательно. По умолчанию `https://berghhman.github.io/gtj-miniapp/` |
 | `ALLOW_ORIGIN` | Необязательно. По умолчанию `https://berghhman.github.io` |
 
-## Запуск в Yandex Cloud
+## Где запускать
 
-1. **Новый токен.** В @BotFather: /revoke → выбрать бота → скопировать новый токен. Старый был виден на скриншоте.
-2. **Функция.** console.yandex.cloud → Cloud Functions → «Создать функцию», имя `gtj-bot`. Нужен платёжный аккаунт; небольшой бот обычно укладывается в бесплатный объём.
-3. **Код.** Редактор → среда «Node.js 18» или новее → способ «ZIP-архив» → загрузить `gtj-bot.zip` → точка входа `index.handler` → таймаут 10 секунд, память 128 МБ.
-4. **Переменные.** Добавить `BOT_TOKEN` и `WEBHOOK_SECRET`. → «Сохранить изменения».
-5. **Публичный доступ.** Вкладка «Обзор» → включить «Публичная функция» → скопировать ссылку вызова.
-6. **Адрес.** Редактор → добавить переменную `PUBLIC_URL` с этой ссылкой → «Сохранить изменения».
-7. **Подключение бота.** Открыть в браузере `<ссылка>?setup=<WEBHOOK_SECRET>`. В ответе три раза должно быть `"ok": true`: бот получил адрес, кнопку «Магазин» и команду /start.
-8. **Чат менеджера.** С аккаунта @brghmn написать боту /id. Если заявки должны падать в группу — добавить бота в группу и написать /id там. Номер вписать в `MANAGER_CHAT_ID` → «Сохранить изменения».
-9. **Мини-апп.** Ссылку функции вписать в `data/shop.js` → `leadEndpoint`. С этого момента заявки уходят менеджеру сами, без ручного «Отправить».
+С весны 2026 российские хостинги, включая Yandex Cloud, не достают до api.telegram.org: функция запускается, но любой запрос к Telegram висит до таймаута. Поэтому бот живёт на Cloudflare Workers — бесплатно, без карты, сервер вне РФ.
+
+## Запуск на Cloudflare Workers
+
+1. **Сборка.** `node server/build-worker.js` → получится `server/dist/worker.js` (один файл).
+2. **Аккаунт.** dash.cloudflare.com → регистрация по почте.
+3. **Воркер.** Compute → Workers & Pages → Create → «Start with Hello World» → имя `gtj-bot` → Deploy → Edit code. Заменить весь код содержимым `dist/worker.js` → Deploy.
+4. **Переменные.** Воркер → Settings → Variables and Secrets → Add:
+   - `BOT_TOKEN` — тип Secret, токен из BotFather;
+   - `WEBHOOK_SECRET` — тип Secret, длинная строка из букв и цифр;
+   - `PUBLIC_URL` — адрес воркера, например `https://gtj-bot.<имя>.workers.dev`;
+   - `MANAGER_CHAT_ID` — добавить после шага 6.
+   → Deploy.
+5. **Подключение бота.** Открыть `<PUBLIC_URL>?setup=<WEBHOOK_SECRET>`. В ответе три раза `"ok": true`.
+6. **Чат менеджера.** С аккаунта @brghmn написать боту /id, число вписать в `MANAGER_CHAT_ID` → Deploy.
+7. **Мини-апп.** `PUBLIC_URL` вписать в `data/shop.js` → `leadEndpoint`.
 
 Проверка: напишите боту с другого аккаунта — сообщение придёт менеджеру. Ответьте на него — ответ придёт клиенту.
+
+## Другие варианты
+
+- `index.js` — вход для Yandex Cloud Functions (`index.handler`). Работает, только если из облака доступен api.telegram.org.
+- `local.js` — обычный сервер вне РФ: `node server/local.js`, перед ним nginx с HTTPS.
 
 ## Как работать менеджеру
 
