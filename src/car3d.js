@@ -77,7 +77,7 @@ function size() {
   renderer.setSize(w, h, false); camera.aspect = w / h;
   /* три четверти спереди; дистанция подобрана так, чтобы машина целиком помещалась по ширине */
   const d = 7.9 * Math.max(1, 1.55 / camera.aspect);
-  camera.position.set(-d * 0.62, d * 0.26, d * 0.78); camera.lookAt(0, 0.95, 0.1);
+  camera.position.set(-d * 0.62, d * 0.26, d * 0.78); camera.lookAt(0, 0.72, 0.1);
   camera.updateProjectionMatrix(); loop();
 }
 
