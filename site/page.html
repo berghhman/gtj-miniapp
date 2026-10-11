@@ -58,7 +58,7 @@ img { max-width: 100%; display: block }
 .menu .x { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 14px); left: var(--gut); font-size: var(--sm) }
 
 /* hero */
-.hero { position: relative; height: clamp(520px, 78vh, 820px); overflow: hidden; background: #000; cursor: none }
+.hero { position: relative; height: clamp(520px, 78vh, 820px); overflow: hidden; background: #000 }
 .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.06); transition: opacity 1.2s ease, transform 7s linear; filter: contrast(1.15) saturate(.9) brightness(.82) }
 .slide.on { opacity: 1; transform: scale(1) }
 .grain { position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: overlay; background-size: 180px 180px }
@@ -72,11 +72,13 @@ img { max-width: 100%; display: block }
 .hero .cap { font-size: var(--xs); color: var(--soft); justify-self: center; text-align: center }
 .hero .cta { justify-self: end }
 @media (max-width: 700px) { .hero-foot { grid-template-columns: 1fr auto } .hero .cap { display: none } }
-/* the peek card follows the cursor over the hero and shows the next shot */
-.peek { position: absolute; z-index: 3; width: clamp(140px, 17vw, 260px); aspect-ratio: 4 / 3; left: 0; top: 0; pointer-events: none; opacity: 0; transition: opacity .25s; box-shadow: 0 18px 50px rgba(0,0,0,.5) }
-.peek img { width: 100%; height: 100%; object-fit: cover }
-.hero:hover .peek { opacity: 1 }
-@media (hover: none) { .hero { cursor: auto } .peek { display: none } }
+/* moving the cursor drops a trail of photo cards that stack on top of each other;
+   each new card also becomes the hero photo, so the whole screen changes as you move */
+.hero.moving .slide { transition: opacity .35s ease, transform 7s linear }
+.trail { position: absolute; z-index: 1; inset: 0; pointer-events: none; overflow: hidden }
+.trail img { position: absolute; left: 0; top: 0; width: clamp(150px, 18vw, 280px); aspect-ratio: 4 / 3; object-fit: cover; box-shadow: 0 20px 60px rgba(0,0,0,.55); filter: contrast(1.1) saturate(.95); will-change: transform, opacity }
+.hero { cursor: crosshair }
+@media (hover: none) { .hero { cursor: auto } .trail { display: none } }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 16px; background: var(--text); color: #000; font: 700 var(--sm)/1 var(--f-body); border: 1px solid var(--text); transition: background-color .15s, color .15s; cursor: pointer }
 .btn:hover { background: transparent; color: var(--text) }
@@ -198,10 +200,10 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
     <img class="slide" src="img/work-intercooler.jpg" alt="Увеличенный интеркулер на Geely Preface" data-cap="Интеркулер на Preface, Stage 2">
     <img class="slide" src="img/night-gas.jpg" alt="Водитель в оранжевой машине на ночной заправке, иллюстрация" data-cap="Два часа ночи, заправка">
     <img class="slide" src="img/preface-purple.jpg" alt="Geely Preface в цветном полиуретане" data-cap="Цветной полиуретан на Preface">
+    <div class="trail" aria-hidden="true"></div>
     <div class="dots"></div>
     <div class="glyphs" aria-hidden="true"><span>改</span><span>装</span></div>
     <div class="grain"></div>
-    <div class="peek" aria-hidden="true"><img alt=""></div>
     <div class="hero-foot">
       <h1>Тюнинг и детейлинг китайских автомобилей. Санкт-Петербург, свой бокс.</h1>
       <span class="cap" aria-live="polite"></span>
@@ -372,26 +374,51 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
     };
   }
 
-  /* ---------- hero: slides, caption, blurred backdrop, peek card ---------- */
+  /* ---------- hero: slides, caption, blurred backdrop, cursor trail ---------- */
   const slides = $$('.slide'); const cap = $('.hero .cap'); const back = $('.backdrop');
   const backs = slides.map(s => { const i = document.createElement('img'); i.src = s.getAttribute('src'); i.alt = ''; back.append(i); return i; });
-  const peek = $('.peek'); const peekImg = $('.peek img');
   let cur = 0, timer = 0;
   function show(i) {
     slides[cur].classList.remove('on'); backs[cur].classList.remove('on');
     cur = (i + slides.length) % slides.length;
     slides[cur].classList.add('on'); backs[cur].classList.add('on');
     setText(cap, slides[cur].dataset.cap);
-    peekImg.src = slides[(cur + 1) % slides.length].getAttribute('src');
   }
   function auto() { clearInterval(timer); if (!REDUCED) timer = setInterval(() => show(cur + 1), 5200); }
-  backs[0].classList.add('on'); cap.textContent = slides[0].dataset.cap; peekImg.src = slides[1].getAttribute('src'); auto();
-  const hero = $('.hero');
-  hero.addEventListener('pointermove', e => {
-    const r = hero.getBoundingClientRect(); const w = peek.offsetWidth, h = peek.offsetHeight;
-    const x = Math.min(r.width - w - 8, Math.max(8, e.clientX - r.left + 18)), y = Math.min(r.height - h - 8, Math.max(8, e.clientY - r.top + 18));
-    peek.style.transform = `translate(${x}px, ${y}px)`;
-  });
+  backs[0].classList.add('on'); cap.textContent = slides[0].dataset.cap; auto();
+  const hero = $('.hero'); const trail = $('.trail');
+  /* every STEP px of cursor travel: drop the next photo as a card under the cursor and swap the hero to it.
+     Cards pile up (newest on top) and each one fades out on its own after a short hold. */
+  const STEP = 90, HOLD = 700, MAX = 8;
+  let last = null, travel = 0, z = 1, idle = 0;
+  const canTrail = !REDUCED && matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let ti = 0;
+  function drop(x, y) {
+    /* the hero takes the previous card's photo, so the newest card always stands out against it */
+    const prev = ti; ti = (ti + 1) % slides.length; if (ti === cur) ti = (ti + 1) % slides.length;
+    const card = new Image(); card.src = slides[ti].getAttribute('src'); card.alt = '';
+    card.style.zIndex = ++z;
+    trail.append(card);
+    const w = card.offsetWidth, h = card.offsetHeight;
+    const at = `translate(${x - w / 2}px, ${y - h / 2}px)`;
+    card.animate([{ transform: at + ' scale(.55)', opacity: 0 }, { transform: at + ' scale(1)', opacity: 1 }], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+    card.animate([{ transform: at + ' scale(1)', opacity: 1 }, { transform: at + ' scale(.82)', opacity: 0 }], { duration: 380, delay: HOLD, easing: 'ease-in', fill: 'forwards' })
+      .finished.then(() => card.remove(), () => card.remove());
+    while (trail.children.length > MAX) trail.firstElementChild.remove();
+    if (prev !== cur && trail.children.length > 1) show(prev);
+  }
+  if (canTrail) {
+    hero.addEventListener('pointermove', e => {
+      const r = hero.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top;
+      if (last) travel += Math.hypot(x - last.x, y - last.y);
+      last = { x, y };
+      if (travel >= STEP) { travel = 0; drop(x, y); }
+      /* while the cursor is moving the hero follows it, the timer waits */
+      hero.classList.add('moving'); clearInterval(timer); clearTimeout(idle);
+      idle = setTimeout(() => { hero.classList.remove('moving'); auto(); }, 1600);
+    });
+    hero.addEventListener('pointerleave', () => { last = null; travel = 0; });
+  }
   hero.addEventListener('click', e => { if (e.target.closest('a')) return; show(cur + 1); auto(); });
   /* the glyphs lag behind the scroll, so the photo slides under them */
   const glyphs = $('.glyphs');
