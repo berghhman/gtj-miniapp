@@ -1879,6 +1879,7 @@ document.addEventListener('keydown', e => {
   if (sp) {
     if (PM[sp]) openProduct(sp);
     else if (sp.startsWith('ref_')) { if (!S.ref) S.ref = sp.slice(4); }
+    else if (sp === 'parts') { S.src = 'site'; setTimeout(partsSheet, 400); }
     else S.src = sp.slice(0, 64);
   }
   if (SHOP.metrikaId) {

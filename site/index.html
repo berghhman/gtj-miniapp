@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#050506">
+<title>GTJ Tuning</title>
+<meta name="description" content="Тюнинг и детейлинг китайских автомобилей в Санкт-Петербурге: прошивка, выхлоп, тормоза, подвеска, обвес, защита кузова, оригинальные запчасти по VIN.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Tektur:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500&text=%E6%94%B9%E8%A3%85%E5%8A%A8%E5%8A%9B%E6%8E%92%E6%B0%94%E5%88%B6%E5%8A%A8%E5%A4%96%E8%A7%82%E5%86%85%E9%A5%B0%E7%BE%8E%E5%AE%B9%E6%B6%A1%E8%BD%AE%E8%B0%83%E6%A0%A1%E9%A9%AC%E5%8A%9B%E6%89%AD%E7%9F%A9%E5%90%89%E5%88%A9%E5%A5%87%E7%91%9E%E5%93%88%E5%BC%97%E5%9D%A6%E5%85%8B%E6%98%9F%E9%80%94%E9%95%BF%E5%AE%89%E7%BA%A2%E6%97%97%E5%88%B7%E5%86%99%E8%BF%9B%E6%82%AC%E6%8C%82%E6%AF%82%E5%88%B9%E8%BD%A6%E6%8D%B7%E6%AC%A7%E8%90%8C%E8%BE%BE%E9%9B%B6%E4%BB%B6%E5%8E%9F%E5%8E%82%E5%9C%A3%E5%BD%BC%E5%BE%97%E5%A0%A1&display=swap">
+<style>
+/* Layout: black workshop floor, left-aligned type, square-edged blocks; pictures arrive as pixels and resolve. One loud thing: the pixel/hanzi decoding. */
+:root {
+  --ink: #050506;        /* page */
+  --deck: #0e0f11;       /* raised blocks */
+  --line: #23252a;       /* edges */
+  --paper: #f3f2ef;      /* main text */
+  --mute: #8b8d93;       /* secondary text */
+  --seal: #d4251c;       /* the red seal, used in one place per screen */
+  --f-display: "Tektur", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-han: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --s-1: clamp(13px, .78rem, 14px);
+  --s0: clamp(15px, .95rem, 16px);
+  --s1: clamp(18px, 1.15rem + .2vw, 21px);
+  --s2: clamp(24px, 1.4rem + 1.2vw, 34px);
+  --s3: clamp(34px, 1.6rem + 3.6vw, 72px);
+  --s4: clamp(44px, 1.2rem + 7vw, 128px);
+  --gut: clamp(16px, 4vw, 48px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100% }
+body { margin: 0; background: var(--ink); color: var(--paper); font: 500 var(--s0)/1.55 var(--f-body); -webkit-font-smoothing: antialiased; overflow-x: hidden }
+a { color: inherit; text-decoration: none }
+img { max-width: 100%; display: block }
+:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px }
+.wrap { padding-inline: var(--gut); max-width: 1440px; margin-inline: auto }
+
+/* scramble: each glyph sits in a fixed slot while it decodes, so lines never jump */
+.sw { white-space: nowrap }
+.scr .sc { display: inline-block; text-align: center; overflow: hidden; vertical-align: bottom }
+.sc.x { font-family: var(--f-han); font-weight: 500; font-size: .74em; color: var(--mute); line-height: 1.35 }
+
+/* header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--ink) 82%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line) }
+.top .wrap { display: flex; align-items: center; gap: 20px; height: 60px }
+.logo { display: flex; align-items: center; gap: 10px; font: 800 22px/1 var(--f-display); letter-spacing: .02em }
+.seal { width: 26px; height: 26px; display: grid; place-items: center; background: var(--seal); color: #fff; font: 500 16px/1 var(--f-han); }
+.nav { display: flex; gap: 22px; margin-left: auto; font-size: var(--s-1); color: var(--mute) }
+.nav a:hover { color: var(--paper) }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 0 22px; font: 700 var(--s0)/1 var(--f-body); border: 1px solid var(--paper); background: var(--paper); color: var(--ink); transition: background-color .15s, color .15s }
+.btn:hover { background: transparent; color: var(--paper) }
+.btn.ghost { background: transparent; color: var(--paper); border-color: var(--line) }
+.btn.ghost:hover { border-color: var(--paper) }
+.btn.sm { min-height: 40px; padding: 0 16px; font-size: var(--s-1) }
+.btn svg { width: 16px; height: 16px }
+@media (max-width: 860px) { .nav { display: none } .top .btn { margin-left: auto } }
+
+/* hero */
+.hero { padding-block: clamp(36px, 7vw, 96px) 0 }
+.hero h1 { margin: 0; font: 800 var(--s4)/1 var(--f-display); letter-spacing: -.01em; text-transform: uppercase; max-width: 13ch; text-wrap: balance }
+.hero .lead { margin: clamp(20px, 3vw, 32px) 0 0; max-width: 52ch; font-size: var(--s1); color: #c9c8c4 }
+.hero .acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px }
+.hero-pic { margin-top: clamp(32px, 5vw, 64px); aspect-ratio: 835 / 265; min-height: 220px; position: relative }
+@media (max-width: 640px) { .hero-pic { aspect-ratio: 2 / 1; min-height: 0 } }
+
+/* pixel picture */
+.px { position: relative; overflow: hidden; background: var(--deck) }
+.px img { width: 100%; height: 100%; object-fit: cover }
+.px canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated }
+.px.live img { visibility: hidden }
+
+/* stage figures */
+.stage { display: grid; grid-template-columns: minmax(0, 1.1fr) repeat(2, minmax(0, 1fr)); border: 1px solid var(--line); border-top: 0 }
+.stage > div { padding: clamp(18px, 2.4vw, 28px); border-left: 1px solid var(--line); min-width: 0 }
+.stage > div:first-child { border-left: 0 }
+.stage h2 { margin: 0; font: 700 var(--s1)/1.2 var(--f-display) }
+.stage p { margin: 8px 0 0; color: var(--mute); font-size: var(--s-1) }
+.fig small { display: block; color: var(--mute); font-size: var(--s-1) }
+.fig b { display: block; margin-top: 6px; white-space: nowrap; font: 800 clamp(28px, 1rem + 3.6vw, 72px)/1 var(--f-display); font-variant-numeric: tabular-nums }
+.fig > span { display: block; margin-top: 8px; font-size: var(--s-1); color: #c9c8c4; font-variant-numeric: tabular-nums }
+@media (max-width: 760px) { .stage { grid-template-columns: 1fr 1fr } .stage > div:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--line) } .stage > div:nth-child(2) { border-left: 0 } }
+
+/* brand ticker */
+.tick { margin-top: clamp(56px, 8vw, 110px); border-block: 1px solid var(--line); overflow: hidden; padding-block: 18px }
+.tick ul { display: flex; gap: 0; margin: 0; padding: 0; list-style: none; width: max-content; animation: run 38s linear infinite }
+.tick li { display: flex; align-items: baseline; gap: 12px; padding-right: 56px; font: 700 var(--s2)/1 var(--f-display); white-space: nowrap }
+.tick li i { font: 500 .62em/1 var(--f-han); font-style: normal; color: var(--mute) }
+@keyframes run { to { transform: translateX(-50%) } }
+
+/* sections */
+.sec { padding-block: clamp(64px, 9vw, 128px) 0 }
+.sec-h { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 32px; margin-bottom: clamp(24px, 3.5vw, 44px) }
+.sec-h h2 { margin: 0; font: 800 var(--s3)/1 var(--f-display); text-transform: uppercase; text-wrap: balance; max-width: 16ch }
+.sec-h p { margin: 0; max-width: 44ch; color: var(--mute) }
+
+/* services */
+.svc { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line) }
+.svc article { background: var(--ink); padding: clamp(20px, 2.6vw, 32px); display: flex; flex-direction: column; gap: 10px; min-height: 230px; transition: background-color .2s }
+.svc article:hover { background: var(--deck) }
+.svc .han { font: 500 clamp(40px, 4vw, 56px)/1 var(--f-han); color: #2e3036; transition: color .2s }
+.svc article:hover .han { color: var(--paper) }
+.svc h3 { margin: auto 0 0; font: 700 var(--s1)/1.2 var(--f-display) }
+.svc p { margin: 0; color: var(--mute); font-size: var(--s-1) }
+.svc .num { font-variant-numeric: tabular-nums; color: var(--paper) }
+@media (max-width: 900px) { .svc { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (max-width: 520px) { .svc { grid-template-columns: 1fr } .svc article { min-height: 0 } .svc h3 { margin-top: 18px } }
+
+/* works */
+.works { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px }
+.work { position: relative; display: block }
+.work .px { aspect-ratio: 4 / 3 }
+.work.tall .px { aspect-ratio: 3 / 4 }
+.work figcaption { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; font-size: var(--s-1) }
+.work figcaption b { font-weight: 700 }
+.work figcaption span { color: var(--mute) }
+.w1 { grid-column: span 7 } .w2 { grid-column: span 5 }
+.w1 .px, .w2 .px { aspect-ratio: auto; height: clamp(240px, 32vw, 500px) } .w3 { grid-column: span 4 } .w4 { grid-column: span 4 } .w5 { grid-column: span 4 }
+@media (max-width: 760px) { .works { grid-template-columns: 1fr 1fr } .w1 { grid-column: 1 / -1 } .w1 .px { height: auto; aspect-ratio: 4 / 3 } .w2 .px { height: auto; aspect-ratio: 3 / 4 } .w2, .w3, .w4, .w5 { grid-column: span 1 } .work figcaption { flex-direction: column; gap: 2px } }
+figure { margin: 0 }
+
+/* parts */
+.parts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px }
+.part { display: flex; flex-direction: column; background: var(--deck); border: 1px solid var(--line); transition: border-color .2s }
+.part:hover { border-color: #4a4d55 }
+.part .px { aspect-ratio: 1 }
+.part .b { padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1 }
+.part h3 { margin: 0; font: 700 var(--s0)/1.3 var(--f-body) }
+.part .fit { font-size: var(--s-1); color: var(--mute) }
+.part .pr { margin-top: auto; padding-top: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px }
+.part .price { white-space: nowrap; font: 700 var(--s1)/1 var(--f-display); font-variant-numeric: tabular-nums }
+.part .go { font-size: var(--s-1); color: var(--mute) }
+.part:hover .go { color: var(--paper) }
+@media (max-width: 900px) { .parts { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+@media (max-width: 560px) { .part .go { display: none } .part .b { padding: 12px } }
+
+/* VIN block */
+.vin { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; border: 1px solid var(--line); padding: clamp(20px, 4vw, 48px); background: var(--deck) }
+.vin h2 { margin: 0; font: 800 clamp(28px, 1rem + 3.6vw, 72px)/.98 var(--f-display); text-transform: uppercase; text-wrap: balance }
+.vin p { color: var(--mute); max-width: 46ch }
+.vin .plate { margin-top: 20px; display: inline-block; padding: 10px 14px; border: 1px solid var(--line); background: var(--ink); font: 700 clamp(16px, 2.2vw, 24px)/1 var(--f-display); letter-spacing: .12em; font-variant-numeric: tabular-nums; max-width: 100%; overflow: hidden }
+.need { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line) }
+.need li { background: var(--ink); padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; align-items: baseline }
+.need b { font-weight: 700 }
+.need small { color: var(--mute); font-size: var(--s-1); grid-column: 1 / -1 }
+.need em { font-style: normal; font-size: var(--s-1); color: var(--mute) }
+.need em.req { color: var(--paper) }
+.vin .btn { margin-top: 18px }
+@media (max-width: 860px) { .vin { grid-template-columns: 1fr } }
+
+/* steps */
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); counter-reset: s; border-top: 1px solid var(--line); margin: 0; padding: 0 }
+.steps li { list-style: none; padding: 22px 22px 0 0; display: flex; flex-direction: column; gap: 8px; min-width: 0 }
+.steps li::before { counter-increment: s; content: counter(s); font: 800 var(--s2)/1 var(--f-display); color: var(--mute) }
+.steps b { font: 700 var(--s1)/1.2 var(--f-display) }
+.steps span { color: var(--mute); font-size: var(--s-1); max-width: 30ch }
+.steps ol { display: contents }
+@media (max-width: 760px) { .steps { grid-template-columns: 1fr 1fr; row-gap: 18px } }
+
+/* closing call */
+.cta { margin-top: clamp(64px, 9vw, 128px); border-top: 1px solid var(--line); padding-block: clamp(40px, 6vw, 80px) }
+.cta h2 { margin: 0; font: 800 var(--s4)/.98 var(--f-display); text-transform: uppercase; max-width: 12ch; text-wrap: balance }
+.cta .acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px }
+footer { border-top: 1px solid var(--line); padding-block: 24px 40px; color: var(--mute); font-size: var(--s-1) }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: center }
+footer .handle { color: var(--paper); user-select: all }
+
+/* boot screen: GTJ assembled from pixels, then dissolves */
+#boot { position: fixed; inset: 0; z-index: 99; background: var(--ink) }
+#boot canvas { width: 100%; height: 100%; display: block }
+
+@media (prefers-reduced-motion: reduce) {
+  .tick ul { animation: none }
+  html { scroll-behavior: auto }
+}
+</style>
+<script>
+/* the boot overlay is added only when scripts run, so without JS the page simply shows */
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, seen = false;
+  try { seen = sessionStorage.getItem('gtj-boot') === '1'; sessionStorage.setItem('gtj-boot', '1'); } catch (e) {}
+  if (reduce || seen) return;
+  var d = document.createElement('div'); d.id = 'boot'; d.setAttribute('aria-hidden', 'true');
+  document.documentElement.appendChild(d);
+})();
+</script>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="GTJ, на главную"><span class="seal" aria-hidden="true">改</span>GTJ</a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#services">Услуги</a><a href="#works">Работы</a><a href="#parts">Детали</a><a href="#vin">Запчасти по VIN</a><a href="#contacts">Контакты</a>
+    </nav>
+    <a class="btn sm" href="https://t.me/GTJdetailing_bot/shop?startapp=site" target="_blank" rel="noopener">Открыть магазин</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <h1 data-scr>Тюнинг китайских машин</h1>
+    <p class="lead">Прошиваем, ставим выхлоп, тормоза и подвеску, клеим плёнку. Свой бокс в Санкт-Петербурге, детали подбираем под вашу комплектацию.</p>
+    <div class="acts">
+      <a class="btn" href="https://t.me/GTJdetailing_bot/shop?startapp=site" target="_blank" rel="noopener" data-scr-hover>Подобрать тюнинг</a>
+      <a class="btn ghost" href="#vin" data-scr-hover>Запчасти по VIN</a>
+    </div>
+    <div class="hero-pic px" data-px><img src="img/hero-preface.jpg" alt="Geely Preface после тюнинга: цветной полиуретан, диски, обвес" fetchpriority="high"></div>
+    <div class="stage">
+      <div><h2>Прошивка Stage 1 для Geely Preface 2.0T</h2><p>Заводскую прошивку сохраняем и можем вернуть.</p></div>
+      <div class="fig"><small>Мощность</small><b data-scr>+50 л.с.</b><span>200 → 250 л.с.</span></div>
+      <div class="fig"><small>Крутящий момент</small><b data-scr>+50 Н·м</b><span>325 → 375 Н·м</span></div>
+    </div>
+  </section>
+
+  <div class="tick" aria-label="Марки, с которыми работаем: Geely, Chery, Haval, Tank, Exeed, Changan, Hongqi, Jetour">
+    <ul aria-hidden="true">
+      <li>GEELY<i>吉利</i></li><li>CHERY<i>奇瑞</i></li><li>HAVAL<i>哈弗</i></li><li>TANK<i>坦克</i></li><li>EXEED<i>星途</i></li><li>CHANGAN<i>长安</i></li><li>HONGQI<i>红旗</i></li><li>JETOUR<i>捷途</i></li>
+      <li>GEELY<i>吉利</i></li><li>CHERY<i>奇瑞</i></li><li>HAVAL<i>哈弗</i></li><li>TANK<i>坦克</i></li><li>EXEED<i>星途</i></li><li>CHANGAN<i>长安</i></li><li>HONGQI<i>红旗</i></li><li>JETOUR<i>捷途</i></li>
+    </ul>
+  </div>
+
+  <section class="sec wrap" id="services">
+    <div class="sec-h"><h2 data-scr>Что делаем</h2><p>Одна заявка на всё: отметьте, что интересует, и менеджер посчитает цену под вашу машину.</p></div>
+    <div class="svc">
+      <article><span class="han" aria-hidden="true">动力</span><h3 data-scr>Чип-тюнинг</h3><p>Stage 1 и Stage 2, замер на стенде до и после. Прошивка от <span class="num">35 000 ₽</span></p></article>
+      <article><span class="han" aria-hidden="true">排气</span><h3 data-scr>Выхлоп, впуск и турбо</h3><p>Даунпайпы, интеркулеры, перепускные клапаны: отдача мотора и звук.</p></article>
+      <article><span class="han" aria-hidden="true">制动</span><h3 data-scr>Тормоза и подвеска</h3><p>Суппорты и диски большого диаметра, пружины, койловеры с регулировкой.</p></article>
+      <article><span class="han" aria-hidden="true">外观</span><h3 data-scr>Обвес и внешний вид</h3><p>Бамперы, пороги, спойлеры, кованые диски с подбором вылета.</p></article>
+      <article><span class="han" aria-hidden="true">内饰</span><h3 data-scr>Салон и электрика</h3><p>Перетяжка, подсветка, мультимедиа, доводчики.</p></article>
+      <article><span class="han" aria-hidden="true">美容</span><h3 data-scr>Детейлинг и защита кузова</h3><p>Полиуретан на зоны риска и весь кузов, цветная плёнка, керамика.</p></article>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="works">
+    <div class="sec-h"><h2 data-scr>Работы бокса</h2><p>Машины клиентов после визита к нам. Фото из нашего бокса.</p></div>
+    <div class="works">
+      <figure class="work w1"><div class="px" data-px><img src="img/work-intercooler.jpg" alt="Увеличенный интеркулер на Geely Preface" loading="lazy"></div><figcaption><b>Интеркулер на Preface</b><span>Stage 2 за один день</span></figcaption></figure>
+      <figure class="work w2"><div class="px" data-px><img src="img/work-lift.jpg" alt="Geely Preface на подъёмнике, новые диски" loading="lazy"></div><figcaption><b>Диски и занижение</b><span>Preface на койловерах</span></figcaption></figure>
+      <figure class="work tall w3"><div class="px" data-px><img src="img/preface-purple.jpg" alt="Preface в цветном полиуретане" loading="lazy"></div><figcaption><b>Цветной полиуретан</b><span>Защита и новый цвет</span></figcaption></figure>
+      <figure class="work tall w4"><div class="px" data-px><img src="img/work-monjaro.jpg" alt="Подкапотное пространство Geely Monjaro" loading="lazy"></div><figcaption><b>Охлаждение на Monjaro</b><span>Радиатор и патрубки</span></figcaption></figure>
+      <figure class="work tall w5"><div class="px" data-px><img src="img/wheels3.jpg" alt="Кованый диск на седане" loading="lazy"></div><figcaption><b>Кованые диски</b><span>Подбор вылета под кузов</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="parts">
+    <div class="sec-h"><h2 data-scr>Детали в наличии</h2><p>Цены за деталь, установка в боксе считается отдельно. Весь каталог с подбором под вашу машину — в Telegram.</p></div>
+    <div class="parts">
+      <a class="part" href="https://t.me/GTJdetailing_bot/shop?startapp=downpipe" target="_blank" rel="noopener"><div class="px" data-px><img src="img/downpipe.jpg" alt="" loading="lazy"></div><div class="b"><h3 data-scr>Даунпайп с пламегасителем</h3><span class="fit">Geely, Chery, GWM с турбомотором</span><div class="pr"><span class="price" data-scr>38 500 ₽</span><span class="go">В магазин →</span></div></div></a>
+      <a class="part" href="https://t.me/GTJdetailing_bot/shop?startapp=intercooler" target="_blank" rel="noopener"><div class="px" data-px><img src="img/intercooler.jpg" alt="" loading="lazy"></div><div class="b"><h3 data-scr>Интеркулер увеличенный</h3><span class="fit">2.0T: Preface, Monjaro, Tugella</span><div class="pr"><span class="price" data-scr>64 000 ₽</span><span class="go">В магазин →</span></div></div></a>
+      <a class="part" href="https://t.me/GTJdetailing_bot/shop?startapp=bbk6" target="_blank" rel="noopener"><div class="px" data-px><img src="img/brakes.jpg" alt="" loading="lazy"></div><div class="b"><h3 data-scr>Тормозной кит 6 поршней, 380 мм</h3><span class="fit">2.0T: Preface, Monjaro, Tugella</span><div class="pr"><span class="price" data-scr>245 000 ₽</span><span class="go">В магазин →</span></div></div></a>
+      <a class="part" href="https://t.me/GTJdetailing_bot/shop?startapp=wheels" target="_blank" rel="noopener"><div class="px" data-px><img src="img/wheels.jpg" alt="" loading="lazy"></div><div class="b"><h3 data-scr>Кованые диски, 4 шт</h3><span class="fit">Под любой кузов, подбор вылета</span><div class="pr"><span class="price" data-scr>168 000 ₽</span><span class="go">В магазин →</span></div></div></a>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="vin">
+    <div class="vin">
+      <div>
+        <h2 data-scr>Оригинальные запчасти по VIN</h2>
+        <p>Найдём по каталогу производителя и привезём под заказ. Цену и срок пришлём в Telegram.</p>
+        <span class="plate" data-scr aria-label="Пример VIN">LB37624S7PL000001</span><br>
+        <a class="btn" href="https://t.me/GTJdetailing_bot/shop?startapp=parts" target="_blank" rel="noopener" data-scr-hover>Оставить запрос</a>
+      </div>
+      <ul class="need">
+        <li><b>VIN-номер</b><em class="req">обязательно</em><small>17 символов, есть в СТС и под лобовым стеклом</small></li>
+        <li><b>Название машины на английском</b><em class="req">обязательно</em><small>Как в документах: Geely Preface 2.0T 2024</small></li>
+        <li><b>Фото автомобиля</b><em>по возможности</em><small>Общий вид или табличка с VIN</small></li>
+        <li><b>OEM-номера деталей</b><em>не обязательно</em><small>Если уже знаете, что нужно</small></li>
+        <li><b>Комментарий к запросу</b><em>по желанию</em><small>Какие детали, сроки, бюджет</small></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec wrap" aria-labelledby="how">
+    <div class="sec-h"><h2 id="how" data-scr>Как работаем</h2></div>
+    <ol class="steps">
+      <li><b>Заявка в Telegram</b><span>Выбираете машину и отмечаете, что хотите сделать.</span></li>
+      <li><b>Подбор и цена</b><span>Менеджер проверяет совместимость и присылает точную сумму.</span></li>
+      <li><b>Запись в бокс</b><span>Ставим детали в удобный день. Прошивка — 2–3 часа.</span></li>
+      <li><b>Замер и выдача</b><span>Показываем результат на стенде и отдаём машину.</span></li>
+    </ol>
+  </section>
+
+  <section class="cta wrap" id="contacts">
+    <h2 data-scr>Начните с одной заявки</h2>
+    <div class="acts">
+      <a class="btn" href="https://t.me/GTJdetailing_bot/shop?startapp=site" target="_blank" rel="noopener" data-scr-hover>Открыть магазин в Telegram</a>
+      <a class="btn ghost" href="https://t.me/GTJdetailing_bot" target="_blank" rel="noopener" data-scr-hover>Написать менеджеру</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>GTJ — тюнинг и детейлинг китайских автомобилей, Санкт-Петербург</span>
+    <span>Telegram: <span class="handle">@GTJdetailing_bot</span></span>
+    <span>© 2026 GTJ</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const HZ = '改装动力排气制动外观内饰美容涡轮调校马力扭矩吉利奇瑞哈弗坦克星途长安红旗刷写进悬挂毂刹车捷零件原厂';
+  const rnd = s => s[(Math.random() * s.length) | 0];
+
+  /* ---------- decoding text: glyphs flip through hanzi and land on the real letter ---------- */
+  function prep(el) {
+    if (el._sc) return el._sc;
+    const text = el.textContent; const chars = [];
+    el.textContent = '';
+    text.split(/(\s+)/).forEach(part => {
+      if (!part) return;
+      if (/^\s+$/.test(part)) { el.append(' '); return; }
+      const w = document.createElement('span'); w.className = 'sw'; w.setAttribute('aria-hidden', 'true');
+      for (const ch of part) { const s = document.createElement('span'); s.className = 'sc'; s.textContent = ch; s.dataset.c = ch; w.append(s); chars.push(s); }
+      el.append(w);
+    });
+    if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', text.trim());
+    return (el._sc = chars);
+  }
+  function scramble(el, dur) {
+    if (REDUCED) return;
+    const chars = prep(el);
+    if (el._run) cancelAnimationFrame(el._run);
+    chars.forEach(s => { s.style.width = ''; s.textContent = s.dataset.c; s.classList.remove('x'); });
+    el.classList.remove('scr');
+    const widths = chars.map(s => s.getBoundingClientRect().width);
+    el.classList.add('scr'); chars.forEach((s, i) => { s.style.width = widths[i] + 'px'; });
+    const n = chars.length, total = dur || Math.min(1100, 320 + n * 32), t0 = performance.now();
+    const order = chars.map((_, i) => i / n + Math.random() * 0.18);
+    let last = 0;
+    const tick = now => {
+      const p = (now - t0) / total;
+      if (now - last > 55 || p >= 1) {
+        last = now;
+        chars.forEach((s, i) => {
+          const c = s.dataset.c;
+          if (p >= order[i] || p >= 1) { if (s.textContent !== c) { s.textContent = c; s.classList.remove('x'); } }
+          else if (c.trim()) { s.textContent = /\d/.test(c) ? String((Math.random() * 10) | 0) : rnd(HZ); s.classList.toggle('x', !/\d/.test(c)); }
+        });
+      }
+      if (p < 1.2) el._run = requestAnimationFrame(tick);
+      else { el.classList.remove('scr'); chars.forEach(s => { s.style.width = ''; }); el._run = 0; }
+    };
+    el._run = requestAnimationFrame(tick);
+  }
+
+  /* ---------- pictures: drawn through a canvas, coarse pixels resolve into the photo ---------- */
+  function Pix(box) {
+    const img = box.querySelector('img'); const cv = document.createElement('canvas'); const ctx = cv.getContext('2d');
+    const small = document.createElement('canvas'); const sx = small.getContext('2d');
+    let ready = false, timer = 0, cur = 40;
+    const dpr = () => Math.min(devicePixelRatio || 1, 2);
+    function size() { const r = box.getBoundingClientRect(); cv.width = Math.max(1, Math.round(r.width * dpr())); cv.height = Math.max(1, Math.round(r.height * dpr())); }
+    function draw(px) {
+      if (!ready) return; cur = px;
+      const W = cv.width, H = cv.height, iw = img.naturalWidth, ih = img.naturalHeight;
+      const k = Math.max(W / iw, H / ih), cw = W / k, ch = H / k, cx = (iw - cw) / 2, cy = (ih - ch) / 2;
+      const p = Math.max(1, Math.round(px * dpr()));
+      if (p <= 1) { ctx.imageSmoothingEnabled = true; ctx.drawImage(img, cx, cy, cw, ch, 0, 0, W, H); return; }
+      const w = Math.max(1, Math.ceil(W / p)), h = Math.max(1, Math.ceil(H / p));
+      small.width = w; small.height = h; sx.drawImage(img, cx, cy, cw, ch, 0, 0, w, h);
+      ctx.imageSmoothingEnabled = false; ctx.clearRect(0, 0, W, H); ctx.drawImage(small, 0, 0, w, h, 0, 0, w * p, h * p);
+    }
+    function run(steps, gap) {
+      clearTimeout(timer); let i = 0;
+      const step = () => { draw(steps[i]); if (++i < steps.length) timer = setTimeout(step, gap); };
+      step();
+    }
+    const start = () => {
+      ready = true; size(); box.append(cv); box.classList.add('live');
+      draw(REDUCED ? 1 : 40);
+      new ResizeObserver(() => { size(); draw(cur); }).observe(box);
+    };
+    if (img.complete && img.naturalWidth) start(); else img.addEventListener('load', start, { once: true });
+    return {
+      reveal() { if (!ready) { img.addEventListener('load', () => this.reveal(), { once: true }); return; } if (REDUCED) return draw(1); run([40, 28, 18, 12, 8, 5, 3, 2, 1], 75); },
+      glitch() { if (!ready || REDUCED) return; run([14, 9, 6, 3, 1], 55); },
+    };
+  }
+
+  /* ---------- wire up ---------- */
+  const pix = new Map();
+  document.querySelectorAll('[data-px]').forEach(b => pix.set(b, Pix(b)));
+  const once = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return; once.unobserve(e.target);
+    if (pix.has(e.target)) pix.get(e.target).reveal(); else scramble(e.target);
+  }), { threshold: 0.35 });
+  const startAll = () => {
+    pix.forEach((_, b) => once.observe(b));
+    document.querySelectorAll('[data-scr]').forEach(el => once.observe(el));
+  };
+  /* hover: a card re-pixelates its picture and re-decodes its title and price */
+  document.querySelectorAll('.part, .work, .svc article').forEach(card => card.addEventListener('pointerenter', () => {
+    const b = card.querySelector('[data-px]'); b && pix.get(b).glitch();
+    card.querySelectorAll('[data-scr]').forEach(el => scramble(el, 520));
+  }));
+  document.querySelectorAll('[data-scr-hover]').forEach(el => el.addEventListener('pointerenter', () => scramble(el, 420)));
+
+  /* ---------- boot: GTJ and the seal built from pixels, then the screen breaks into squares ---------- */
+  const FONT = { G: ['01110', '10001', '10000', '10111', '10001', '10001', '01110'], T: ['11111', '00100', '00100', '00100', '00100', '00100', '00100'], J: ['00111', '00010', '00010', '00010', '00010', '10010', '01100'] };
+  function boot(done) {
+    const host = document.getElementById('boot'); if (!host) return done();
+    const cv = document.createElement('canvas'); host.append(cv); const g = cv.getContext('2d');
+    const W = cv.width = innerWidth * Math.min(devicePixelRatio || 1, 2), H = cv.height = innerHeight * Math.min(devicePixelRatio || 1, 2);
+    const cs = getComputedStyle(document.documentElement);
+    const ink = cs.getPropertyValue('--ink').trim() || '#050506', paper = cs.getPropertyValue('--paper').trim() || '#f3f2ef', seal = cs.getPropertyValue('--seal').trim() || '#d4251c';
+    const cell = Math.max(6, Math.round(Math.min(W / 30, H / 14)));
+    const cols = 7 + 1 + 5 * 3 + 2; const ox = Math.round((W - cols * cell) / 2), oy = Math.round((H - 7 * cell) / 2);
+    const dots = [];
+    for (let y = 0; y < 7; y++) for (let x = 0; x < 7; x++) dots.push({ x, y, c: seal }); // the seal square
+    ['G', 'T', 'J'].forEach((L, li) => FONT[L].forEach((row, y) => [...row].forEach((v, x) => { if (v === '1') dots.push({ x: 8 + li * 6 + x, y, c: paper }); })));
+    dots.forEach(d => { d.t = Math.random() * 520; });
+    const t0 = performance.now(); const tile = Math.max(24, Math.round(Math.min(W, H) / 14));
+    const tiles = []; for (let y = 0; y < H; y += tile) for (let x = 0; x < W; x += tile) tiles.push({ x, y, t: Math.random() * 420 });
+    const frame = now => {
+      const t = now - t0;
+      g.fillStyle = ink; g.fillRect(0, 0, W, H);
+      dots.forEach(d => { if (t > d.t) { g.fillStyle = d.c; g.fillRect(ox + d.x * cell, oy + d.y * cell, cell - 1, cell - 1); } });
+      if (t > 1000) {
+        /* dissolve: cut holes in the overlay tile by tile */
+        const k = t - 1000;
+        tiles.forEach(s => { if (k > s.t) g.clearRect(s.x, s.y, tile, tile); });
+        if (k > 480) { host.remove(); done(); return; }
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  }
+  const fontsReady = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
+  boot(() => fontsReady.then(startAll));
+})();
+</script>
+</body>
+</html>
