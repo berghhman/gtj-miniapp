@@ -3,13 +3,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="format-detection" content="telephone=no">
-<meta name="theme-color" content="#0d0e10">
+<meta name="theme-color" content="#07080a">
 <link rel="icon" href="img/gtj-wordmark.svg" type="image/svg+xml">
 <title>GTJ Mini App</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tektur:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&text=%E6%94%B9%E8%A3%85&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@500&text=%E6%94%B9%E8%A3%85%E5%8A%A8%E5%8A%9B%E6%8E%92%E6%B0%94%E5%88%B6%E5%8A%A8%E5%A4%96%E8%A7%82%E5%86%85%E9%A5%B0%E7%BE%8E%E5%AE%B9%E6%B6%A1%E8%BD%AE%E8%B0%83%E6%A0%A1%E9%A9%AC%E5%8A%9B%E6%89%AD%E7%9F%A9%E5%90%89%E5%88%A9%E5%A5%87%E7%91%9E%E5%93%88%E5%BC%97%E5%9D%A6%E5%85%8B%E6%98%9F%E9%80%94%E9%95%BF%E5%AE%89%E7%BA%A2%E6%97%97%E5%88%B7%E5%86%99%E8%BF%9B%E6%82%AC%E6%8C%82%E6%AF%82%E5%88%B9%E8%BD%A6%E6%8D%B7%E9%9B%B6%E4%BB%B6%E5%8E%9F%E5%8E%82&display=swap">
 <style>
 /* Layout: one phone-width column (Telegram webview) — sticky top, scrolling feed, bottom tab bar; on desktop it sits in a frame next to a short brief. */
 :root{
@@ -557,6 +559,79 @@ img.ld{opacity:1!important}
 @keyframes up{from{transform:translateY(100%)}to{transform:none}}
 @keyframes fade{from{opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ===================== site design, Oct 2026 =====================
+   The same look as the GTJ website: night ground, bone for actions, square corners,
+   Unbounded capitals for headings, 改装 as the sign. Screens and flows are unchanged;
+   the earlier look is kept in index-v1.html. */
+:root{
+  --ink:#07080a;--backdrop:#07080a;--panel:#0f1013;--panel-2:#16171b;--line:rgba(244,242,238,.12);
+  --fg:#f4f2ee;--muted:rgba(244,242,238,.56);--cream:#ece5d6;--red:#d4251c;
+  --f-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --f-han:"Noto Sans SC","PingFang SC","Hiragino Sans GB",sans-serif;
+  --f-brush:"ZCOOL QingKe HuangYou","Noto Sans SC","PingFang SC",sans-serif;
+  --r:0px;--r-s:0px;--r-m:0px;--r-l:0px;
+}
+body{background-image:none}
+.tgbar{background:#07080a}
+.tabbar{background:#07080a}
+/* headings: wide capitals, like the site's section titles */
+.sec-h h2,.ptitle h1,.sheet h2,.empty h3,.lgroup h3,.prose h3{font-family:var(--f-display);font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+.sec-h h2{font-size:var(--fs-m);line-height:1.15}
+.ptitle h1{font-size:var(--fs-l)}
+.sheet h2{font-size:var(--fs-m)}
+.sec-h button{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.06em}
+.pbody h1{font-size:var(--fs-l);line-height:1.2}
+.hero h3{font:700 var(--fs-l)/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.01em}
+.hero h3,.ptitle h1,.sec-h h2{text-wrap:balance}
+/* buttons: a solid bone block and an outline; pressing one turns it into the other */
+.btn{height:46px;font:700 var(--fs-s)/1 var(--f-body);letter-spacing:.01em;border:1px solid transparent;transition:transform .14s cubic-bezier(.2,.8,.2,1),background-color .15s,color .15s,border-color .15s}
+.btn-cream{background:var(--cream);color:#07080a;border-color:var(--cream)}
+.btn-cream:active{background:transparent;color:var(--cream);filter:none}
+.btn-ghost{background:transparent;border-color:rgba(244,242,238,.32);color:var(--fg)}
+.btn-ghost:active{background:var(--fg);border-color:var(--fg);color:#07080a}
+@media (hover:hover){.btn-cream:not(:disabled):hover{background:transparent;color:var(--cream)}.btn-ghost:not(:disabled):hover{border-color:var(--fg)}}
+.btn-sm{height:38px}
+.addbtn{color:#07080a}
+.chip{background:transparent}
+.chip.on{color:#07080a}
+.day.on,.appt .d{color:#07080a}
+.toast{color:#07080a;border-radius:0}
+.iconbtn{background:transparent;border-color:rgba(244,242,238,.2)}
+.toggle{border-radius:999px}
+.tpick .box,.tpick .ci,.photo-pick.has img{border-radius:0}
+.tpick[aria-pressed=true] .box{color:#07080a}
+.sheet .panel{border-radius:0}
+.hchange{background:rgba(7,8,10,.78)}
+/* the active tab gets the site's thin bone bar on top */
+.tab.on::before{content:"";position:absolute;top:-5px;left:32%;right:32%;height:2px;background:var(--cream)}
+/* logo as on the site: the 改 seal and the wide wordmark */
+.logo{display:inline-flex;align-items:center;gap:8px;font:700 18px/1 var(--f-display);letter-spacing:.04em;color:#fff}
+.seal{width:20px;height:20px;display:inline-grid;place-items:center;background:#fff;color:#000;font:500 13px/1 var(--f-han);letter-spacing:0}
+
+/* ---------- home film: scrolling assembles the Preface, as on the site ---------- */
+.ftrack{position:relative;margin:0 -16px;height:calc(var(--vph,640px) * 2.2)}
+.fpin{position:sticky;top:0;height:var(--vph,640px);overflow:hidden;background:#d4d4d6;container-type:size}
+.fpin canvas{position:absolute;display:block}
+.fbg{inset:-10%;width:120%;height:120%;filter:blur(30px) saturate(1.1)}
+.fcv{left:50%;top:42%;width:158%;height:auto;transform:translate(-54%,-50%);-webkit-mask-image:linear-gradient(transparent,#000 16%,#000 84%,transparent);mask-image:linear-gradient(transparent,#000 16%,#000 84%,transparent)}
+.fgly{position:absolute;left:-6%;right:-6%;top:40%;transform:translateY(-50%);display:flex;justify-content:center;pointer-events:none;color:var(--cream);font:400 200px/.8 var(--f-brush);font-size:56cqw;letter-spacing:-.06em;white-space:nowrap;mix-blend-mode:difference}
+.fgly span{display:inline-block;animation:fdrift 11s ease-in-out infinite alternate}
+.fgly span+span{animation-duration:13s;animation-delay:-4s}
+@keyframes fdrift{0%{transform:translate(-1.5%,2%) rotate(-3deg)}50%{transform:translate(1%,-2%) rotate(1.5deg) scale(1.04)}100%{transform:translate(2%,1%) rotate(4deg) scale(.98)}}
+.fhead{position:absolute;inset:0 0 auto;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 16px}
+.fhead .logo{mix-blend-mode:difference}
+.fhead .iconbtn{background:rgba(7,8,10,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border-color:rgba(255,255,255,.2)}
+.ffoot{position:absolute;inset:auto 0 0;z-index:2;display:flex;flex-direction:column;gap:10px;padding:56px 16px 16px;background:linear-gradient(transparent,rgba(7,8,10,.86) 46%)}
+.ffoot .stage-cap{font-size:var(--fs-xs);color:var(--muted);min-height:1.45em}
+.ffoot h1{margin:0;font:700 var(--fs-l)/1.15 var(--f-display);text-transform:uppercase;color:#fff;text-wrap:balance}
+.ffoot .acts{display:flex;gap:8px}
+.ffoot .acts .btn{flex:1}
+.ffoot .acts .btn-ghost{flex:none;padding:0 14px}
+/* decoding text: while a label decodes, each letter keeps its width and flickers through hanzi */
+.scw{white-space:nowrap}
+.scr .scc{display:inline-block;text-align:center;overflow:hidden;vertical-align:bottom}
+.scc.x{font-family:var(--f-han);font-weight:500;font-size:.8em;opacity:.8}
 </style>
 
 <div class="stage">
@@ -873,6 +948,117 @@ function mount3d(view) {
     .then(() => { if (!GTJ3D.supported()) throw new Error('no webgl'); const e2 = $('#view .h3d[data-glb]'); e2 && GTJ3D.attach(e2, e2.dataset.glb, () => e2.classList.add('fail')); })
     .catch(() => { const e2 = $('#view .h3d'); e2 && e2.classList.add('fail'); });
 }
+/* home opens with the site's film: scrolling assembles the Preface from a light sketch into the finished night car */
+function filmHtml() {
+  const c = car();
+  return `<div class="ftrack">
+    <div class="fpin">
+      <canvas class="fbg" width="48" height="27" aria-hidden="true"></canvas>
+      <canvas class="fcv" width="1024" height="578" role="img" aria-label="Geely Preface собирается из светящегося чертежа в готовую машину с обвесом"></canvas>
+      <div class="fgly" aria-hidden="true"><span>改</span><span>装</span></div>
+      <div class="fhead"><span class="logo" role="img" aria-label="GTJ"><span class="seal" aria-hidden="true">改</span>GTJ</span><button class="iconbtn" data-act="contact" aria-label="Связаться с нами">${ic('chat')}</button></div>
+      <div class="ffoot">
+        <span class="stage-cap" aria-live="polite"></span>
+        <h1>Тюнинг и детейлинг китайских автомобилей</h1>
+        <div class="acts">${c ? `<button class="btn btn-cream" data-act="tohero">Подобрать для ${esc(c.short)}</button>` : `<button class="btn btn-cream" data-act="carsheet">Выбрать машину</button>`}<button class="btn btn-ghost" data-act="tab" data-v="catalog">Каталог</button></div>
+      </div>
+    </div></div>`;
+}
+const FILM = { n: 121, frames: [], started: false, want: 0, q: 0, stage: -1 };
+const FSTAGES = [[0, 'Чертёж: Geely Preface 2.0T'], [.1, 'Собираем кузов'], [.38, 'Обвес и подвеска'], [.62, 'Детейлинг и полировка'], [.86, 'Готово к выезду']];
+/* 121 frames, coarse to fine: the ends first, then every 16th, every 8th... so scrubbing works at once and smooths out */
+function filmLoad() {
+  if (FILM.started) return; FILM.started = true;
+  const load = i => new Promise(done => {
+    const im = new Image(); im.decoding = 'async';
+    im.onload = () => { FILM.frames[i] = im; filmQueue(); done(); };
+    im.onerror = () => done();
+    im.src = `site/intro/f/${String(i + 1).padStart(3, '0')}.webp`;
+  });
+  const order = [], seen = new Set();
+  for (const step of [120, 16, 8, 4, 2, 1]) for (let i = 0; i < FILM.n; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
+  let k = 0; const next = () => k < order.length ? load(order[k++]).then(next) : null;
+  load(order[k++]).then(() => { for (let j = 0; j < 6; j++) next(); });
+}
+function filmPaint() {
+  FILM.q = 0;
+  const cv = $('#view .fcv'), bg = $('#view .fbg'); if (!cv) return;
+  const w = FILM.want; let k = -1;
+  for (let d = 0; d < FILM.n; d++) { if (FILM.frames[w - d]) { k = w - d; break; } if (FILM.frames[w + d]) { k = w + d; break; } }
+  if (k < 0 || cv._k === k) return;
+  cv._k = k;
+  cv.getContext('2d').drawImage(FILM.frames[k], 0, 0, cv.width, cv.height);
+  bg.getContext('2d').drawImage(FILM.frames[k], 0, 0, bg.width, bg.height);
+}
+const filmQueue = () => { if (!FILM.q) FILM.q = requestAnimationFrame(filmPaint); };
+function filmScroll(v) {
+  const t = v.querySelector('.ftrack'); if (!t) return;
+  const range = t.offsetHeight - v.clientHeight;
+  const p = range > 0 ? Math.min(1, Math.max(0, (v.scrollTop - t.offsetTop) / range)) : 0;
+  FILM.want = Math.round(Math.min(1, p / .85) * (FILM.n - 1));   /* the last stretch holds the finished car */
+  const g = t.querySelector('.fgly'); if (g) { g.style.opacity = Math.max(0, 1 - p / .28); g.style.scale = String(1 + p * .5); }
+  let s = 0; FSTAGES.forEach((x, i) => { if (p >= x[0]) s = i; });
+  const cap = t.querySelector('.stage-cap');
+  if (cap && (s !== FILM.stage || !cap.textContent)) { FILM.stage = s; setText(cap, FSTAGES[s][1]); }
+  filmQueue();
+}
+
+/* decoding text, as on the site: letters flicker through hanzi, then settle */
+const HZ = '改装动力排气制动外观内饰美容涡轮调校马力扭矩吉利奇瑞哈弗坦克星途长安红旗刷写进悬挂毂刹车捷零件原厂';
+const rndOf = s => s[(Math.random() * s.length) | 0];
+function scPrep(el) {
+  if (el._sc) return el._sc;
+  const text = el.textContent; const chars = [];
+  el.textContent = '';
+  text.split(/(\s+)/).forEach(part => {
+    if (!part) return;
+    if (/^\s+$/.test(part)) { el.append(' '); return; }
+    const w = document.createElement('span'); w.className = 'scw'; w.setAttribute('aria-hidden', 'true');
+    for (const ch of part) { const s = document.createElement('span'); s.className = 'scc'; s.textContent = ch; s.dataset.c = ch; w.append(s); chars.push(s); }
+    el.append(w);
+  });
+  if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', text.trim());
+  return (el._sc = chars);
+}
+function scramble(el, dur) {
+  if (REDUCED || !el) return;
+  const chars = scPrep(el);
+  if (el._run) cancelAnimationFrame(el._run);
+  chars.forEach(s => { s.style.width = ''; s.textContent = s.dataset.c; s.classList.remove('x'); });
+  el.classList.remove('scr');
+  const widths = chars.map(s => s.getBoundingClientRect().width);
+  el.classList.add('scr'); chars.forEach((s, i) => { s.style.width = widths[i] + 'px'; });
+  const n = chars.length, total = dur || Math.min(1000, 300 + n * 30), t0 = performance.now();
+  const order = chars.map((_, i) => i / n * .85 + Math.random() * .15);
+  let last = 0;
+  const tick = now => {
+    const p = (now - t0) / total;
+    if (now - last > 50 || p >= 1) {
+      last = now;
+      chars.forEach((s, i) => {
+        const c = s.dataset.c;
+        if (p >= order[i] || p >= 1) { if (s.textContent !== c) { s.textContent = c; s.classList.remove('x'); } }
+        else if (c.trim()) { const d = /\d/.test(c); s.textContent = d ? String((Math.random() * 10) | 0) : rndOf(HZ); s.classList.toggle('x', !d); }
+      });
+    }
+    if (p < 1.1) el._run = requestAnimationFrame(tick);
+    else { el.classList.remove('scr'); chars.forEach(s => { s.style.width = ''; }); el._run = 0; }
+  };
+  el._run = requestAnimationFrame(tick);
+}
+function setText(el, text) { el._sc = null; el.removeAttribute('aria-label'); el.textContent = text; scramble(el, 600); }
+/* section titles decode once per session, the first time they come into view */
+const decoded = new Set();
+function decodeHeads(view) {
+  if (REDUCED || !('IntersectionObserver' in window)) return;
+  if (!decodeHeads.io) decodeHeads.io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    decodeHeads.io.unobserve(e.target);
+    const t = e.target.textContent;
+    if (!decoded.has(t)) { decoded.add(t); scramble(e.target, 700); }
+  }), { root: $('#view'), threshold: .6 });
+  view.querySelectorAll('.sec-h h2, .ptitle h1, .ffoot h1').forEach(h => { if (!decoded.has(h.textContent)) decodeHeads.io.observe(h); });
+}
 const partsCta = () => `<button class="row-card parts-cta" data-act="parts">${ic('wrench')}<div class="t"><b>Оригинальные запчасти под заказ</b><span>Подберём по VIN и привезём</span></div>${ic('chev')}</button>`;
 function vHome() {
   const c = car();
@@ -882,14 +1068,8 @@ function vHome() {
   const bigTile = g => `<button class="gtile big" data-act="group" data-v="${g.id}"><span class="ci">${ic(g.g)}</span><b>${g.n}</b><small>${g.s}</small><span class="cnt">${count(g)} ${plural(count(g), 'позиция', 'позиции', 'позиций')}</span></button>`;
   const tile = g => `<button class="gtile" data-act="group" data-v="${g.id}"><span class="ci">${ic(g.g)}</span><b>${g.n}</b><span class="cnt">${count(g)}</span></button>`;
   return `
-  <div class="top">
-    <div class="brandrow">
-      <img src="${IMG}gtj-wordmark.svg" alt="GTJ">
-      <div class="t"><b>Тюнинг и детейлинг</b><span>китайских автомобилей</span></div>
-      <button class="iconbtn" data-act="contact" aria-label="Связаться с нами">${ic('chat')}</button>
-    </div>
-  </div>
-  ${heroHtml()}
+  ${filmHtml()}
+  ${c ? heroHtml() : ''}
   ${partsCta()}
   <section class="sec">
     <div class="sec-h"><h2>Что делаем</h2><button data-act="group" data-v="all">Весь каталог${ic('chev')}</button></div>
@@ -1236,9 +1416,12 @@ function render(opt = {}) {
   $('#tabbar').innerHTML = [['home', 'home', 'Главная'], ['catalog', 'grid', 'Каталог'], ['cart', 'cart', 'Корзина'], ['profile', 'user', 'Кабинет']]
     .map(([id, icn, l]) => `<button class="tab ${S.tab === id && !sub ? 'on' : ''}" data-act="tab" data-v="${id}" ${S.tab === id && !sub ? 'aria-current="page"' : ''}>${ic(icn)}${l}${id === 'cart' && cc ? `<span class="dot">${cc}</span>` : ''}</button>`).join('');
 
+  view.style.setProperty('--vph', view.clientHeight + 'px');
+  if (view.querySelector('.ftrack')) filmLoad();
   view.scrollTop = top;
   markLoaded(view);
   mount3d(view);
+  decodeHeads(view);
   const nav = $('#navbar'); const nt = sub ? '' : TAB_TITLE[S.tab];
   nav.classList.toggle('on', !!nt); $('#navtitle').textContent = nt;
   onScroll();
@@ -1267,9 +1450,11 @@ function render(opt = {}) {
 function onScroll() {
   const v = $('#view'), vp = $('#vp'); const st = v.scrollTop;
   vp.classList.toggle('scrolled', st > 2);
-  const g = v.querySelector('.pcar, .pp > .media');
+  const g = v.querySelector('.pcar, .pp > .media, .ftrack');
   vp.classList.toggle('far', st > (g ? g.offsetHeight - 70 : 56));
+  filmScroll(v);
 }
+addEventListener('resize', () => { const v = $('#view'); v.style.setProperty('--vph', v.clientHeight + 'px'); onScroll(); });
 
 /* Telegram's own Back button closes whatever is on top: a sheet, then the pushed screen */
 const sheetOpen = () => !!document.querySelector('#sheet .sheet:not(.closing)');
@@ -1729,6 +1914,7 @@ document.addEventListener('click', e => {
       sheet(''); S.tab = 'cart'; S.product = null; S.carInfo = null; hNote('success'); toast('Пакет в корзине, выберите время установки'); goal('pack_to_cart'); break; }
     case 'copylead': copy(doneSheet.text || '', 'Текст скопирован'); return;
     case 'contact': contactSheet(); return;
+    case 'tohero': { const v = $('#view'), h = v.querySelector('.hero'); h && v.scrollTo({ top: h.offsetTop - 8, behavior: REDUCED ? 'auto' : 'smooth' }); return; }
     case 'contacts': contactsSheet(); return;
     case 'map': openExt(SHOP.mapUrl); return;
     case 'reviews': openExt(SHOP.reviewsUrl); return;
@@ -1891,8 +2077,8 @@ document.addEventListener('keydown', e => {
       tg.ready(); tg.expand();
       const at = v => tg.isVersionAtLeast && tg.isVersionAtLeast(v);
       if (at('7.7') && tg.disableVerticalSwipes) tg.disableVerticalSwipes();
-      if (at('6.1')) { tg.setHeaderColor('#0d0e10'); tg.setBackgroundColor('#0d0e10'); }
-      if (at('7.10') && tg.setBottomBarColor) tg.setBottomBarColor('#101113');
+      if (at('6.1')) { tg.setHeaderColor('#07080a'); tg.setBackgroundColor('#07080a'); }
+      if (at('7.10') && tg.setBottomBarColor) tg.setBottomBarColor('#07080a');
       tg.BackButton.onClick(() => goBack());
     } catch (e) {}
     document.getElementById('tgbar').hidden = true;
