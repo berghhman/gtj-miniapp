@@ -745,6 +745,15 @@ const TUNE = [
   { id: 'other', n: 'Не нашли нужного?', c: 'Другое', s: 'Опишите задачу своими словами', g: 'chat' },
 ];
 const TM = Object.fromEntries(TUNE.map(t => [t.id, t]));
+/* which catalogue rubrics serve each kind of work: ticking works in step 2 narrows the parts in step 3 */
+const TUNE_CATS = {
+  chip: ['chip'],
+  exhaust: ['exhaust', 'intake', 'turbo', 'cooling', 'engine', 'hoses', 'fittings'],
+  chassis: ['brakes', 'susp'],
+  ext: ['ext'],
+  int: ['int', 'elec'],
+  detail: ['detail', 'chem'],
+};
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
 
 /* ======================= icons ======================= */
@@ -1115,9 +1124,15 @@ function vHome() {
   </section>`;
 }
 
+/* the rubrics behind the works ticked for the chosen car; null = no narrowing */
+function tuneCats() {
+  if (!car()) return null;
+  const ids = [...S.tune].filter(id => TUNE_CATS[id]);
+  return ids.length ? new Set(ids.flatMap(id => TUNE_CATS[id])) : null;
+}
 function catalogList(gid = S.group) {
-  const c = car();
-  const list = P.filter(p => (gid === 'all' || GM[gid].cats.includes(p.cat)) && (!S.onlyFit || !c || fits(p)));
+  const c = car(); const tc = tuneCats();
+  const list = P.filter(p => (gid === 'all' || GM[gid].cats.includes(p.cat)) && (!S.onlyFit || !c || fits(p)) && (!tc || tc.has(p.cat)));
   return list.sort((a, b) => (b.pop || 0) - (a.pop || 0));
 }
 function listHtml() {
@@ -1145,9 +1160,11 @@ function vCatalog() {
     ${S.garage.length > 1 ? `<div class="chips">${S.garage.map((g, i) => `<button class="chip ${i === S.active ? 'on' : ''}" data-act="setactive" data-v="${i}">${esc(resolveCar(g).short)}</button>`).join('')}</div>` : ''}`
     : `<div class="brands">${top.map(b => `<button class="brand" data-act="pickbrandin" data-v="${b.id}"><b>${esc(b.n)}</b><small>${b.models.length} ${plural(b.models.length, 'модель', 'модели', 'моделей')}</small></button>`).join('')}</div>
     <button class="btn btn-ghost btn-block" data-act="carsheet">Все марки и поиск</button>`;
+  const tc = tuneCats();
+  const picked = [...S.tune].filter(id => TUNE_CATS[id]).map(id => TM[id].c);
   const parts = `<div class="chips">
       <button class="chip ${S.group === 'all' ? 'on' : ''}" data-act="group" data-v="all">Все</button>
-      ${GROUPS.map(g => `<button class="chip ${S.group === g.id ? 'on' : ''}" data-act="group" data-v="${g.id}">${g.n}</button>`).join('')}
+      ${GROUPS.filter(g => !tc || g.cats.some(x => tc.has(x))).map(g => `<button class="chip ${S.group === g.id ? 'on' : ''}" data-act="group" data-v="${g.id}">${g.n}</button>`).join('')}
     </div>
     <div class="clist">${listHtml()}</div>`;
   return `
@@ -1161,7 +1178,8 @@ function vCatalog() {
   <p class="hint">Отметьте, что интересует, и мы посчитаем цену под вашу комплектацию.</p>
   ${tuneListHtml(c)}
   ${partsCta()}
-  ${step(3, 'Детали для ' + esc(c.short))}
+  ${step(3, tc ? 'Детали под выбранные работы' : 'Детали для ' + esc(c.short))}
+  <p class="hint">${tc ? `Под работы: ${picked.join(', ').toLowerCase()}. Снимите отметки, чтобы увидеть всё для ${esc(c.short)}.` : S.tune.has('other') ? 'Задачу «не нашли нужного» опишите в заявке, а ниже всё, что подходит к машине.' : 'Отметьте работы выше, и здесь останутся только детали под них.'}</p>
   ${parts}` : S.browseAll ? `
   ${step(2, 'Весь каталог')}
   <p class="hint">Показываем всё подряд. Выберите машину выше, и останется только то, что на неё встаёт.</p>
@@ -1955,10 +1973,11 @@ document.addEventListener('click', e => {
       if (v === 'other') { const l = $('#l-coml'); if (l) l.textContent = on ? 'Что нужно сделать?' : 'Комментарий'; if (on) { const t = $('#l-com'); t && t.focus(); } }
       return; }
     case 'tune': {
-      S.tune.has(v) ? S.tune.delete(v) : S.tune.add(v);
-      el.setAttribute('aria-pressed', S.tune.has(v)); hSel();
-      const b = $('#tunego'); if (b) b.outerHTML = tuneBtn();
-      return; }
+      S.tune.has(v) ? S.tune.delete(v) : S.tune.add(v); hSel();
+      /* step 3 follows the ticks; a section chip that no longer applies falls back to all */
+      const tc = tuneCats();
+      if (S.group !== 'all' && tc && !GM[S.group].cats.some(x => tc.has(x))) S.group = 'all';
+      break; }
     case 'tunego': leadSheet('tune'); goal('tune_open', { items: [...S.tune].join(',') }); return;
     case 'parts': partsSheet(); goal('parts_open'); return;
     case 'rmphoto': S.partsPhoto = null; photoPick(); return;
