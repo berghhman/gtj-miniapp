@@ -116,6 +116,7 @@ const t = async (name, fn) => { calls = []; reply = () => ({ ok: true, result: {
   await t('сообщение менеджера не ответом: подсказка, как отвечать', async () => {
     await req({ update_id: 9, message: { message_id: 53, chat: { id: 777, type: 'private' }, from: { id: 777 }, text: 'привет' } }, tgHdr);
     assert.match(calls[0].payload.text, /ответьте на его сообщение/);
+    assert.match(calls[0].payload.text, /\/post/);
   });
 
   await t('в рабочей группе обычная переписка менеджеров игнорируется', async () => {
@@ -156,8 +157,71 @@ const t = async (name, fn) => { calls = []; reply = () => ({ ok: true, result: {
     assert.equal(bad.status, 403);
     const ok = await route({ method: 'GET', headers: {}, query: { setup: 's3cret' }, body: '' }, env, deps);
     assert.equal(ok.status, 200);
-    assert.deepEqual(calls.map(c => c.method), ['setWebhook', 'setChatMenuButton', 'setMyCommands']);
+    assert.deepEqual(calls.map(c => c.method), ['setWebhook', 'setChatMenuButton', 'setMyCommands', 'setMyCommands']);
     assert.equal(calls[0].payload.secret_token, 's3cret');
+    assert.deepEqual(calls[3].payload.scope, { type: 'chat', chat_id: '777' });
+    assert.deepEqual(calls[3].payload.commands.map(c => c.command), ['shop', 'post', 'help']);
+  });
+
+  const cenv = { ...env, CHANNEL_ID: '@gtj_parts' };
+  const mgr = (text, extra = {}) => route({ method: 'POST', headers: tgHdr, query: {}, body: JSON.stringify({ update_id: 20, message: { message_id: 90, chat: { id: 777, type: 'private' }, from: { id: 777 }, text, ...extra } }) }, cenv, deps);
+
+  await t('/shop публикует в канал пост с кнопкой «Магазин» и закрепляет его', async () => {
+    reply = m => (m === 'sendMessage' ? { ok: true, result: { message_id: 55 } } : { ok: true });
+    await mgr('/shop');
+    const [post, pin, note] = calls;
+    assert.equal(post.method, 'sendMessage');
+    assert.equal(post.payload.chat_id, '@gtj_parts');
+    assert.deepEqual(post.payload.reply_markup.inline_keyboard[0][0], { text: 'Магазин', url: 'https://t.me/GTJdetailing_bot/shop?startapp=channel' });
+    assert.equal(pin.method, 'pinChatMessage');
+    assert.equal(pin.payload.message_id, 55);
+    assert.equal(note.payload.chat_id, 777);
+    assert.match(note.payload.text, /закреплён/);
+  });
+
+  await t('/post downpipe ответом на сообщение копирует его в канал с кнопкой на карточку детали', async () => {
+    reply = m => (m === 'copyMessage' ? { ok: true, result: { message_id: 56 } } : { ok: true });
+    await mgr('/post downpipe', { reply_to_message: { message_id: 89, chat: { id: 777 }, caption: 'Даунпайп Geely 2.0T' } });
+    const [copy, note] = calls;
+    assert.equal(copy.method, 'copyMessage');
+    assert.equal(copy.payload.chat_id, '@gtj_parts');
+    assert.equal(copy.payload.message_id, 89);
+    assert.equal(copy.payload.reply_markup.inline_keyboard[0][0].url, 'https://t.me/GTJdetailing_bot/shop?startapp=downpipe');
+    assert.ok(!calls.some(c => c.method === 'pinChatMessage'));
+    assert.match(note.payload.text, /downpipe/);
+  });
+
+  await t('/post без ответа и без канала объясняет, что делать; клиенту команда недоступна', async () => {
+    await mgr('/post');
+    assert.match(calls[0].payload.text, /ответом на сообщение/);
+    calls = [];
+    await route({ method: 'POST', headers: tgHdr, query: {}, body: JSON.stringify({ update_id: 21, message: { message_id: 1, chat: { id: 777, type: 'private' }, from: { id: 777 }, text: '/shop' } }) }, env, deps);
+    assert.match(calls[0].payload.text, /Канал не подключён/);
+    calls = [];
+    await route({ method: 'POST', headers: tgHdr, query: {}, body: JSON.stringify({ update_id: 22, message: { message_id: 1, chat: { id: 5551, type: 'private' }, from: client, text: '/shop' } }) }, cenv, deps);
+    assert.ok(!calls.some(c => c.payload.chat_id === '@gtj_parts'));
+    assert.equal(calls[0].payload.chat_id, '777'); // ушло менеджеру как обычное сообщение клиента
+  });
+
+  await t('нет прав в канале — понятная ошибка; закреп не вышел — пост всё равно опубликован', async () => {
+    reply = () => ({ ok: false, description: 'Bad Request: need administrator rights in the channel chat' });
+    await mgr('/shop');
+    assert.match(calls[calls.length - 1].payload.text, /не хватает прав/);
+    calls = [];
+    reply = m => (m === 'pinChatMessage' ? { ok: false, description: 'Bad Request: not enough rights to manage pinned messages in the chat' } : { ok: true, result: { message_id: 57 } });
+    await mgr('/shop');
+    assert.match(calls[calls.length - 1].payload.text, /опубликован, но закрепить не вышло/);
+  });
+
+  await t('пересланный пост из канала показывает CHANNEL_ID', async () => {
+    await mgr('', { forward_origin: { type: 'channel', chat: { id: -1001234, title: 'GTJ запчасти', type: 'channel' }, message_id: 3 } });
+    assert.match(calls[0].payload.text, /CHANNEL_ID: -1001234/);
+  });
+
+  await t('кривой код детали не публикуется', async () => {
+    await mgr('/post <b>x', { reply_to_message: { message_id: 89, chat: { id: 777 }, text: 'x' } });
+    assert.equal(calls.length, 1);
+    assert.match(calls[0].payload.text, /Код детали/);
   });
 
   console.log('\nвсе проверки пройдены');

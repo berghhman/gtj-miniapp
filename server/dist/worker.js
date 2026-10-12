@@ -79,8 +79,51 @@ const TEXT = {
   start: 'GTJ — тюнинг и детейлинг китайских автомобилей.\n\nОткройте магазин кнопкой ниже: подберём детали под вашу машину и посчитаем прирост мощности. Или просто напишите вопрос сюда — ответит менеджер.',
   received: 'Заявка принята. Менеджер GTJ ответит здесь, в этом чате.',
   accepted: 'Менеджер принял вашу заявку и скоро напишет здесь.',
-  managerHelp: 'Чтобы ответить клиенту, ответьте на его сообщение (свайп влево → «Ответить»). Бот перешлёт ответ от имени GTJ: текст, фото, файлы, голосовые.\n\nКнопки под заявкой: «Принять» — клиенту придёт уведомление, «Закрыть» — заявка отмечается как обработанная.',
+  managerHelp: 'Чтобы ответить клиенту, ответьте на его сообщение (свайп влево → «Ответить»). Бот перешлёт ответ от имени GTJ: текст, фото, файлы, голосовые.\n\nКнопки под заявкой: «Принять» — клиенту придёт уведомление, «Закрыть» — заявка отмечается как обработанная.\n\nКанал:\n/shop — опубликовать в канале пост с кнопкой «Магазин» и закрепить его. Если отправить команду ответом на своё сообщение, в канал уйдёт оно.\n/post — ответом на своё сообщение (текст или одно фото с подписью): опубликовать его в канале с кнопкой «Магазин».\n/post downpipe — то же, но кнопка «Открыть в магазине» ведёт сразу на карточку детали (код детали из каталога).',
+  managerHint: 'Это сообщение никуда не ушло. Ответить клиенту — ответьте на его сообщение. Опубликовать это в канале — ответьте на него командой /post. Все команды — /help.',
+  shopPost: 'Магазин GTJ прямо в Telegram.\n\nВыберите свою машину — покажем детали, которые на неё подходят, посчитаем прирост мощности после прошивки и запишем в бокс.\n\nОткрывается кнопкой ниже.',
+  noChannel: 'Канал не подключён. Добавьте бота в канал администратором (право «Публикация сообщений», для закрепления — «Редактирование сообщений»), затем перешлите сюда любой пост из канала — бот покажет его номер. Этот номер нужно вписать в настройку CHANNEL_ID воркера.',
+  needReply: 'Отправьте /post ответом на сообщение, которое нужно опубликовать: свайп влево по своему сообщению → «Ответить» → /post.',
 };
+
+/* ---------- публикация в канал ---------- */
+const SHOP_LINK = env => env.SHOP_LINK || 'https://t.me/GTJdetailing_bot/shop';
+const CODE = /^[a-z0-9_-]{1,60}$/i;
+function shopButton(env, code) {
+  /* в каналах кнопка web_app запрещена, поэтому обычная ссылка на мини-апп: Telegram откроет его поверх канала */
+  return { inline_keyboard: [[code
+    ? { text: 'Открыть в магазине', url: `${SHOP_LINK(env)}?startapp=${encodeURIComponent(code)}` }
+    : { text: 'Магазин', url: `${SHOP_LINK(env)}?startapp=channel` }]] };
+}
+function channelError(r) {
+  const d = (r && r.description) || 'ошибка Telegram';
+  if (/not enough rights|administrator|CHAT_ADMIN_REQUIRED|need administrator rights/i.test(d)) return 'Боту не хватает прав в канале. Сделайте его администратором с правами «Публикация сообщений» и «Редактирование сообщений».';
+  if (/chat not found/i.test(d)) return 'Канал не найден. Проверьте CHANNEL_ID и что бот добавлен в канал.';
+  return `Не получилось: ${d}`;
+}
+async function channelCommand(m, env, call) {
+  const text = m.text || '';
+  const ch = env.CHANNEL_ID;
+  const say = t => call('sendMessage', { chat_id: m.chat.id, reply_to_message_id: m.message_id, text: t, disable_web_page_preview: true });
+  if (!ch) return say(TEXT.noChannel);
+  const isShop = /^\/shop\b/.test(text);
+  const arg = text.split(/\s+/)[1] || '';
+  if (arg && !CODE.test(arg)) return say('Код детали — латиница, цифры, дефис или подчёркивание, например /post downpipe');
+  const src = m.reply_to_message;
+  if (!isShop && !src) return say(TEXT.needReply);
+  const kb = shopButton(env, isShop ? '' : arg);
+  const r = src
+    ? await call('copyMessage', { chat_id: ch, from_chat_id: m.chat.id, message_id: src.message_id, reply_markup: kb })
+    : await call('sendMessage', { chat_id: ch, text: TEXT.shopPost, reply_markup: kb });
+  if (!r.ok) return say(channelError(r));
+  const id = r.result && r.result.message_id;
+  let note = arg ? `Опубликовано. Кнопка ведёт на деталь «${arg}»: ${SHOP_LINK(env)}?startapp=${arg}\nПроверьте, что открывается нужная карточка.` : 'Опубликовано с кнопкой «Магазин».';
+  if (isShop) {
+    const p = await call('pinChatMessage', { chat_id: ch, message_id: id, disable_notification: true });
+    note = p.ok ? 'Пост с кнопкой «Магазин» опубликован и закреплён: кнопка теперь видна на плашке закрепа вверху канала.' : `Пост опубликован, но закрепить не вышло — закрепите его в канале вручную. (${channelError(p)})`;
+  }
+  return say(note);
+}
 
 /* ---------- заявка из мини-аппа ---------- */
 async function handleLead(body, env, deps = {}) {
@@ -123,10 +166,16 @@ async function handleUpdate(u, env, deps = {}) {
 
   /* сообщения из чата менеджера */
   if (String(m.chat.id) === manager) {
+    if (/^\/(post|shop)\b/.test(text)) return channelCommand(m, env, call);
+    const fwd = m.forward_origin || (m.forward_from_chat ? { type: 'channel', chat: m.forward_from_chat } : null);
+    if (fwd && fwd.type === 'channel' && fwd.chat) {
+      return call('sendMessage', { chat_id: m.chat.id, text: `Канал «${fwd.chat.title || ''}»\nCHANNEL_ID: ${fwd.chat.username ? '@' + fwd.chat.username : fwd.chat.id}\n\nЭто значение нужно вписать в настройки воркера.` });
+    }
     const orig = m.reply_to_message;
     const tag = orig && ((orig.text || orig.caption || '').match(ID_TAG));
     if (!tag) {
-      if (m.chat.type === 'private' || /^\/(help|start)/.test(text)) return call('sendMessage', { chat_id: m.chat.id, text: TEXT.managerHelp });
+      if (/^\/(help|start)/.test(text)) return call('sendMessage', { chat_id: m.chat.id, text: TEXT.managerHelp });
+      if (m.chat.type === 'private') return call('sendMessage', { chat_id: m.chat.id, reply_to_message_id: m.message_id, text: TEXT.managerHint });
       return; // обычная переписка менеджеров в группе
     }
     const r = await call('copyMessage', { chat_id: tag[1], from_chat_id: m.chat.id, message_id: m.message_id });
@@ -165,6 +214,14 @@ async function setup(env, deps = {}) {
   out.webhook = await call('setWebhook', { url: env.PUBLIC_URL, secret_token: env.WEBHOOK_SECRET, allowed_updates: ['message', 'edited_message', 'callback_query'], drop_pending_updates: true });
   out.menu = await call('setChatMenuButton', { menu_button: { type: 'web_app', text: 'Магазин', web_app: { url } } });
   out.commands = await call('setMyCommands', { commands: [{ command: 'start', description: 'Открыть магазин GTJ' }] });
+  if (env.MANAGER_CHAT_ID) {
+    /* менеджер видит в меню свои команды, клиенты — только /start */
+    out.managerCommands = await call('setMyCommands', { scope: { type: 'chat', chat_id: env.MANAGER_CHAT_ID }, commands: [
+      { command: 'shop', description: 'Пост с кнопкой «Магазин» в канал + закрепить' },
+      { command: 'post', description: 'Ответом на сообщение: опубликовать в канале' },
+      { command: 'help', description: 'Как отвечать клиентам и публиковать' },
+    ] });
+  }
   return out;
 }
 
