@@ -166,8 +166,20 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
 .sc.x { font-family: var(--f-han); font-weight: 500; font-size: .8em; opacity: .8 }
 
 /* boot */
-#boot { position: fixed; inset: 0; z-index: 99; background: var(--night) }
+#boot { position: fixed; inset: 0; z-index: 99; background: var(--night); overflow: hidden }
 #boot canvas { width: 100%; height: 100%; display: block }
+/* intro film: the car assembles from a light sketch and ends in night, the page fades in under it */
+#boot.vid { background: #d4d4d6; transition: opacity .7s ease }
+#boot.vid.out { opacity: 0; pointer-events: none }
+#boot .bg { position: absolute; inset: -10%; width: 120%; height: 120%; filter: blur(30px) saturate(1.1) }
+#boot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+/* tall screens: the film runs as a wide band, zoomed so the car fills the width, with feathered edges over its own blurred frame */
+@media (max-aspect-ratio: 4/3) {
+  #boot video { inset: auto; left: 50%; top: 50%; width: 130%; height: auto; transform: translate(-54%, -50%); -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent); mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent) }
+}
+@media (max-aspect-ratio: 1/1) { #boot video { width: 158% } }
+#boot .skip { position: absolute; right: var(--gut); bottom: calc(var(--gut) + env(safe-area-inset-bottom, 0px)); min-height: 40px; padding: 0 16px; background: none; border: 1px solid currentColor; color: #fff; mix-blend-mode: difference; font: 700 var(--sm)/1 var(--f-body); cursor: pointer }
+#boot .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: #fff; mix-blend-mode: difference; transform-origin: left; transform: scaleX(0) }
 
 @media (prefers-reduced-motion: reduce) {
   .glyphs span { animation: none }
@@ -177,11 +189,18 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
 </style>
 <script>
 (function () {
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, seen = false;
+  /* the intro plays once per browser session; ?intro=1 forces it (for checking) */
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, seen = false, force = /[?&]intro=1/.test(location.search);
   try { seen = sessionStorage.getItem('gtj-boot') === '1'; sessionStorage.setItem('gtj-boot', '1'); } catch (e) {}
-  if (reduce || seen) return;
-  var d = document.createElement('div'); d.id = 'boot'; d.setAttribute('aria-hidden', 'true');
+  if ((reduce || seen) && !force) return;
+  var d = document.createElement('div'); d.id = 'boot'; d.className = 'vid'; d.setAttribute('role', 'presentation');
+  d.innerHTML = '<canvas class="bg" width="48" height="27" aria-hidden="true"></canvas>' +
+    '<video muted playsinline autoplay preload="auto" poster="intro/poster.jpg" aria-hidden="true">' +
+    '<source src="intro/intro.webm" type="video/webm"><source src="intro/intro.mp4" type="video/mp4"></video>' +
+    '<button type="button" class="skip">Пропустить</button><i class="bar" aria-hidden="true"></i>';
   document.documentElement.appendChild(d);
+  var v = d.querySelector('video'); v.muted = true;
+  var p = v.play(); if (p && p.catch) p.catch(function () {});
 })();
 </script>
 
@@ -454,8 +473,37 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
 
   /* ---------- boot ---------- */
   const FONT = { G: ['01110', '10001', '10000', '10111', '10001', '10001', '01110'], T: ['11111', '00100', '00100', '00100', '00100', '00100', '00100'], J: ['00111', '00010', '00010', '00010', '00010', '10010', '01100'] };
+  /* intro film: plays to the end (or until "Пропустить" / Esc), then fades out over the page.
+     Autoplay refused, a broken file or a stall of 4 s simply drops the intro. */
+  function intro(host, v, done) {
+    const root = document.documentElement; root.style.overflow = 'hidden';
+    const bg = host.querySelector('.bg').getContext('2d'); const bar = host.querySelector('.bar');
+    let over = false;
+    const finish = () => {
+      if (over) return; over = true;
+      removeEventListener('keydown', onKey); clearTimeout(watchdog);
+      host.classList.add('out'); root.style.overflow = ''; done();
+      setTimeout(() => host.remove(), 750);
+    };
+    const onKey = e => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); finish(); } };
+    addEventListener('keydown', onKey);
+    host.querySelector('.skip').addEventListener('click', finish);
+    v.addEventListener('ended', finish);
+    v.querySelector('source:last-of-type').addEventListener('error', finish);
+    const watchdog = setTimeout(() => { if (v.paused || v.currentTime < 0.05) finish(); }, 4000);
+    /* a tiny blurred copy of the current frame fills the space around the film on narrow screens */
+    const draw = () => {
+      if (over) return;
+      if (v.readyState >= 2) { bg.drawImage(v, 0, 0, 48, 27); if (v.duration) bar.style.transform = `scaleX(${v.currentTime / v.duration})`; }
+      requestAnimationFrame(draw);
+    };
+    requestAnimationFrame(draw);
+    if (v.ended) return finish();
+    const p = v.play(); if (p && p.catch) p.catch(finish);
+  }
   function boot(done) {
     const host = document.getElementById('boot'); if (!host) return done();
+    const vid = host.querySelector('video'); if (vid) return intro(host, vid, done);
     const cv = document.createElement('canvas'); host.append(cv); const g = cv.getContext('2d');
     const k = Math.min(devicePixelRatio || 1, 2), W = cv.width = innerWidth * k, H = cv.height = innerHeight * k;
     const cell = Math.max(6, Math.round(Math.min(W / 32, H / 16)));
