@@ -64,7 +64,24 @@ img { max-width: 100%; display: block }
 .menu .x { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 14px); left: var(--gut); font-size: var(--sm) }
 
 /* hero */
-.hero { position: relative; height: clamp(520px, 78vh, 820px); overflow: hidden; background: #000 }
+.hero { position: relative; height: clamp(520px, 78vh, 820px); background: #000 }
+.pin { position: relative; height: 100%; overflow: hidden }
+/* film: the hero turns into a scroll track. Its first screen stays pinned while the Preface assembles
+   frame by frame from a light sketch into the finished night car; scrolling back takes it apart again. */
+.film-cv, .film-bg { display: none }
+.js .hero.film { height: 260vh }
+.js .hero.film .pin { position: sticky; top: 0; height: 100vh; height: 100svh; background: #d4d4d6 }
+.js .hero.film .slide { display: none }
+.js .hero.film .film-bg { display: block; position: absolute; inset: -10%; width: 120%; height: 120%; filter: blur(30px) saturate(1.1) }
+.js .hero.film .film-cv { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+.js .hero.film .glyphs { mix-blend-mode: difference }
+.js .hero.film .grain { opacity: .14 }
+.js .hero.film .dots { display: none }
+/* tall screens: the car runs as a wide band across the screen, feathered into its own blurred frame */
+@media (max-aspect-ratio: 4/3) {
+  .js .hero.film .film-cv { inset: auto; left: 50%; top: 44%; width: 130%; height: auto; transform: translate(-54%, -50%); -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent); mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent) }
+}
+@media (max-aspect-ratio: 1/1) { .js .hero.film .film-cv { width: 158% } }
 .slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.06); transition: opacity 1.2s ease, transform 7s linear; filter: contrast(1.15) saturate(.9) brightness(.82) }
 .slide.on { opacity: 1; transform: scale(1) }
 .grain { position: absolute; inset: 0; pointer-events: none; opacity: .5; mix-blend-mode: overlay; background-size: 180px 180px }
@@ -166,20 +183,8 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
 .sc.x { font-family: var(--f-han); font-weight: 500; font-size: .8em; opacity: .8 }
 
 /* boot */
-#boot { position: fixed; inset: 0; z-index: 99; background: var(--night); overflow: hidden }
+#boot { position: fixed; inset: 0; z-index: 99; background: var(--night) }
 #boot canvas { width: 100%; height: 100%; display: block }
-/* intro film: the car assembles from a light sketch and ends in night, the page fades in under it */
-#boot.vid { background: #d4d4d6; transition: opacity .7s ease }
-#boot.vid.out { opacity: 0; pointer-events: none }
-#boot .bg { position: absolute; inset: -10%; width: 120%; height: 120%; filter: blur(30px) saturate(1.1) }
-#boot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
-/* tall screens: the film runs as a wide band, zoomed so the car fills the width, with feathered edges over its own blurred frame */
-@media (max-aspect-ratio: 4/3) {
-  #boot video { inset: auto; left: 50%; top: 50%; width: 130%; height: auto; transform: translate(-54%, -50%); -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent); mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent) }
-}
-@media (max-aspect-ratio: 1/1) { #boot video { width: 158% } }
-#boot .skip { position: absolute; right: var(--gut); bottom: calc(var(--gut) + env(safe-area-inset-bottom, 0px)); min-height: 40px; padding: 0 16px; background: none; border: 1px solid currentColor; color: #fff; mix-blend-mode: difference; font: 700 var(--sm)/1 var(--f-body); cursor: pointer }
-#boot .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: #fff; mix-blend-mode: difference; transform-origin: left; transform: scaleX(0) }
 
 @media (prefers-reduced-motion: reduce) {
   .glyphs span { animation: none }
@@ -189,18 +194,12 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
 </style>
 <script>
 (function () {
-  /* the intro plays once per browser session; ?intro=1 forces it (for checking) */
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, seen = false, force = /[?&]intro=1/.test(location.search);
+  document.documentElement.classList.add('js');
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches, seen = false;
   try { seen = sessionStorage.getItem('gtj-boot') === '1'; sessionStorage.setItem('gtj-boot', '1'); } catch (e) {}
-  if ((reduce || seen) && !force) return;
-  var d = document.createElement('div'); d.id = 'boot'; d.className = 'vid'; d.setAttribute('role', 'presentation');
-  d.innerHTML = '<canvas class="bg" width="48" height="27" aria-hidden="true"></canvas>' +
-    '<video muted playsinline autoplay preload="auto" poster="intro/poster.jpg" aria-hidden="true">' +
-    '<source src="intro/intro.webm" type="video/webm"><source src="intro/intro.mp4" type="video/mp4"></video>' +
-    '<button type="button" class="skip">Пропустить</button><i class="bar" aria-hidden="true"></i>';
+  if (reduce || seen) return;
+  var d = document.createElement('div'); d.id = 'boot'; d.setAttribute('aria-hidden', 'true');
   document.documentElement.appendChild(d);
-  var v = d.querySelector('video'); v.muted = true;
-  var p = v.play(); if (p && p.catch) p.catch(function () {});
 })();
 </script>
 
@@ -220,7 +219,10 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
 </nav>
 
 <main id="top">
-  <section class="hero" aria-label="Работы бокса GTJ">
+  <section class="hero film" aria-label="Работы бокса GTJ">
+   <div class="pin">
+    <canvas class="film-bg" width="48" height="27" aria-hidden="true"></canvas>
+    <canvas class="film-cv" width="1024" height="578" role="img" aria-label="Geely Preface собирается из светящегося чертежа в готовую машину с обвесом"></canvas>
     <img class="slide on" src="img/night-meet.jpg" alt="Ночная встреча тюнингованных седанов на парковке, иллюстрация" data-cap="Петербург, ночь" fetchpriority="high">
     <img class="slide" src="img/work-lift.jpg" alt="Geely Preface на подъёмнике после установки дисков и койловеров" data-cap="Preface на койловерах, бокс GTJ">
     <img class="slide" src="img/night-garage.jpg" alt="Седан на подъёмнике в гараже, механик меняет тормоза, иллюстрация" data-cap="Тормоза и подвеска">
@@ -236,6 +238,7 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
       <span class="cap" aria-live="polite"></span>
       <a class="btn cta" href="https://t.me/GTJdetailing_bot/shop?startapp=site" target="_blank" rel="noopener"><span data-scr>Подобрать тюнинг</span></a>
     </div>
+   </div>
   </section>
 
   <section class="sec" id="power">
@@ -404,16 +407,16 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
   /* ---------- hero: slides, caption, blurred backdrop, cursor trail ---------- */
   const slides = $$('.slide'); const cap = $('.hero .cap'); const back = $('.backdrop');
   const backs = slides.map(s => { const i = document.createElement('img'); i.src = s.getAttribute('src'); i.alt = ''; back.append(i); return i; });
-  let cur = 0, timer = 0;
+  let cur = 0, timer = 0, filmOn = false;
   function show(i) {
     slides[cur].classList.remove('on'); backs[cur].classList.remove('on');
     cur = (i + slides.length) % slides.length;
     slides[cur].classList.add('on'); backs[cur].classList.add('on');
-    setText(cap, slides[cur].dataset.cap);
+    if (!filmOn) setText(cap, slides[cur].dataset.cap);   /* with the film on, the caption tells the build stage */
   }
   function auto() { clearInterval(timer); if (!REDUCED) timer = setInterval(() => show(cur + 1), 5200); }
   backs[0].classList.add('on'); cap.textContent = slides[0].dataset.cap; auto();
-  const hero = $('.hero'); const trail = $('.trail');
+  const hero = $('.hero'); const pin = $('.pin'); const trail = $('.trail');
   /* every STEP px of cursor travel: drop the next photo as a card under the cursor and swap the hero to it.
      Cards pile up (newest on top) and each one fades out on its own after a short hold. */
   const STEP = 90, HOLD = 700, MAX = 8;
@@ -436,7 +439,7 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
   }
   if (canTrail) {
     hero.addEventListener('pointermove', e => {
-      const r = hero.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top;
+      const r = pin.getBoundingClientRect(); const x = e.clientX - r.left, y = e.clientY - r.top;
       if (last) travel += Math.hypot(x - last.x, y - last.y);
       last = { x, y };
       if (travel >= STEP) { travel = 0; drop(x, y); }
@@ -449,7 +452,49 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
   hero.addEventListener('click', e => { if (e.target.closest('a')) return; show(cur + 1); auto(); });
   /* the glyphs lag behind the scroll, so the photo slides under them */
   const glyphs = $('.glyphs');
-  if (!REDUCED) addEventListener('scroll', () => { const y = Math.min(scrollY, innerHeight); glyphs.style.translate = `0 ${y * .35}px`; }, { passive: true });
+
+  /* ---------- hero film: scroll position picks the frame, so the car assembles as you read down ---------- */
+  const FRAMES = 121, filmCv = $('.film-cv'), filmBg = $('.film-bg');
+  const fx = filmCv.getContext('2d'), bx = filmBg.getContext('2d');
+  const frames = []; let want = 0, shown = -1, paintQ = 0, stage = -1;
+  /* what the box does at each stretch of the build; the caption follows the car */
+  const STAGES = [[0, 'Чертёж: Geely Preface 2.0T'], [.1, 'Собираем кузов'], [.38, 'Обвес и подвеска'], [.62, 'Детейлинг и полировка'], [.86, 'Готово к выезду']];
+  const frameSrc = i => `intro/f/${String(i + 1).padStart(3, '0')}.webp`;
+  const nearest = i => { for (let d = 0; d < FRAMES; d++) { if (frames[i - d]) return i - d; if (frames[i + d]) return i + d; } return -1; };
+  function paint() {
+    paintQ = 0; const k = nearest(want); if (k < 0 || k === shown) return;
+    shown = k; fx.drawImage(frames[k], 0, 0, filmCv.width, filmCv.height); bx.drawImage(frames[k], 0, 0, filmBg.width, filmBg.height);
+  }
+  const queuePaint = () => { if (!paintQ) paintQ = requestAnimationFrame(paint); };
+  function filmScroll() {
+    const r = hero.getBoundingClientRect(), track = hero.offsetHeight - innerHeight;
+    const p = track > 0 ? Math.min(1, Math.max(0, -r.top / track)) : 0;
+    want = Math.round(Math.min(1, p / .85) * (FRAMES - 1));   /* the last stretch holds the finished car */
+    glyphs.style.opacity = Math.max(0, 1 - p / .28); glyphs.style.scale = String(1 + p * .5);
+    let s = 0; STAGES.forEach((st, i) => { if (p >= st[0]) s = i; });
+    if (s !== stage) { stage = s; setText(cap, STAGES[s][1]); }
+    queuePaint();
+  }
+  const loadFrame = i => new Promise(done => {
+    const im = new Image(); im.decoding = 'async';
+    im.onload = () => { frames[i] = im; queuePaint(); done(true); };
+    im.onerror = () => done(false);
+    im.src = frameSrc(i);
+  });
+  async function startFilm() {
+    filmOn = true; cap.textContent = STAGES[0][1]; stage = 0;
+    addEventListener('scroll', filmScroll, { passive: true }); addEventListener('resize', filmScroll);
+    filmScroll();
+    /* no first frame: fall back to the photo slideshow */
+    if (!(await loadFrame(0))) { filmOn = false; hero.classList.remove('film'); removeEventListener('scroll', filmScroll); glyphs.style.opacity = glyphs.style.scale = ''; setText(cap, slides[cur].dataset.cap); return; }
+    /* coarse to fine: the ends first, then every 16th frame, every 8th... so scrubbing works at once and smooths out */
+    const order = [], seen = new Set([0]);
+    for (const step of [120, 16, 8, 4, 2, 1]) for (let i = 0; i < FRAMES; i += step) if (!seen.has(i)) { seen.add(i); order.push(i); }
+    let n = 0; const next = () => n < order.length ? loadFrame(order[n++]).then(next) : null;
+    await Promise.all(Array.from({ length: 6 }, next));
+  }
+  if (hero.classList.contains('film')) startFilm();
+  else if (!REDUCED) addEventListener('scroll', () => { const y = Math.min(scrollY, innerHeight); glyphs.style.translate = `0 ${y * .35}px`; }, { passive: true });
 
   /* ---------- menu ---------- */
   const menu = $('#menu'); const menuBtn = $('.top [data-menu]');
@@ -473,37 +518,8 @@ footer .mark { white-space: nowrap; font: 400 28px/1 var(--f-brush); color: var(
 
   /* ---------- boot ---------- */
   const FONT = { G: ['01110', '10001', '10000', '10111', '10001', '10001', '01110'], T: ['11111', '00100', '00100', '00100', '00100', '00100', '00100'], J: ['00111', '00010', '00010', '00010', '00010', '10010', '01100'] };
-  /* intro film: plays to the end (or until "Пропустить" / Esc), then fades out over the page.
-     Autoplay refused, a broken file or a stall of 4 s simply drops the intro. */
-  function intro(host, v, done) {
-    const root = document.documentElement; root.style.overflow = 'hidden';
-    const bg = host.querySelector('.bg').getContext('2d'); const bar = host.querySelector('.bar');
-    let over = false;
-    const finish = () => {
-      if (over) return; over = true;
-      removeEventListener('keydown', onKey); clearTimeout(watchdog);
-      host.classList.add('out'); root.style.overflow = ''; done();
-      setTimeout(() => host.remove(), 750);
-    };
-    const onKey = e => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); finish(); } };
-    addEventListener('keydown', onKey);
-    host.querySelector('.skip').addEventListener('click', finish);
-    v.addEventListener('ended', finish);
-    v.querySelector('source:last-of-type').addEventListener('error', finish);
-    const watchdog = setTimeout(() => { if (v.paused || v.currentTime < 0.05) finish(); }, 4000);
-    /* a tiny blurred copy of the current frame fills the space around the film on narrow screens */
-    const draw = () => {
-      if (over) return;
-      if (v.readyState >= 2) { bg.drawImage(v, 0, 0, 48, 27); if (v.duration) bar.style.transform = `scaleX(${v.currentTime / v.duration})`; }
-      requestAnimationFrame(draw);
-    };
-    requestAnimationFrame(draw);
-    if (v.ended) return finish();
-    const p = v.play(); if (p && p.catch) p.catch(finish);
-  }
   function boot(done) {
     const host = document.getElementById('boot'); if (!host) return done();
-    const vid = host.querySelector('video'); if (vid) return intro(host, vid, done);
     const cv = document.createElement('canvas'); host.append(cv); const g = cv.getContext('2d');
     const k = Math.min(devicePixelRatio || 1, 2), W = cv.width = innerWidth * k, H = cv.height = innerHeight * k;
     const cell = Math.max(6, Math.round(Math.min(W / 32, H / 16)));
