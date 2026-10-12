@@ -628,6 +628,38 @@ body{background-image:none}
 .ffoot .acts{display:flex;gap:8px}
 .ffoot .acts .btn{flex:1}
 .ffoot .acts .btn-ghost{flex:none;padding:0 14px}
+/* home: the brand */
+.about{margin-top:22px}
+.lede{margin:0;font-size:var(--fs-m);line-height:1.5;color:var(--fg);max-width:36ch}
+.svcl{border-top:1px solid var(--line)}
+.svc2{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:14px 0;border-bottom:1px solid var(--line);text-align:left;color:var(--muted)}
+.svc2 .han{font:500 26px/1 var(--f-han);color:var(--muted);transition:color .2s}
+.svc2 .t b{display:block;font-size:var(--fs-s);color:var(--fg)}
+.svc2 .t span{display:block;font-size:var(--fs-xs);color:var(--muted);margin-top:2px}
+.svc2:active .han{color:var(--cream)}
+@media (hover:hover){.svc2:hover .han{color:var(--cream)}}
+.howl{list-style:none;margin:0;padding:0;counter-reset:how;border-top:1px solid var(--line)}
+.howl li{counter-increment:how;display:grid;grid-template-columns:52px minmax(0,1fr);gap:2px 12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.howl li::before{content:counter(how);grid-row:1/3;font:700 var(--fs-xl)/1 var(--f-display);color:var(--muted)}
+.howl b{font-size:var(--fs-s)}
+.howl span{font-size:var(--fs-xs);color:var(--muted)}
+.homecta{gap:10px;padding:18px;border:1px solid var(--line);background:var(--panel)}
+.homecta h2{margin:0;font:700 var(--fs-m)/1.2 var(--f-display);text-transform:uppercase;text-wrap:balance}
+.homecta p{margin:0;color:var(--muted);font-size:var(--fs-s)}
+/* catalogue: numbered steps, car first */
+.step{display:flex;align-items:center;gap:10px;margin:26px 0 12px}
+.step .sn{flex:none;width:24px;height:24px;display:grid;place-items:center;background:var(--cream);color:#07080a;font:700 var(--fs-xs)/1 var(--f-display)}
+.step h2{margin:0;font:700 var(--fs-m)/1.15 var(--f-display);text-transform:uppercase;letter-spacing:.01em;min-width:0}
+.step.off{margin:16px 0 0}
+.step.off .sn{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.step.off h2{color:var(--muted)}
+.step+.hint{display:block;margin:-4px 0 10px}
+.mycar .btn{flex:none}
+.mycar+.chips{margin-top:8px}
+.brands+.btn{margin-top:8px}
+.tune+.btn{margin-top:8px}
+.locked{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:14px;padding:14px;border:1px dashed rgba(244,242,238,.22);color:var(--muted);font-size:var(--fs-s);line-height:1.45}
+.clist{margin-top:14px}
 /* decoding text: while a label decodes, each letter keeps its width and flickers through hanzi */
 .scw{white-space:nowrap}
 .scr .scc{display:inline-block;text-align:center;overflow:hidden;vertical-align:bottom}
@@ -788,7 +820,7 @@ const S = {
   picker: { step: 'brand', b: null, m: null, q: '' },
   orders: load('orders2', []), openOrder: null,
   src: load('src', ''), ref: load('ref', ''),
-  tune: new Set(), partsPhoto: null,
+  tune: new Set(), partsPhoto: null, browseAll: false,
 };
 if (!S.me.name && tgName) S.me.name = tgName;
 S.cart = S.cart.filter(i => PM[i.id]);
@@ -905,26 +937,6 @@ function packInfo(c = car()) {
   const inst = items.reduce((a, p) => a + (p.inst || 0), 0);
   return { items, parts, inst, total: parts + inst, gain: c && stageGain(PM.stage2, c) };
 }
-function heroHtml() {
-  const c = car();
-  if (!c) return `<div class="hero">
-    ${SHOP.heroModel ? stage3d(SHOP.heroModel) : `<img src="${IMG}car-preface.jpg" alt="Geely Preface">`}
-    <div class="copy">
-      <h3>Подберём тюнинг под вашу машину</h3>
-      <p>Выберите марку и модель: покажем детали, которые подходят, и посчитаем прирост мощности.</p>
-      <button class="btn btn-cream btn-block" data-act="carsheet">Выбрать машину</button>
-      <button class="btn btn-ghost btn-block" data-act="lead" data-v="calc">Задать вопрос менеджеру</button>
-    </div></div>`;
-  return `<div class="hero">
-    <div class="hcar">${c.m.glb || SHOP.heroModel ? stage3d(c.m.glb || SHOP.heroModel, IMG + c.m.img) : `<img src="${IMG}${c.m.img}" alt="${esc(c.title)}">`}<button class="hchange" data-act="carsheet" aria-label="Сменить машину">${esc(c.title)} ${esc(c.d[0])}${ic('down')}</button></div>
-    <div class="copy">
-      <h3>Что сделаем с ${esc(c.short)}?</h3>
-      <p>Отметьте, что интересует, и мы посчитаем цену под вашу комплектацию.</p>
-      <div class="tune" role="group" aria-label="Что интересует">${tuneItems(c).map(t => `<button class="tpick" data-act="tune" data-v="${t.id}" aria-pressed="${S.tune.has(t.id)}">
-        <span class="ci">${ic(t.g)}</span><span class="t"><b>${t.n}</b><span>${t.sub || t.s}</span></span><span class="box">${ic('check')}</span></button>`).join('')}</div>
-      ${tuneBtn()}
-    </div></div>`;
-}
 /* the checklist for this car: chip tuning shows our real figures, and drops out when the car has nothing to flash */
 function tuneItems(c = car()) {
   const g = c && stageGain(PM.stage1, c);
@@ -960,7 +972,7 @@ function filmHtml() {
       <div class="ffoot">
         <span class="stage-cap" aria-live="polite"></span>
         <h1>Тюнинг и детейлинг китайских автомобилей</h1>
-        <div class="acts">${c ? `<button class="btn btn-cream" data-act="tohero">Подобрать для ${esc(c.short)}</button>` : `<button class="btn btn-cream" data-act="carsheet">Выбрать машину</button>`}<button class="btn btn-ghost" data-act="tab" data-v="catalog">Каталог</button></div>
+        <div class="acts"><button class="btn btn-cream" data-act="tab" data-v="catalog">${c ? 'Детали для ' + esc(c.short) : 'Подобрать детали'}</button><button class="btn btn-ghost" data-act="contact">Связаться</button></div>
       </div>
     </div></div>`;
 }
@@ -1057,34 +1069,49 @@ function decodeHeads(view) {
     const t = e.target.textContent;
     if (!decoded.has(t)) { decoded.add(t); scramble(e.target, 700); }
   }), { root: $('#view'), threshold: .6 });
-  view.querySelectorAll('.sec-h h2, .ptitle h1, .ffoot h1').forEach(h => { if (!decoded.has(h.textContent)) decodeHeads.io.observe(h); });
+  view.querySelectorAll('.sec-h h2, .ptitle h1, .ffoot h1, .step h2, .homecta h2').forEach(h => { if (!decoded.has(h.textContent)) decodeHeads.io.observe(h); });
 }
 const partsCta = () => `<button class="row-card parts-cta" data-act="parts">${ic('wrench')}<div class="t"><b>Оригинальные запчасти под заказ</b><span>Подберём по VIN и привезём</span></div>${ic('chev')}</button>`;
+/* home is the brand: who GTJ are, what the box does, its work and how it goes; everything with parts lives in the catalogue */
+const SVC = [
+  ['动力', 'Чип-тюнинг', 'Stage 1 и Stage 2, замер до и после.', 'power'],
+  ['排气', 'Выхлоп, впуск и турбо', 'Даунпайпы, интеркулеры, клапаны.', 'power'],
+  ['制动', 'Тормоза и подвеска', 'Суппорты, диски, пружины, койловеры.', 'chassis'],
+  ['外观', 'Обвес и внешний вид', 'Бамперы, пороги, спойлеры, диски.', 'exterior'],
+  ['内饰', 'Салон и электрика', 'Перетяжка, свет, мультимедиа.', 'interior'],
+  ['美容', 'Детейлинг', 'Полиуретан, цветная плёнка, керамика.', 'detailing'],
+];
+const HOW = [
+  ['Заявка в Telegram', 'Выбираете машину и отмечаете, что хотите сделать.'],
+  ['Подбор и цена', 'Менеджер проверяет совместимость и присылает точную сумму.'],
+  ['Бокс и замер', 'Ставим детали в удобный день, показываем результат и отдаём машину.'],
+];
 function vHome() {
-  const c = car();
-  const hits = P.filter(p => !p.svc && !universal(p) && fits(p)).sort((a, b) => b.pop - a.pop).slice(0, 8);
-  const count = g => P.filter(p => g.cats.includes(p.cat) && (!c || fits(p))).length;
-  const [big1, big2, ...rest] = GROUPS;
-  const bigTile = g => `<button class="gtile big" data-act="group" data-v="${g.id}"><span class="ci">${ic(g.g)}</span><b>${g.n}</b><small>${g.s}</small><span class="cnt">${count(g)} ${plural(count(g), 'позиция', 'позиции', 'позиций')}</span></button>`;
-  const tile = g => `<button class="gtile" data-act="group" data-v="${g.id}"><span class="ci">${ic(g.g)}</span><b>${g.n}</b><span class="cnt">${count(g)}</span></button>`;
   return `
   ${filmHtml()}
-  ${c ? heroHtml() : ''}
-  ${partsCta()}
-  <section class="sec">
-    <div class="sec-h"><h2>Что делаем</h2><button data-act="group" data-v="all">Весь каталог${ic('chev')}</button></div>
-    <div class="gbig">${bigTile(big1)}${bigTile(big2)}</div>
-    <div class="gsmall">${rest.map(tile).join('')}</div>
+  <section class="sec about">
+    <p class="lede">GTJ — тюнинг и детейлинг китайских автомобилей. Свой бокс в Санкт-Петербурге: прошивка, детали, обвес и защита кузова в одном месте.</p>
   </section>
-  ${hits.length ? `<section class="sec">
-    <div class="sec-h"><h2>${c ? 'Популярное для ' + esc(c.short) : 'Популярное'}</h2><button data-act="group" data-v="all">Все${ic('chev')}</button></div>
-    <div class="hscroll">${hits.map(gcard).join('')}</div>
-  </section>` : ''}
+  <section class="sec">
+    <div class="sec-h"><h2>Что делаем</h2></div>
+    <div class="svcl">${SVC.map(([h, t, d, g]) => `<button class="svc2" data-act="group" data-v="${g}"><span class="han" aria-hidden="true">${h}</span><span class="t"><b>${t}</b><span>${d}</span></span>${ic('chev')}</button>`).join('')}</div>
+  </section>
   <section class="sec">
     <div class="sec-h"><h2>Работы бокса</h2>${SHOP.channel ? `<button data-act="channel">Больше в канале${ic('chev')}</button>` : ''}</div>
     <div class="hscroll">${WORKS.map(w => `<button class="work" ${w.to && PM[w.to] ? `data-act="product" data-v="${w.to}"` : 'tabindex="-1"'}><img src="${IMG}${w.img}" alt="" loading="lazy"><span class="wt"><b>${w.t}</b><span>${w.s}</span></span></button>`).join('')}</div>
+  </section>
+  <section class="sec">
+    <div class="sec-h"><h2>Как работаем</h2></div>
+    <ol class="howl">${HOW.map(([t, d]) => `<li><b>${t}</b><span>${d}</span></li>`).join('')}</ol>
+  </section>
+  ${SHOP.reviewsUrl || hasContacts() ? `<section class="sec">
     ${SHOP.reviewsUrl ? `<button class="row-card" data-act="reviews">${ic('star')}<div class="t"><b>${SHOP.rating ? `${esc(SHOP.rating)} на Яндекс Картах` : 'Отзывы клиентов'}</b><span>Читать отзывы о GTJ</span></div>${ic('chev')}</button>` : ''}
     ${hasContacts() ? `<button class="row-card" data-act="contacts">${ic('pin')}<div class="t"><b>${esc(SHOP.address || 'Бокс GTJ')}</b><span>${esc(SHOP.hours || 'Адрес и часы работы')}</span></div>${ic('chev')}</button>` : ''}
+  </section>` : ''}
+  <section class="sec homecta">
+    <h2>Подберём детали под вашу машину</h2>
+    <p>Выберите марку и модель: покажем, что на неё встаёт, и посчитаем прирост мощности.</p>
+    <button class="btn btn-cream btn-block" data-act="tab" data-v="catalog">Перейти в каталог</button>
   </section>`;
 }
 
@@ -1106,18 +1133,43 @@ function listHtml() {
   const l = catalogList();
   return l.length ? `<span class="hint">${l.length} ${plural(l.length, 'позиция', 'позиции', 'позиций')}</span><div class="ggrid">${l.map(gcard).join('')}</div>` : empty;
 }
+/* the catalogue goes in order: the car first, then what to do with it, then the parts that fit */
+const tuneListHtml = c => `<div class="tune" role="group" aria-label="Что интересует">${tuneItems(c).map(t => `<button class="tpick" data-act="tune" data-v="${t.id}" aria-pressed="${S.tune.has(t.id)}">
+  <span class="ci">${ic(t.g)}</span><span class="t"><b>${t.n}</b><span>${t.sub || t.s}</span></span><span class="box">${ic('check')}</span></button>`).join('')}</div>${tuneBtn()}`;
 function vCatalog() {
   const c = car();
-  return `
-  <div class="top">
-    <div class="ptitle" style="padding-top:2px"><h1>${S.group === 'all' ? 'Каталог' : esc(GM[S.group].n)}</h1><button class="iconbtn" data-act="tab" data-v="cart" aria-label="Корзина">${ic('cart')}${cartCount() ? `<span class="dot">${cartCount()}</span>` : ''}</button></div>
-    <div class="chips">
-      ${c ? `<button class="chip ${S.onlyFit ? 'on' : ''}" data-act="onlyfit">${S.onlyFit ? ic('check') + 'Для ' + esc(c.short) : 'Для всех машин'}</button>` : `<button class="chip" data-act="carsheet">${ic('plus')}Выбрать машину</button>`}
+  const step = (n, t, on = true) => `<div class="step${on ? '' : ' off'}"><span class="sn">${n}</span><h2>${t}</h2></div>`;
+  const top = CARS.filter(b => b.top);
+  const carBlock = c ? `
+    <div class="mycar"><span class="ph">${c.m.img ? `<img src="${IMG}${c.m.img}" alt="">` : ic('car')}</span><span class="t"><b>${esc(c.title)}</b><span>${esc(c.d[0])}, ${c.d[2]} л.с., ${esc(c.d[5])}</span></span><button class="btn btn-ghost btn-sm" data-act="carsheet">Сменить</button></div>
+    ${S.garage.length > 1 ? `<div class="chips">${S.garage.map((g, i) => `<button class="chip ${i === S.active ? 'on' : ''}" data-act="setactive" data-v="${i}">${esc(resolveCar(g).short)}</button>`).join('')}</div>` : ''}`
+    : `<div class="brands">${top.map(b => `<button class="brand" data-act="pickbrandin" data-v="${b.id}"><b>${esc(b.n)}</b><small>${b.models.length} ${plural(b.models.length, 'модель', 'модели', 'моделей')}</small></button>`).join('')}</div>
+    <button class="btn btn-ghost btn-block" data-act="carsheet">Все марки и поиск</button>`;
+  const parts = `<div class="chips">
       <button class="chip ${S.group === 'all' ? 'on' : ''}" data-act="group" data-v="all">Все</button>
       ${GROUPS.map(g => `<button class="chip ${S.group === g.id ? 'on' : ''}" data-act="group" data-v="${g.id}">${g.n}</button>`).join('')}
     </div>
+    <div class="clist">${listHtml()}</div>`;
+  return `
+  <div class="top">
+    <div class="ptitle" style="padding-top:2px"><h1>Каталог</h1><button class="iconbtn" data-act="tab" data-v="cart" aria-label="Корзина">${ic('cart')}${cartCount() ? `<span class="dot">${cartCount()}</span>` : ''}</button></div>
   </div>
-  <div class="clist">${listHtml()}</div>`;
+  ${step(1, c ? 'Ваша машина' : 'Выберите машину')}
+  ${carBlock}
+  ${c ? `
+  ${step(2, 'Что сделаем с ' + esc(c.short))}
+  <p class="hint">Отметьте, что интересует, и мы посчитаем цену под вашу комплектацию.</p>
+  ${tuneListHtml(c)}
+  ${partsCta()}
+  ${step(3, 'Детали для ' + esc(c.short))}
+  ${parts}` : S.browseAll ? `
+  ${step(2, 'Весь каталог')}
+  <p class="hint">Показываем всё подряд. Выберите машину выше, и останется только то, что на неё встаёт.</p>
+  ${parts}` : `
+  ${step(2, 'Что сделаем с машиной', false)}
+  ${step(3, 'Детали', false)}
+  <div class="locked">Сначала машина: покажем только детали, которые на неё встают, и посчитаем прирост мощности.<button class="linkbtn" data-act="browseall">Смотреть весь каталог без машины</button></div>
+  ${partsCta()}`}`;
 }
 
 function vProduct() {
@@ -1882,6 +1934,8 @@ document.addEventListener('click', e => {
     case 'pickbrand': S.picker.step = 'model'; S.picker.b = v; sheet(pickerHtml()); return;
     case 'pickmodel': { const [b, m] = v.split('|'); S.picker.b = b; S.picker.m = m; S.picker.step = 'mod'; sheet(pickerHtml()); return; }
     case 'pickstep': S.picker.step = v; sheet(pickerHtml()); return;
+    case 'pickbrandin': S.picker = { step: 'model', b: v, m: null, q: '' }; sheet(pickerHtml()); return;
+    case 'browseall': S.browseAll = true; S.onlyFit = false; break;
     case 'pickmod': {
       const g = { b: S.picker.b, m: S.picker.m, i: +v };
       let ix = S.garage.findIndex(x => x.b === g.b && x.m === g.m && x.i === g.i);
@@ -1914,7 +1968,6 @@ document.addEventListener('click', e => {
       sheet(''); S.tab = 'cart'; S.product = null; S.carInfo = null; hNote('success'); toast('Пакет в корзине, выберите время установки'); goal('pack_to_cart'); break; }
     case 'copylead': copy(doneSheet.text || '', 'Текст скопирован'); return;
     case 'contact': contactSheet(); return;
-    case 'tohero': { const v = $('#view'), h = v.querySelector('.hero'); h && v.scrollTo({ top: h.offsetTop - 8, behavior: REDUCED ? 'auto' : 'smooth' }); return; }
     case 'contacts': contactsSheet(); return;
     case 'map': openExt(SHOP.mapUrl); return;
     case 'reviews': openExt(SHOP.reviewsUrl); return;
